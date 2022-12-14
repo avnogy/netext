@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "MyException.h"
 #include <iostream>
 #include <string>
 #include <WinSock2.h>
@@ -17,5 +17,5 @@ class PeerClient
 
 	private:
 		
-		SOCKET client_sock;
+		SOCKET _sock;
 };

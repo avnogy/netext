@@ -147,9 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MyException.cpp" />
+    <ClCompile Include="PeerClient.cpp" />
+    <ClCompile Include="PeerServer.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="MyException.h" />
     <ClInclude Include="PeerClient.h" />
     <ClInclude Include="PeerServer.h" />
   </ItemGroup>
