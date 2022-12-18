@@ -147,16 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="MyException.cpp" />
     <ClCompile Include="PeerClient.cpp" />
     <ClCompile Include="PeerServer.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="WSAInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="consts.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="MyException.h" />
     <ClInclude Include="PeerClient.h" />
     <ClInclude Include="PeerServer.h" />
+    <ClInclude Include="WSAInitializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

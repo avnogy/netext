@@ -20,7 +20,7 @@ void PeerServer::bindAndListen(int port , string serverIp)
 
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
-	inet_pton(server.sin_family, serverIp.c_str(), &server.sin_addr.s_addr);
+	inet_pton(AF_INET, serverIp.c_str(), &server.sin_addr);
 
 	if (bind(_serverSocket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
 		throw std::exception(__FUNCTION__ " - bind");
@@ -36,8 +36,7 @@ void PeerServer::bindAndListen(int port , string serverIp)
 		if ((clientSock = accept(_serverSocket, (struct sockaddr*)&client, &clientlen)) == -1)
 			throw std::runtime_error("Server::startListening: Failed to establish connection with client");
 
-		std::cout << inet_ntoa(client.sin_addr) << " connected" << std::endl;
-		std::cout << "hello" << std::endl;
+		std::cout << "Connected!" << std::endl;
 
 
 		boost::thread th(&startHandleRequests, clientSock);
