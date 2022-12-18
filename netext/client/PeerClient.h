@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <WinSock2.h>
+#include <WS2tcpip.h>
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 using std::string;
 
@@ -17,5 +20,8 @@ class PeerClient
 
 	private:
 		
+
+
+
 		SOCKET _sock;
 };
