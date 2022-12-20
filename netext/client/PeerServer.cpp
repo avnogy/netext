@@ -1,6 +1,7 @@
 #include "PeerServer.h"
 
-PeerServer::PeerServer()
+PeerServer::PeerServer(int port , string ip) : 
+	_port(port) , _ip(ip)
 {
 	_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
@@ -10,17 +11,23 @@ PeerServer::~PeerServer()
 	closesocket(_serverSocket);
 }
 
-void PeerServer::bindAndListen(int port , string serverIp)
+void PeerServer::run()
+{
+	bindAndListen();
+	acceptClients();
+}
+
+void PeerServer::bindAndListen()
 {
 
-	SOCKET clientSock;
-	struct sockaddr_in server, client;
+
+	struct sockaddr_in server;
 
 	memset(&server, 0, sizeof(struct sockaddr_in));
 
 	server.sin_family = AF_INET;
-	server.sin_port = htons(port);
-	inet_pton(AF_INET, serverIp.c_str(), &server.sin_addr);
+	server.sin_port = htons(_port);
+	inet_pton(AF_INET, _ip.c_str(), &server.sin_addr);
 
 	if (bind(_serverSocket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
 		throw std::exception(__FUNCTION__ " - bind");
@@ -28,6 +35,14 @@ void PeerServer::bindAndListen(int port , string serverIp)
 	if (listen(_serverSocket, SOMAXCONN) == SOCKET_ERROR)
 		throw std::exception(__FUNCTION__ " - listen");
 
+
+	
+}
+
+void PeerServer::acceptClients()
+{
+	SOCKET clientSock;
+	struct sockaddr_in client;
 
 	while (true)
 	{
