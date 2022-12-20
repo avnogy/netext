@@ -13,16 +13,23 @@ using std::string;
 class PeerServer 
 {
 	public:
-		PeerServer();
+		PeerServer(int port , string ip);
 		~PeerServer();
 
-		void bindAndListen(int port, string server_ip);
+		void run();
+
+		
+
+
 
 		static void startHandleRequests(SOCKET client_sock);
 
 	private:
 
-		
+		void bindAndListen();
+		void acceptClients();
 		
 		SOCKET _serverSocket;
+		int _port;
+		string _ip;
 };

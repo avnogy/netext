@@ -7,7 +7,6 @@ PeerClient::PeerClient()
 
 PeerClient::~PeerClient()
 {
-
 	closesocket(_sock);
 }
 
