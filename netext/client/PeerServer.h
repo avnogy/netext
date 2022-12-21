@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MyException.h"
+#include "Helper.h"
 #include <iostream>
 #include <string>
 #include <boost/thread/thread.hpp>

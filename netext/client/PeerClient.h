@@ -1,14 +1,20 @@
 #pragma once
 
+
 #include "MyException.h"
+#include "Helper.h"
 #include <iostream>
 #include <string>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 
 using std::string;
+using std::cout;
+using std::endl;
+using std::cin;
+
 
 class PeerClient
 {
@@ -16,10 +22,18 @@ class PeerClient
 		PeerClient();
 		~PeerClient();
 
-		void connectToOtherPeer(string ip, int port);
+		void run();
+
+		
+
+		
 
 	private:
 		
+		
+		void connectToOtherPeer(string ip, int port);
+		void createSession();
+		void joinSession();
 
 
 
