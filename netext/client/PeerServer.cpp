@@ -60,5 +60,26 @@ void PeerServer::acceptClients()
 
 void PeerServer::startHandleRequests(SOCKET client_sock)
 {
-	// TO DO : SPRINT 2
+	std::cout << "Client accepted!" << std::endl;
+
+	Byte id;
+	RequestId idReq;
+	Buffer buff;
+
+	while (true)
+	{
+		try
+		{
+			id = Helper::getId(client_sock);
+			idReq = Helper::getRequestId(id);
+			buff = Helper::getDataBufferFromClient(client_sock);
+			
+			
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "Client Disconnected" << std::endl;
+			break;
+		}
+	}
 }
