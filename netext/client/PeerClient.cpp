@@ -15,13 +15,22 @@ void PeerClient::run()
 	cout << "Menu:" << endl << "1. Connect to another peer" << endl << "2. Create Session" << "3. Join Session" << "4. Delete Session (IF ALREADY EXISTED)" << endl;
 
 	int option = 0;
+	string ip = "";
+	int port = 0;
 
 	cin >> option;
 
 	switch (option)
 	{
 		case 1:
-			connectToOtherPeer();
+			
+
+			cout << "Enter ip: ";
+			cin >> ip;
+
+			cout << "Enter port: ";
+			cin >> port;
+			connectToOtherPeer(ip , port);
 			break;
 
 		case 2:
@@ -33,11 +42,10 @@ void PeerClient::run()
 	
 }
 
-void PeerClient::connectToOtherPeer(string ip , int port)
+void PeerClient::connectToOtherPeer(string ip, int port)
 {
 
 	
-
 
 
 	sockaddr_in serverAddr;
@@ -134,8 +142,8 @@ void PeerClient::joinSession()
 	json result = json::parse(data);
 
 	int status = result["status"];
-	string ip = result["ip"];
-	int port = result["port"];
+	ip = result["ip"];
+	port = result["port"];
 
 
 	cout << "Status: " << status << endl;
