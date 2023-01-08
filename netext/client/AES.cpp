@@ -2,13 +2,13 @@
 
 
 
-
+// initiating the key_schedule field with the key itself so we wont need the key anymore
 void AES::Init(const std::array<std::uint8_t, 16>& key)
 {
 	KeyExpansion(key);
 }
 
-
+// rotating a word (32 bytes)
 std::uint32_t AES::RotateWord(std::uint32_t word)
 {
     std::uint8_t a = (word >> 24) & 0xFF;
@@ -21,7 +21,8 @@ std::uint32_t AES::RotateWord(std::uint32_t word)
 // Performs the SubBytes step.
 void AES::SubBytes()
 {
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 16; ++i) 
+    {
         state[i] = kSBox[state[i]];
     }
 }
@@ -29,7 +30,8 @@ void AES::SubBytes()
 // Performs the InvSubBytes step.
 void AES::InvSubBytes()
 {
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 16; ++i) 
+    {
         state[i] = kInvSBox[state[i]];
     }
 }
@@ -37,67 +39,31 @@ void AES::InvSubBytes()
 // Performs the ShiftRows step.
 void AES::ShiftRows() 
 {
-    std::uint8_t temp[4];
-    temp[0] = state[0];
-    temp[1] = state[5];
-    temp[2] = state[10];
-    temp[3] = state[15];
-    state[0] = temp[0];
-    state[5] = temp[1];
-    state[10] = temp[2];
-    state[15] = temp[3];
-    temp[0] = state[4];
-    state[4] = state[1];
-    state[1] = state[14];
-    state[14] = state[11];
-    state[11] = temp[0];
-    temp[0] = state[8];
-    temp[1] = state[9];
-    temp[2] = state[14];
-    temp[3] = state[15];
-    state[8] = state[2];
-    state[9] = state[7];
-    state[2] = temp[0];
-    state[7] = temp[1];
-    state[14] = temp[2];
-    state[15] = temp[3];
+    for (int i = 0; i < 4; ++i) 
+    {
+        // Shift the row by i bytes to the left.
+        std::rotate(state.begin() + i * 4, state.begin() + i * 4 + i, state.begin() + i * 4 + 4);
+    }
 }
 
 
 // Performs the InvShiftRows step.
 void AES::InvShiftRows() 
 {
-    std::uint8_t temp[4];
-    temp[0] = state[0];
-    temp[1] = state[5];
-    temp[2] = state[10];
-    temp[3] = state[15];
-    state[0] = temp[0];
-    state[5] = temp[1];
-    state[10] = temp[2];
-    state[15] = temp[3];
-    temp[0] = state[4];
-    state[4] = state[11];
-    state[11] = state[14];
-    state[14] = state[1];
-    state[1] = temp[0];
-    temp[0] = state[8];
-    temp[1] = state[9];
-    temp[2] = state[14];
-    temp[3] = state[15];
-    state[8] = state[2];
-    state[9] = state[7];
-    state[2] = temp[0];
-    state[7] = temp[1];
-    state[14] = temp[2];
-    state[15] = temp[3];
+    for (int i = 0; i < 4; ++i) 
+    {
+        // Shift the row by i bytes to the right.
+        std::rotate(state.begin() + i * 4, state.begin() + i * 4 + 4 - i, state.begin() + i * 4 + 4);
+    }
 }
 
 void AES::MixColumns()
 {
     std::array<std::uint8_t, 4> column;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
+    for (int i = 0; i < 4; ++i) 
+    {
+        for (int j = 0; j < 4; ++j) 
+        {
             column[j] = state[i + j * 4];
         }
         state[i] = kMixColumnsMatrix[i + 0] * column[0] ^ kMixColumnsMatrix[i + 4] * column[1] ^ kMixColumnsMatrix[i + 8] * column[2] ^ kMixColumnsMatrix[i + 12] * column[3];
@@ -111,8 +77,10 @@ void AES::MixColumns()
 void AES::InvMixColumns() 
 {
     std::array<std::uint8_t, 4> column;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
+    for (int i = 0; i < 4; ++i) 
+    {
+        for (int j = 0; j < 4; ++j) 
+        {
             column[j] = state[i + j * 4];
         }
         state[i] = kInvMixColumnsMatrix[i + 0] * column[0] ^ kInvMixColumnsMatrix[i + 4] * column[1] ^ kInvMixColumnsMatrix[i + 8] * column[2] ^ kInvMixColumnsMatrix[i + 12] * column[3];
@@ -131,14 +99,18 @@ void AES::AddRoundKey(int round)
 }
 
 // Performs the KeyExpansion routine.
-void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key) {
-    for (int i = 0; i < 16; ++i) {
+void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key) 
+{
+    for (int i = 0; i < 16; ++i) 
+    {
         key_schedule[i] = key[i];
     }
     std::uint32_t temp;
-    for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i) {
+    for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i) 
+    {
         temp = key_schedule[i - 1];
-        if (i % 4 == 0) {
+        if (i % 4 == 0) 
+        {
             temp = RotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
         }
         key_schedule[i] = key_schedule[i - 4] ^ temp;
@@ -151,7 +123,8 @@ std::array<std::uint8_t, 16> AES::Encrypt(const std::array<std::uint8_t, 16>& pl
 
     state = plaintext;
     AddRoundKey(0);
-    for (int round = 1; round <= K_NUM_ROUNDS; ++round) {
+    for (int round = 1; round <= K_NUM_ROUNDS; ++round) 
+    {
         SubBytes();
         ShiftRows();
         MixColumns();
@@ -165,7 +138,8 @@ std::array<std::uint8_t, 16> AES::Decrypt(const std::array<std::uint8_t, 16>& ci
 
     state = ciphertext;
     AddRoundKey(K_NUM_ROUNDS);
-    for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) {
+    for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) 
+    {
         InvMixColumns();
         InvShiftRows();
         InvSubBytes();
