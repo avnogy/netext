@@ -12,7 +12,6 @@ DHkey::DHkey()
 
 int DHkey::generatePrime() const
 {
-	srand(time(nullptr));
 	int candidate = rand();
 
 	while (!isPrime(candidate))
