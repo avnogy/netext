@@ -4,10 +4,16 @@
 DHkey::DHkey()
 {
 	srand(time(nullptr));
-	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
-
 	_p = generatePrime();
 	_g = generatePrimitiveRoot();
+
+	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
+}
+
+DHkey::DHkey(int p, int g):_p(p),_g(g)
+{
+	srand(time(nullptr));
+	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
 }
 
 //this function returns mod((base**exp),mod)
