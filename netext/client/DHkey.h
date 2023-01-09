@@ -11,11 +11,11 @@ public:
 	DHkey(int p,int g);
 	int calculateSharedKey(const int otherKey) const;
 
-	int modularPow(int base, int exponent, const int modulus) const;
+	int modularPow(int base, int exponent, const int mod) const;
 	int generatePrime() const;
-	int generatePrimitiveRoot() const;
+	int generatePrimitiveRoot(int mod) const;
 	bool isPrime(int num) const;
-	bool isPrimitiveRoot(int num, const int modulo) const;
+	bool isPrimitiveRoot(int num, const int mod) const;
 
 
 
