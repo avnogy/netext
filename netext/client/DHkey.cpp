@@ -92,6 +92,25 @@ int DHkey::generatePrimitiveRoot(int mod) const
 }
 
 /// <summary>
+/// this function checks if a given number is a prime number
+/// </summary>
+/// <param name="num"></param>
+/// <returns></returns>
+bool DHkey::isPrime(int candidate) const
+{
+	bool flag = true;
+	for (int i = 2; i < candidate && flag; i++)
+	{
+		if (candidate % i == 0)
+		{
+			flag = false;
+			break;
+		}
+	}
+	return flag;
+}
+
+/// <summary>
 /// calculates the shared key from the private key and the other key.
 /// </summary>
 /// <param name="otherKey"></param>

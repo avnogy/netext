@@ -14,8 +14,8 @@ public:
 	int modularPow(int base, int exponent, const int mod) const;
 	int generatePrime() const;
 	int generatePrimitiveRoot(int mod) const;
-	bool isPrime(int num) const;
-	bool isPrimitiveRoot(int num, const int mod) const;
+	bool isPrime(int candidate) const;
+	bool isPrimitiveRoot(int candidate, const int mod) const;
 
 
 
