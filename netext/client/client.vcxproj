@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AES.cpp" />
+    <ClCompile Include="DHkey.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MyException.cpp" />

@@ -36,6 +36,9 @@
     <ClCompile Include="AES.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DHkey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PeerClient.h">
