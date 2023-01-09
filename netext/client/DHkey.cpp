@@ -22,3 +22,8 @@ int DHkey::generatePrime() const
 
 	return candidate;
 }
+
+int DHkey::calculateSharedKey(const int otherKey) const
+{
+	return modular_pow(otherKey, _kPrivate, _p);
+}
