@@ -8,7 +8,7 @@ class DHkey
 public:
 
 	DHkey();
-
+	DHkey(int p,int g);
 	int calculateSharedKey(const int otherKey) const;
 
 	int modularPow(int base, int exponent, const int modulus) const;
