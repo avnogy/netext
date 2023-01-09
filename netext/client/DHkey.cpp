@@ -10,6 +10,32 @@ DHkey::DHkey()
 	_g = generatePrimitiveRoot();
 }
 
+//this function returns mod((base**exp),mod)
+//we cant just calculate it directly because it could overflow the integer limit
+//so the solution is to calculat the % every step
+int DHkey::modularPow(int base, int exponent, const int modulus) const
+{
+	//the result if the exponent is zero
+	long long result = 1;
+
+	base %= modulus;
+
+	//faster way then just repeatedly performing result*base 
+	while (exponent > 0)
+	{
+		if (exponent % 2 == 1)
+		{
+			result = (result * base) % modulus;
+		}
+
+		exponent /= 2;
+
+		base = (base * base) % modulus;
+	}
+
+	return result;
+}
+
 int DHkey::generatePrime() const
 {
 	int candidate = rand();
