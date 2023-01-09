@@ -2,6 +2,7 @@
 #include <iostream>
 
 #define MINIUM_VALUE 2
+
 class DHkey
 {
 public:
@@ -10,7 +11,7 @@ public:
 
 	int calculateSharedKey(const int otherKey) const;
 
-	int modular_pow(const int base, const int exponent, const int modulus) const;
+	int modularPow(int base, int exponent, const int modulus) const;
 	int generatePrime() const;
 	int generatePrimitiveRoot() const;
 	bool isPrime(int num) const;
