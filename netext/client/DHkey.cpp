@@ -62,6 +62,6 @@ int DHkey::generatePrimitiveRoot() const
 
 int DHkey::calculateSharedKey(const int otherKey) const
 {
-	return modular_pow(otherKey, _kPrivate, _p);
+	return modularPow(otherKey, _kPrivate, _p);
 }
 
