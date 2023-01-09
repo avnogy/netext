@@ -1,6 +1,9 @@
 #include "DHkey.h"
 
-
+/// <summary>
+/// this is the initialization for the first person in the exchange.
+/// it initiates _p and _g and creates private key
+/// </summary>
 DHkey::DHkey()
 {
 	srand(time(nullptr));
@@ -10,13 +13,17 @@ DHkey::DHkey()
 	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
 }
 
+/// <summary>
+/// this is the initialization for the second person in the exchange.
+/// it initiates _p and _g from given arguments and creates private key
+/// </summary>
+/// <param name="p"></param>
+/// <param name="g"></param>
 DHkey::DHkey(int p, int g):_p(p),_g(g)
 {
 	srand(time(nullptr));
 	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
 }
-
-
 
 
 /// <summary>
