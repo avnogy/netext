@@ -2,13 +2,21 @@
 
 
 
-// initiating the key_schedule field with the key itself so we wont need the key anymore
+/// <summary>
+/// function Initializes the AES class with the given key. The key should be an array of 16 std::uint8_t values.
+/// </summary>
+/// <param name="key"></param>
 void AES::Init(const std::array<std::uint8_t, 16>& key)
 {
 	KeyExpansion(key);
 }
 
-// rotating a word (32 bytes)
+/// <summary>
+/// function is used  to rotate a word (32-bits) by one byte to the left
+/// The first byte will be moved to the last position in the word, while the rest will be shifted by one position/
+/// </summary>
+/// <param name="word"></param>
+/// <returns></returns>
 std::uint32_t AES::RotateWord(std::uint32_t word)
 {
     std::uint8_t a = (word >> 24) & 0xFF;
@@ -18,7 +26,9 @@ std::uint32_t AES::RotateWord(std::uint32_t word)
     return (d << 24) | (a << 16) | (b << 8) | c;
 }
 
-// Performs the SubBytes step.
+/// <summary>
+/// the function applies the substitution box (or "S-box") to each byte of the state array (encrypt)
+/// </summary>
 void AES::SubBytes()
 {
     for (int i = 0; i < 16; ++i) 
@@ -27,7 +37,9 @@ void AES::SubBytes()
     }
 }
 
-// Performs the InvSubBytes step.
+/// <summary>
+/// the function applies the inverse S-box to each byte of the state array (decrypt)
+/// </summary>
 void AES::InvSubBytes()
 {
     for (int i = 0; i < 16; ++i) 
@@ -36,7 +48,9 @@ void AES::InvSubBytes()
     }
 }
 
-// Performs the ShiftRows step.
+/// <summary>
+///  function shifts the rows of the state array by a certain number of bytes to the LEFT (with the first row remaining unchanged). (encrypt)
+/// </summary>
 void AES::ShiftRows() 
 {
     for (int i = 0; i < 4; ++i) 
@@ -47,7 +61,9 @@ void AES::ShiftRows()
 }
 
 
-// Performs the InvShiftRows step.
+/// <summary>
+/// function shifts the rows of the state array by a certain number of bytes to the RIGHT (with the first row remaining unchanged). (decrypt)
+/// </summary>
 void AES::InvShiftRows() 
 {
     for (int i = 0; i < 4; ++i) 
@@ -57,6 +73,10 @@ void AES::InvShiftRows()
     }
 }
 
+
+/// <summary>
+/// function applies a linear transformation to the columns of the state array, effectively mixing their values. (encrypt)
+/// </summary>
 void AES::MixColumns()
 {
     std::array<std::uint8_t, 4> column;
@@ -73,7 +93,9 @@ void AES::MixColumns()
     }
 }
 
-// Performs the InvMixColumns step.
+/// <summary>
+/// function applies the inverse of the linear transformation of the encryption. (decrypt)
+/// </summary>
 void AES::InvMixColumns() 
 {
     std::array<std::uint8_t, 4> column;
@@ -98,7 +120,11 @@ void AES::AddRoundKey(int round)
     }
 }
 
-// Performs the KeyExpansion routine.
+
+/// <summary>
+/// function takes the initial key and expands it into a key schedule, which is used in the subsequent encryption and decryption rounds.
+/// </summary>
+/// <param name="key"></param>
 void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key) 
 {
     for (int i = 0; i < 16; ++i) 
@@ -118,7 +144,11 @@ void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key)
 }
 
 
-// Encrypts a block of 16 bytes of plaintext using the given key.
+/// <summary>
+/// Encrypts a block of 16 bytes of plaintext using the given key.
+/// </summary>
+/// <param name="plaintext"></param>
+/// <returns></returns>
 std::array<std::uint8_t, 16> AES::Encrypt(const std::array<std::uint8_t, 16>& plaintext) {
 
     state = plaintext;
@@ -133,7 +163,11 @@ std::array<std::uint8_t, 16> AES::Encrypt(const std::array<std::uint8_t, 16>& pl
     return state;
 }
 
-// Decrypts a block of 16 bytes of ciphertext using the given key.
+/// <summary>
+/// Decrypts a block of 16 bytes of ciphertext using the given key.
+/// </summary>
+/// <param name="ciphertext"></param>
+/// <returns></returns>
 std::array<std::uint8_t, 16> AES::Decrypt(const std::array<std::uint8_t, 16>& ciphertext) {
 
     state = ciphertext;
