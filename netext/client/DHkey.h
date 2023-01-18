@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <numeric>
+#include <cmath>   
 
 #define MINIUM_VALUE 2
 
