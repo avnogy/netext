@@ -109,6 +109,32 @@ bool DHkey::isPrime(int candidate) const
 }
 
 /// <summary>
+/// returns a boolean value indicating if the candidate is a primitive root for the given modulus.
+/// </summary>
+/// <param name="candidate"></param>
+/// <param name="mod"></param>
+/// <returns></returns>
+bool DHkey::isPrimitiveRoot(int candidate, const int mod) const
+{
+	if (!isPrime(mod))
+	{
+		return false;
+	}
+
+	int phi = mod - 1;
+	for (int i = 2; i <= phi; i++)
+	{
+		bool isRelativlyPrime = std::gcd(i, mod) == 1;
+		bool notPrimitive = pow(candidate, phi / i) == 1;
+		if (isRelativlyPrime && notPrimitive)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+/// <summary>
 /// calculates the shared key from the private key and the other key.
 /// </summary>
 /// <param name="otherKey"></param>
