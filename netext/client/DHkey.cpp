@@ -8,8 +8,10 @@ DHkey::DHkey()
 {
 	srand(time(nullptr));
 	_p = generatePrime();
-	_g = generatePrimitiveRoot(_p);
-
+	while ((_g = generatePrimitiveRoot(_p)) == -1) 
+	{
+		_p = generatePrime();
+	}
 	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
 }
 
@@ -73,21 +75,26 @@ int DHkey::generatePrime() const
 }
 
 /// <summary>
-/// generates a primitive root of mod
+/// generates a primitive root for a given prime modulus.
 /// </summary>
 /// <param name="mod"></param>
 /// <returns></returns>
 int DHkey::generatePrimitiveRoot(int mod) const
 {
-	int candidate = rand();
+	if (!isPrime(mod)) return -1;
 
-	while (!isPrimitiveRoot(candidate,mod))
+	for (int candidate = 2; candidate < mod; candidate++)
 	{
-		candidate = rand();
+		bool isRelativlyPrime = std::gcd(candidate, mod) == 1;
+		
+		if (isRelativlyPrime && isPrimitiveRoot(candidate, mod))
+		{
+			return candidate;
+		}
 	}
-
-	return candidate;
+	return -1;
 }
+
 
 /// <summary>
 /// this function checks if a given number is a prime number
