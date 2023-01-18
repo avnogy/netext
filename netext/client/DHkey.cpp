@@ -19,7 +19,7 @@ DHkey::DHkey()
 /// </summary>
 /// <param name="p"></param>
 /// <param name="g"></param>
-DHkey::DHkey(int p, int g):_p(p),_g(g)
+DHkey::DHkey(int p, int g) :_p(p), _g(g)
 {
 	srand(time(nullptr));
 	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
@@ -37,12 +37,10 @@ DHkey::DHkey(int p, int g):_p(p),_g(g)
 /// <returns></returns>
 int DHkey::modularPow(int base, int exponent, const int mod) const
 {
-	//the result if the exponent is zero
 	long long result = 1;
 
 	base %= mod;
 
-	//faster way then just repeatedly performing result*base 
 	while (exponent > 0)
 	{
 		if (exponent % 2 == 1)
