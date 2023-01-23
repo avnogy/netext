@@ -5,10 +5,6 @@ Update::Update(const string sender_id, const string updateCode, const int editLo
 {
 }
 
-Update::~Update()
-{
-}
-
 /// <summary>
 /// This function is used to convert a JSON string to an Update object.
 /// </summary>
@@ -27,7 +23,7 @@ Update Update::Deserialize(const string data)
 }
 
 /// <summary>
-/// This function is used to convert an Update object to a JSON string. 
+/// This function is used to convert an Update object to a JSON string.
 /// </summary>
 /// <returns></returns>
 string Update::Serialize()
@@ -40,5 +36,3 @@ string Update::Serialize()
 	json["timestamp"] = timestamp;
 	return json.dump();
 }
-
-
