@@ -158,6 +158,7 @@
     <ClCompile Include="MyException.cpp" />
     <ClCompile Include="PeerClient.cpp" />
     <ClCompile Include="PeerServer.cpp" />
+    <ClCompile Include="Update.cpp" />
     <ClCompile Include="WSAInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="MyException.h" />
     <ClInclude Include="PeerClient.h" />
     <ClInclude Include="PeerServer.h" />
+    <ClInclude Include="Update.h" />
     <ClInclude Include="WSAInitializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
