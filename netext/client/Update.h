@@ -17,4 +17,6 @@ public:
 		const string timestamp);
 	static Update Deserialize(const string data);
 	string Serialize();
+
+	bool operator<(const Update& other) const;
 };
