@@ -15,7 +15,6 @@ public:
 		const int editLocation,
 		const string updateData,
 		const string timestamp);
-	~Update();
 	static Update Deserialize(const string data);
 	string Serialize();
 };
