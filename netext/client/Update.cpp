@@ -36,3 +36,8 @@ string Update::Serialize()
 	json["timestamp"] = timestamp;
 	return json.dump();
 }
+
+bool Update::operator<(const Update& other) const
+{
+	return this->timestamp < other.timestamp;
+}
