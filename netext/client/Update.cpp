@@ -14,7 +14,7 @@ Update::~Update()
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-Update Update::Deserialize(string data)
+Update Update::Deserialize(const string data)
 {
 	json json = json::parse(data);
 
