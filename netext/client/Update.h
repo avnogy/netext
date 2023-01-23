@@ -16,4 +16,6 @@ public:
 		const string updateData,
 		const string timestamp);
 	~Update();
+	static Update Deserialize(string data);
+	string Serialize();
 };
