@@ -8,7 +8,7 @@ DHkey::DHkey()
 {
 	srand(time(nullptr));
 	_p = generatePrime();
-	while ((_g = generatePrimitiveRoot(_p)) == -1) 
+	while ((_g = generatePrimitiveRoot(_p)) == -1)
 	{
 		_p = generatePrime();
 	}
@@ -26,7 +26,6 @@ DHkey::DHkey(int p, int g) :_p(p), _g(g)
 	srand(time(nullptr));
 	_kPrivate = rand() % (_p - MINIUM_VALUE) + MINIUM_VALUE;
 }
-
 
 /// <summary>
 /// this function returns modulus((base**exp),mod).
@@ -86,7 +85,7 @@ int DHkey::generatePrimitiveRoot(int mod) const
 	for (int candidate = 2; candidate < mod; candidate++)
 	{
 		bool isRelativlyPrime = std::gcd(candidate, mod) == 1;
-		
+
 		if (isRelativlyPrime && isPrimitiveRoot(candidate, mod))
 		{
 			return candidate;
@@ -94,7 +93,6 @@ int DHkey::generatePrimitiveRoot(int mod) const
 	}
 	return -1;
 }
-
 
 /// <summary>
 /// this function checks if a given number is a prime number
@@ -150,4 +148,3 @@ int DHkey::calculateSharedKey(const int otherKey) const
 {
 	return modularPow(otherKey, _kPrivate, _p);
 }
-
