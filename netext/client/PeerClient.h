@@ -16,10 +16,17 @@ using std::endl;
 using std::cin;
 
 
+/*
+	class representing the side that request connections with other peers
+*/
 class PeerClient
 {
 	public:
+
+		// Ctor
 		PeerClient();
+
+		// Dtor
 		~PeerClient();
 
 		void run();
@@ -30,7 +37,7 @@ class PeerClient
 
 	private:
 		
-		
+		// menu functions
 		void connectToOtherPeer(string ip, int port);
 		void createSession();
 		void joinSession();

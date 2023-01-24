@@ -10,8 +10,15 @@ PeerClient::~PeerClient()
 	closesocket(_sock);
 }
 
+
+/*
+	Function: running the peer client object by using the helper functions in the class 
+	input: none
+	output: none
+*/
 void PeerClient::run()
 {
+	// TEMPORARLY MENU UNTIL GUI
 	cout << "Menu:" << endl << "1. Connect to another peer" << endl << "2. Create Session" << "3. Join Session" << "4. Delete Session (IF ALREADY EXISTED)" << endl;
 
 	int option = 0;
@@ -42,6 +49,11 @@ void PeerClient::run()
 	
 }
 
+/*
+	Function: connecting to another peer using the socket field
+	input: peer's ip (string) and peer's port (int)
+	output: none
+*/
 void PeerClient::connectToOtherPeer(string ip, int port)
 {
 
@@ -63,6 +75,13 @@ void PeerClient::connectToOtherPeer(string ip, int port)
 	std::cout << "Connected to the Peer! , ip : " << ip << ", port : " << std::to_string(port) << std::endl;
 }
 
+
+
+/*
+	Function: inputing session details and updating central server with request
+	input: none
+	output: none
+*/
 void PeerClient::createSession()
 {
 	json jsonData;
@@ -107,6 +126,12 @@ void PeerClient::createSession()
 	closesocket(centralSock);
 }
 
+
+/*
+	Function: inputing session details and checking with central server if information is valid to enter
+	input: none
+	output: none
+*/
 void PeerClient::joinSession()
 {
 

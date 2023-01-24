@@ -10,13 +10,21 @@
 
 using std::string;
 
-
+/*
+	class representing the side that accept other connections from other peers
+*/
 class PeerServer 
 {
 	public:
+
+		// Ctor
 		PeerServer(int port , string ip);
+
+		// Dtor
 		~PeerServer();
 
+
+	
 		void run();
 
 		
