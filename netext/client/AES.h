@@ -1,7 +1,5 @@
 #pragma once
-#include <array>
-#include <cstdint>
-#include <iostream>
+#include "Utilities.h"
 
 // The number of rounds to use in the cipher.
 #define K_NUM_ROUNDS 10
@@ -13,7 +11,6 @@
 
 // The size of the key, in bytes.
 #define K_KEY_SIZE 16
-
 
 
 class AES
