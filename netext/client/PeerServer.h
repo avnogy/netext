@@ -1,44 +1,27 @@
 #pragma once
+#include "Utilities.h"
 
-#include "MyException.h"
-#include "Helper.h"
-#include <iostream>
-#include <string>
-#include <boost/thread/thread.hpp>
-#include <WinSock2.h>
-#include <ws2tcpip.h>
-
-using std::string;
-
-/*
-	class representing the side that accept other connections from other peers
-*/
-class PeerServer 
+/// <summary>
+/// class representing the side that accept other connections from other peers
+/// </summary>
+class PeerServer
 {
-	public:
+public:
+	// Ctor
+	PeerServer(int port, string ip);
 
-		// Ctor
-		PeerServer(int port , string ip);
+	// Dtor
+	~PeerServer();
 
-		// Dtor
-		~PeerServer();
+	void run();
 
+	static void startHandleRequests(SOCKET client_sock);
 
-	
-		void run();
+private:
+	void bindAndListen();
+	void acceptClients();
 
-		
-
-
-
-		static void startHandleRequests(SOCKET client_sock);
-
-	private:
-
-		void bindAndListen();
-		void acceptClients();
-		
-		SOCKET _serverSocket;
-		int _port;
-		string _ip;
+	SOCKET _serverSocket;
+	int _port;
+	string _ip;
 };
