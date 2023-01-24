@@ -1,13 +1,10 @@
+#include "Utilities.h"
 
-#include "Helper.h"
-
-
-
-/*
-	Function: sending a buffer of bytes to another client 
-	input: client socket (SOCKET) and a buffer (Buffer)
-	output: none
-*/
+/// <summary>
+/// sending a buffer of bytes to another client 
+/// </summary>
+/// <param name="client_socket"></param>
+/// <param name="buffer"></param>
 void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 {
 	char* data = new char[buff.size()];
@@ -30,12 +27,11 @@ void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 }
 
 
-
-/*
-	Function: getting a fully  data from a client 
-	input: client socket (SOCKET)
-	output: the data (Buffer)
-*/
+/// <summary>
+/// getting a fully  data from a client 
+/// </summary>
+/// <param name="client_sock"></param>
+/// <returns>the received data</returns>
 Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
 {
 	Buffer buff;
@@ -50,11 +46,12 @@ Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
 }
 
 
-/*
-	Function: receiving data from a client using socket
-	input: client socket (SOCKET) , number of bytes to get
-	output: the data (Byte*)
-*/
+/// <summary>
+/// receiving data from a client using socket
+/// </summary>
+/// <param name="client_socket"></param>
+/// <param name="numOfBytes">: number of bytes to get</param>
+/// <returns></returns>
 Byte* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
 {
 	char* result = new char[numOfBytes];
@@ -69,12 +66,11 @@ Byte* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
 }
 
 
-
-/*
-	Function: getting the request/response id from a client (acording to protocol)
-	input: client socket (SOCKET)
-	output: a single byte representing id (Byte)
-*/
+/// <summary>
+/// getting the request/response id from a client acording to protocol
+/// </summary>
+/// <param name="client_sock"></param>
+/// <returns>a single byte representing id</returns>
 Byte Helper::getId(SOCKET client_sock)
 {
 	Byte* idBuff = (readFromClient(client_sock, 1));
@@ -83,12 +79,11 @@ Byte Helper::getId(SOCKET client_sock)
 }
 
 
-
-/*
-	Function: getting the data length as 4 bytes (acording to protocol)
-	input: client socket (SOCKET)
-	output: the length (int)
-*/
+/// <summary>
+/// getting the data length as 4 bytes acording to protocol
+/// </summary>
+/// <param name="client_sock"></param>
+/// <returns>data length</returns>
 int Helper::getDataLength(SOCKET client_sock)
 {
 	Byte* lengthBuff = readFromClient(client_sock, 4);
@@ -97,12 +92,12 @@ int Helper::getDataLength(SOCKET client_sock)
 }
 
 
-
-/*
-	Function: getting the data chunk from a client message (acording to protocol)
-	input: client socket (SOCKET) and the data length (int)
-	output: the data (Byte*)
-*/
+/// <summary>
+/// getting the data chunk from a client message acording to protocol
+/// </summary>
+/// <param name="client_sock"></param>
+/// <param name="dataLength"></param>
+/// <returns>data</returns>
 Byte* Helper::getData(SOCKET client_sock, int dataLength)
 {
 	Byte* data = readFromClient(client_sock, dataLength);
@@ -110,23 +105,23 @@ Byte* Helper::getData(SOCKET client_sock, int dataLength)
 }
 
 
-/*
-	Function: casting an id to an requestId enum
-	input: id (Byte)
-	output: request id (enum - RequestId)
-*/
+/// <summary>
+/// casting an id to an requestId enum
+/// </summary>
+/// <param name="id"></param>
+/// <returns></returns>
 RequestId Helper::getRequestId(Byte id)
 {
 	return (RequestId)(id);
 }
 
 
-
-/*
-	Function: using an id and a data to create a full message buffer (acording to protocol)
-	input: the id (int) and the data (string)
-	output: the whole buffer (Buffer)
-*/
+/// <summary>
+/// using an id and a data to create a full message buffer acording to protocol
+/// </summary>
+/// <param name="id"></param>
+/// <param name="data"></param>
+/// <returns>the whole buffer</returns>
 Buffer Helper::createLoadedBuffer(int id, string data)
 {
 	Buffer buff;
@@ -140,13 +135,11 @@ Buffer Helper::createLoadedBuffer(int id, string data)
 	return buff;
 }
 
-
-
-/*
-	Function: converting a number to a 4 byte buffer
-	input: the number (int)
-	output: the 4 byte number (Buffer)
-*/
+/// <summary>
+/// converting a number to a 4 byte buffer
+/// </summary>
+/// <param name="num"></param>
+/// <returns>the 4 byte number </returns>
 Buffer Helper::intTo4Bytes(int num)
 {
 	Buffer bytes(4);
@@ -159,11 +152,10 @@ Buffer Helper::intTo4Bytes(int num)
 }
 
 
-/*
-	Function: creating a socket with the central server
-	input: none
-	output: the binded socket (SOCKET)
-*/
+/// <summary>
+/// creating a socket with the central server
+/// </summary>
+/// <returns>the binded socket</returns>
 SOCKET Helper::createCentralSocket()
 {
 	SOCKET centralSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
