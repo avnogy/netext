@@ -6,8 +6,8 @@
 #include <algorithm>
 
 
-typedef unsigned char Byte;
-typedef std::vector<Byte> Buffer;
+typedef unsigned char Byte; // a byte of data
+typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
 
 

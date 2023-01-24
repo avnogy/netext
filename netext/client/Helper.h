@@ -28,7 +28,7 @@ class Helper
 
 		
 		static Buffer createLoadedBuffer(int id, string data);
-		static Buffer intToBytes(int num);
+		static Buffer intTo4Bytes(int num);
 
 
 		static SOCKET createCentralSocket();

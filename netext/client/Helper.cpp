@@ -3,7 +3,11 @@
 
 
 
-
+/*
+	Function: sending a buffer of bytes to another client 
+	input: client socket (SOCKET) and a buffer (Buffer)
+	output: none
+*/
 void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 {
 	char* data = new char[buff.size()];
@@ -25,6 +29,13 @@ void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 	delete[] data;
 }
 
+
+
+/*
+	Function: getting a fully  data from a client 
+	input: client socket (SOCKET)
+	output: the data (Buffer)
+*/
 Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
 {
 	Buffer buff;
@@ -38,6 +49,12 @@ Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
 	return buff;
 }
 
+
+/*
+	Function: receiving data from a client using socket
+	input: client socket (SOCKET) , number of bytes to get
+	output: the data (Byte*)
+*/
 Byte* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
 {
 	char* result = new char[numOfBytes];
@@ -46,11 +63,18 @@ Byte* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
 	{
 		std::string err = "Error while recieving from socket: ";
 		err += std::to_string(client_sock);
-		throw std::exception(err.c_str());
+		throw MyException(err);
 	}
 	return (Byte*)result;
 }
 
+
+
+/*
+	Function: getting the request/response id from a client (acording to protocol)
+	input: client socket (SOCKET)
+	output: a single byte representing id (Byte)
+*/
 Byte Helper::getId(SOCKET client_sock)
 {
 	Byte* idBuff = (readFromClient(client_sock, 1));
@@ -58,6 +82,13 @@ Byte Helper::getId(SOCKET client_sock)
 	return id;
 }
 
+
+
+/*
+	Function: getting the data length as 4 bytes (acording to protocol)
+	input: client socket (SOCKET)
+	output: the length (int)
+*/
 int Helper::getDataLength(SOCKET client_sock)
 {
 	Byte* lengthBuff = readFromClient(client_sock, 4);
@@ -65,31 +96,58 @@ int Helper::getDataLength(SOCKET client_sock)
 	return dataLength;
 }
 
+
+
+/*
+	Function: getting the data chunk from a client message (acording to protocol)
+	input: client socket (SOCKET) and the data length (int)
+	output: the data (Byte*)
+*/
 Byte* Helper::getData(SOCKET client_sock, int dataLength)
 {
 	Byte* data = readFromClient(client_sock, dataLength);
 	return data;
 }
 
+
+/*
+	Function: casting an id to an requestId enum
+	input: id (Byte)
+	output: request id (enum - RequestId)
+*/
 RequestId Helper::getRequestId(Byte id)
 {
 	return (RequestId)(id);
 }
 
+
+
+/*
+	Function: using an id and a data to create a full message buffer (acording to protocol)
+	input: the id (int) and the data (string)
+	output: the whole buffer (Buffer)
+*/
 Buffer Helper::createLoadedBuffer(int id, string data)
 {
 	Buffer buff;
 
 	int dataLength = data.size();
 	buff.push_back((Byte)id); // id - 1 byte
-	Buffer dataLenBuff = intToBytes(dataLength + 1);
+	Buffer dataLenBuff = intTo4Bytes(dataLength + 1);
 	std::copy(dataLenBuff.begin(), dataLenBuff.end(), std::back_inserter(buff)); // data length - 4 bytes
 	std::copy(data.begin(), data.end(), std::back_inserter(buff)); // data - N bytes
 	
 	return buff;
 }
 
-Buffer Helper::intToBytes(int num)
+
+
+/*
+	Function: converting a number to a 4 byte buffer
+	input: the number (int)
+	output: the 4 byte number (Buffer)
+*/
+Buffer Helper::intTo4Bytes(int num)
 {
 	Buffer bytes(4);
 	int i = 0;
@@ -101,7 +159,11 @@ Buffer Helper::intToBytes(int num)
 }
 
 
-
+/*
+	Function: creating a socket with the central server
+	input: none
+	output: the binded socket (SOCKET)
+*/
 SOCKET Helper::createCentralSocket()
 {
 	SOCKET centralSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

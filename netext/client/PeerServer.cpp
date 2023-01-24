@@ -11,12 +11,24 @@ PeerServer::~PeerServer()
 	closesocket(_serverSocket);
 }
 
+
+/*
+	Function: running the peer server object by using the helper functions in the class
+	input: none
+	output: none
+*/
 void PeerServer::run()
 {
 	bindAndListen();
 	acceptClients();
 }
 
+
+/*
+	Function: binding the peer server socket and start listening to connections.
+	input: none
+	output: none
+*/
 void PeerServer::bindAndListen()
 {
 
@@ -39,6 +51,12 @@ void PeerServer::bindAndListen()
 	
 }
 
+
+/*
+	Function: accepting incoming connections and runs handle thread for each connection
+	input: none
+	output: none
+*/
 void PeerServer::acceptClients()
 {
 	SOCKET clientSock;
@@ -58,6 +76,12 @@ void PeerServer::acceptClients()
 	}
 }
 
+
+/*
+	Function: handling a client (his requests) 
+	input: client socket (SOCKET)
+	output: none
+*/
 void PeerServer::startHandleRequests(SOCKET client_sock)
 {
 	std::cout << "Client accepted!" << std::endl;
