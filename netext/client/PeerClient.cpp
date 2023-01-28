@@ -11,11 +11,11 @@ PeerClient::~PeerClient()
 }
 
 
-/*
-	Function: running the peer client object by using the helper functions in the class 
-	input: none
-	output: none
-*/
+
+
+/// <summary>
+/// running the peer client object by using the helper functions in the class 
+/// </summary>
 void PeerClient::run()
 {
 	// TEMPORARLY MENU UNTIL GUI
@@ -49,11 +49,13 @@ void PeerClient::run()
 	
 }
 
-/*
-	Function: connecting to another peer using the socket field
-	input: peer's ip (string) and peer's port (int)
-	output: none
-*/
+
+
+/// <summary>
+/// connecting to another peer using the socket field
+/// </summary>
+/// <param name="ip">peer's ip</param>
+/// <param name="port">peer's port</param>
 void PeerClient::connectToOtherPeer(string ip, int port)
 {
 
@@ -77,11 +79,12 @@ void PeerClient::connectToOtherPeer(string ip, int port)
 
 
 
-/*
-	Function: inputing session details and updating central server with request
-	input: none
-	output: none
-*/
+
+
+
+/// <summary>
+/// inputing session details and updating central server with request
+/// </summary>
 void PeerClient::createSession()
 {
 	json jsonData;
@@ -127,11 +130,10 @@ void PeerClient::createSession()
 }
 
 
-/*
-	Function: inputing session details and checking with central server if information is valid to enter
-	input: none
-	output: none
-*/
+
+/// <summary>
+/// inputing session details and checking with central server if information is valid to enter
+/// </summary>
 void PeerClient::joinSession()
 {
 
