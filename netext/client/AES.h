@@ -13,6 +13,9 @@
 #define K_KEY_SIZE 16
 
 
+/// <summary>
+/// class representing the AES encryption and decrytion
+/// </summary>
 class AES
 {
 
@@ -23,40 +26,41 @@ class AES
         void Init(const std::array<std::uint8_t, 16>& key);
 
        
-        std::array<std::uint8_t, 16> Encrypt(const std::array<std::uint8_t, 16>& plaintext);
+        // encrypt function
+        std::array<std::uint8_t, 16> encrypt(const std::array<std::uint8_t, 16>& plaintext);
 
-        
-        std::array<std::uint8_t, 16> Decrypt(const std::array<std::uint8_t, 16>& ciphertext);
+        // decrypt function
+        std::array<std::uint8_t, 16> decrypt(const std::array<std::uint8_t, 16>& ciphertext);
 
     private:
 
-        
-        void SubBytes();
+        // Performs the SubBytes step.
+        void subBytes();
 
         // Performs the InvSubBytes step.
-        void InvSubBytes();
+        void invSubBytes();
 
         // Performs the ShiftRows step.
-        void ShiftRows();
+        void shiftRows();
 
         // Performs the InvShiftRows step.
-        void InvShiftRows();
+        void invShiftRows();
 
 
         // Rotates the word by one byte to the left.
-        std::uint32_t RotateWord(std::uint32_t word);
+        std::uint32_t rotateWord(std::uint32_t word);
 
         // Performs the MixColumns step.
-        void MixColumns();
+        void mixColumns();
 
         // Performs the InvMixColumns step.
-        void InvMixColumns();
+        void invMixColumns();
 
         // Performs the AddRoundKey step.
-        void AddRoundKey(int round);
+        void addRoundKey(int round);
 
         // Performs the KeyExpansion routine.
-        void KeyExpansion(const std::array<std::uint8_t, 16>& key);
+        void keyExpansion(const std::array<std::uint8_t, 16>& key);
 
 
 
