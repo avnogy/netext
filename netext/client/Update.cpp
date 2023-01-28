@@ -1,25 +1,24 @@
 #include "Update.h"
 
 Update::Update(const string sender_id, const string updateCode, const int editLocation, const string updateData, const string timestamp)
-	:sender_id(sender_id), updateCode(updateCode), editLocation(editLocation), updateData(updateData), timestamp(timestamp)
+	:_sender_id(sender_id), _updateCode(updateCode), _editLocation(editLocation), _updateData(updateData), _timestamp(timestamp)
 {
 }
 
 /// <summary>
-/// This function is used to convert a JSON string to an Update object.
+/// This is secondery constructor used to convert a JSON string to the fields of the message.
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-Update Update::Deserialize(const string data)
+Update::Update(const string data)
 {
 	json json = json::parse(data);
 
-	const string sender_id = json["sender_id"];
-	const string updateCode = json["updateCode"];
-	const int editLocation = json["editLocation"];
-	const string updateData = json["UpdateData"];
-	const string timestamp = json["timestamp"];
-	return Update(sender_id, updateCode, editLocation, updateData, timestamp);
+	_sender_id = json["sender_id"];
+	_updateCode = json["updateCode"];
+	_editLocation = json["editLocation"];
+	_updateData = json["UpdateData"];
+	_timestamp = json["timestamp"];
 }
 
 /// <summary>
@@ -29,15 +28,15 @@ Update Update::Deserialize(const string data)
 string Update::Serialize()
 {
 	json json;
-	json["sender_id"] = sender_id;
-	json["updateCode"] = updateCode;
-	json["editLocation"] = editLocation;
-	json["UpdateData"] = updateData;
-	json["timestamp"] = timestamp;
+	json["sender_id"] = _sender_id;
+	json["updateCode"] = _updateCode;
+	json["editLocation"] = _editLocation;
+	json["UpdateData"] = _updateData;
+	json["timestamp"] = _timestamp;
 	return json.dump();
 }
 
 bool Update::operator<(const Update& other) const
 {
-	return this->timestamp < other.timestamp;
+	return this->_timestamp < other._timestamp;
 }
