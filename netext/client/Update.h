@@ -3,24 +3,18 @@
 
 
 /// <summary>
-/// class representing a structured message protocol between peers
+/// structured message protocol between peers
 /// </summary>
-class Update
+struct FileUpdate
 {
-private:
-	string _sender_id;
-	string _updateCode;
-	int _editLocation;
-	string _updateData;
-	string _timestamp;
-public:
-	Update(const string sender_id,
-		const string updateCode,
-		const int editLocation,
-		const string updateData,
-		const string timestamp);
-	Update(const string data);
-	string Serialize();
+	const unsigned int _updateCode;
+	const unsigned int _sender_id;
+	const unsigned int _editLocation;
+	const string _updateData;
+	const Timestamp _timestamp;
+} typedef FileUpdate;
 
-	bool operator<(const Update& other) const;
-};
+string Serialize(const FileUpdate update);
+FileUpdate Deserialize(const string str);
+
+bool operator<(const FileUpdate& x, const FileUpdate y);

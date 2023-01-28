@@ -18,6 +18,7 @@
 #include <iostream>
 #include <numeric>
 #include <cmath>
+#include <ctime>
 #include <Exception>
 #include <boost/thread/thread.hpp>
 
@@ -34,6 +35,8 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
+
+typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
