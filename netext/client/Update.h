@@ -8,18 +8,18 @@
 class Update
 {
 private:
-	string sender_id;
-	string updateCode;
-	int editLocation;
-	string updateData;
-	string timestamp;
+	string _sender_id;
+	string _updateCode;
+	int _editLocation;
+	string _updateData;
+	string _timestamp;
 public:
 	Update(const string sender_id,
 		const string updateCode,
 		const int editLocation,
 		const string updateData,
 		const string timestamp);
-	static Update Deserialize(const string data);
+	Update(const string data);
 	string Serialize();
 
 	bool operator<(const Update& other) const;
