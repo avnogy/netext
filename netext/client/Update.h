@@ -1,6 +1,10 @@
 #pragma once
-#include "Helper.h"
+#include "Utilities.h"
 
+
+/// <summary>
+/// class representing a structured message protocol between peers
+/// </summary>
 class Update
 {
 private:

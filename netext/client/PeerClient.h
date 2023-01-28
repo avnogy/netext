@@ -1,41 +1,25 @@
 #pragma once
+#include "Utilities.h"
 
-
-#include "MyException.h"
-#include "Helper.h"
-#include <iostream>
-#include <string>
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-
-
-
-using std::string;
-using std::cout;
-using std::endl;
-using std::cin;
-
-
+/// <summary>
+/// class representing the side that request connections with other peers
+/// </summary>
 class PeerClient
 {
-	public:
-		PeerClient();
-		~PeerClient();
+public:
+	// Ctor
+	PeerClient();
 
-		void run();
+	// Dtor
+	~PeerClient();
 
-		
+	void run();
 
-		
+private:
+	// menu functions
+	void connectToOtherPeer(string ip, int port);
+	void createSession();
+	void joinSession();
 
-	private:
-		
-		
-		void connectToOtherPeer(string ip, int port);
-		void createSession();
-		void joinSession();
-
-
-
-		SOCKET _sock;
+	SOCKET _sock;
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PeerServer.h"
 
 PeerServer::PeerServer(int port , string ip) : 
@@ -11,12 +13,19 @@ PeerServer::~PeerServer()
 	closesocket(_serverSocket);
 }
 
+
+/// <summary>
+/// running the peer server object by using the helper functions in the class
+/// </summary>
 void PeerServer::run()
 {
 	bindAndListen();
 	acceptClients();
 }
 
+/// <summary>
+/// binding the peer server socket and start listening to connections.
+/// </summary>
 void PeerServer::bindAndListen()
 {
 
@@ -39,6 +48,9 @@ void PeerServer::bindAndListen()
 	
 }
 
+/// <summary>
+/// accepting incoming connections and runing handle thread for each connection
+/// </summary>
 void PeerServer::acceptClients()
 {
 	SOCKET clientSock;
@@ -58,6 +70,10 @@ void PeerServer::acceptClients()
 	}
 }
 
+/// <summary>
+/// handling client requests
+/// </summary>
+/// <param name="client_sock">client socket(SOCKET)</param>
 void PeerServer::startHandleRequests(SOCKET client_sock)
 {
 	std::cout << "Client accepted!" << std::endl;

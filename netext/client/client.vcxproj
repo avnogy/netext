@@ -163,10 +163,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AES.h" />
-    <ClInclude Include="consts.h" />
     <ClInclude Include="DHkey.h" />
+
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Helper.h" />
+
+    <ClInclude Include="Utilities.h" />
+
     <ClInclude Include="json.hpp" />
     <ClInclude Include="MyException.h" />
     <ClInclude Include="PeerClient.h" />
