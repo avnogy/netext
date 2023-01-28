@@ -8,7 +8,7 @@
 /// <param name="key"></param>
 void AES::Init(const std::array<std::uint8_t, 16>& key)
 {
-	KeyExpansion(key);
+	keyExpansion(key);
 }
 
 /// <summary>
@@ -17,7 +17,7 @@ void AES::Init(const std::array<std::uint8_t, 16>& key)
 /// </summary>
 /// <param name="word"></param>
 /// <returns></returns>
-std::uint32_t AES::RotateWord(std::uint32_t word)
+std::uint32_t AES::rotateWord(std::uint32_t word)
 {
     std::uint8_t a = (word >> 24) & 0xFF;
     std::uint8_t b = (word >> 16) & 0xFF;
@@ -29,7 +29,7 @@ std::uint32_t AES::RotateWord(std::uint32_t word)
 /// <summary>
 /// the function applies the substitution box (or "S-box") to each byte of the state array (encrypt)
 /// </summary>
-void AES::SubBytes()
+void AES::subBytes()
 {
     for (int i = 0; i < 16; ++i) 
     {
@@ -40,7 +40,7 @@ void AES::SubBytes()
 /// <summary>
 /// the function applies the inverse S-box to each byte of the state array (decrypt)
 /// </summary>
-void AES::InvSubBytes()
+void AES::invSubBytes()
 {
     for (int i = 0; i < 16; ++i) 
     {
@@ -51,7 +51,7 @@ void AES::InvSubBytes()
 /// <summary>
 ///  function shifts the rows of the state array by a certain number of bytes to the LEFT (with the first row remaining unchanged). (encrypt)
 /// </summary>
-void AES::ShiftRows() 
+void AES::shiftRows() 
 {
     for (int i = 0; i < 4; ++i) 
     {
@@ -64,7 +64,7 @@ void AES::ShiftRows()
 /// <summary>
 /// function shifts the rows of the state array by a certain number of bytes to the RIGHT (with the first row remaining unchanged). (decrypt)
 /// </summary>
-void AES::InvShiftRows() 
+void AES::invShiftRows() 
 {
     for (int i = 0; i < 4; ++i) 
     {
@@ -77,7 +77,7 @@ void AES::InvShiftRows()
 /// <summary>
 /// function applies a linear transformation to the columns of the state array, effectively mixing their values. (encrypt)
 /// </summary>
-void AES::MixColumns()
+void AES::mixColumns()
 {
     std::array<std::uint8_t, 4> column;
     for (int i = 0; i < 4; ++i) 
@@ -96,7 +96,7 @@ void AES::MixColumns()
 /// <summary>
 /// function applies the inverse of the linear transformation of the encryption. (decrypt)
 /// </summary>
-void AES::InvMixColumns() 
+void AES::invMixColumns() 
 {
     std::array<std::uint8_t, 4> column;
     for (int i = 0; i < 4; ++i) 
@@ -113,7 +113,7 @@ void AES::InvMixColumns()
 }
 
 // Performs the AddRoundKey step.
-void AES::AddRoundKey(int round) 
+void AES::addRoundKey(int round) 
 {
     for (int i = 0; i < 16; ++i) {
         state[i] ^= key_schedule[i + round * 16];
@@ -125,7 +125,7 @@ void AES::AddRoundKey(int round)
 /// function takes the initial key and expands it into a key schedule, which is used in the subsequent encryption and decryption rounds.
 /// </summary>
 /// <param name="key"></param>
-void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key) 
+void AES::keyExpansion(const std::array<std::uint8_t, 16>& key) 
 {
     for (int i = 0; i < 16; ++i) 
     {
@@ -137,7 +137,7 @@ void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key)
         temp = key_schedule[i - 1];
         if (i % 4 == 0) 
         {
-            temp = RotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
+            temp = rotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
         }
         key_schedule[i] = key_schedule[i - 4] ^ temp;
     }
@@ -149,16 +149,16 @@ void AES::KeyExpansion(const std::array<std::uint8_t, 16>& key)
 /// </summary>
 /// <param name="plaintext"></param>
 /// <returns></returns>
-std::array<std::uint8_t, 16> AES::Encrypt(const std::array<std::uint8_t, 16>& plaintext) {
+std::array<std::uint8_t, 16> AES::encrypt(const std::array<std::uint8_t, 16>& plaintext) {
 
     state = plaintext;
-    AddRoundKey(0);
+    addRoundKey(0);
     for (int round = 1; round <= K_NUM_ROUNDS; ++round) 
     {
-        SubBytes();
-        ShiftRows();
-        MixColumns();
-        AddRoundKey(round);
+        subBytes();
+        shiftRows();
+        mixColumns();
+        addRoundKey(round);
     }
     return state;
 }
@@ -168,16 +168,16 @@ std::array<std::uint8_t, 16> AES::Encrypt(const std::array<std::uint8_t, 16>& pl
 /// </summary>
 /// <param name="ciphertext"></param>
 /// <returns></returns>
-std::array<std::uint8_t, 16> AES::Decrypt(const std::array<std::uint8_t, 16>& ciphertext) {
+std::array<std::uint8_t, 16> AES::decrypt(const std::array<std::uint8_t, 16>& ciphertext) {
 
     state = ciphertext;
-    AddRoundKey(K_NUM_ROUNDS);
+    addRoundKey(K_NUM_ROUNDS);
     for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) 
     {
-        InvMixColumns();
-        InvShiftRows();
-        InvSubBytes();
-        AddRoundKey(round);
+        invMixColumns();
+        invShiftRows();
+        invSubBytes();
+        addRoundKey(round);
     }
     return state;
 }
