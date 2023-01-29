@@ -39,7 +39,10 @@
     <ClCompile Include="DHkey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Update.cpp">
+    <ClCompile Include="FileUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestMessage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,10 +71,13 @@
     <ClInclude Include="DHkey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Update.h">
+    <ClInclude Include="FileUpdate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FileSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

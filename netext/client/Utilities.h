@@ -1,5 +1,6 @@
 #pragma once
 #ifndef UTILITIES_H
+#define UTILITIES_H
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>

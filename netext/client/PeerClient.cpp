@@ -58,10 +58,6 @@ void PeerClient::run()
 /// <param name="port">peer's port</param>
 void PeerClient::connectToOtherPeer(string ip, int port)
 {
-
-	
-
-
 	sockaddr_in serverAddr;
 	memset((char*)&serverAddr, 0 ,sizeof(serverAddr));
 	serverAddr.sin_family = AF_INET;
