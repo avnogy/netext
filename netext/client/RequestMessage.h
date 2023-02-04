@@ -7,7 +7,7 @@
 /// </summary>
 struct RequestMessage
 {
-	const unsigned int requestCode;
+	const RequestId requestCode;
 	const unsigned int senderId;
 	json requestData;
 

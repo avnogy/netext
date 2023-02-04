@@ -53,12 +53,13 @@ class Helper
 {
 public:
 	static void sendBufferToClient(SOCKET client_sock, Buffer buff);
-	static Buffer getDataBufferFromClient(SOCKET client_sock);
-	static Byte* readFromClient(SOCKET client_sock, int numOfBytes);
-	static Byte getId(SOCKET client_sock);
+	static string getDataBufferFromClient(SOCKET client_sock);
+	static char* readFromClient(SOCKET client_sock, int numOfBytes);
+
+
 	static int getDataLength(SOCKET client_sock);
-	static Byte* getData(SOCKET client_sock, int dataLength);
-	static RequestId getRequestId(Byte id);
+	static char* getData(SOCKET client_sock, int dataLength);
+
 
 	static Buffer createLoadedBuffer(int id, string data);
 	static Buffer intTo4Bytes(int num);
