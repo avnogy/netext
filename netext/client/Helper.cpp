@@ -9,16 +9,11 @@ void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 {
 	char* data = new char[buff.size()];
 	int i = 0;
-
-	data[0] = buff[0];
-
-	std::cout << (int)data[0] << " ";
-
-	for (i = 1; i < buff.size(); i++)
+	for (i = 0; i < buff.size(); i++)
 	{
 		data[i] = buff[i];
 	}
-	std::cout << std::endl;
+
 	if (send(client_sock, data, buff.size(), 0) == INVALID_SOCKET)
 	{
 		throw std::exception("Error while sending message to client");
@@ -27,22 +22,17 @@ void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
 }
 
 
+
 /// <summary>
 /// getting a fully  data from a client 
 /// </summary>
 /// <param name="client_sock"></param>
 /// <returns>the received data</returns>
-Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
+string Helper::getDataBufferFromClient(SOCKET client_sock)
 {
-	Buffer buff;
 	int dataLength = getDataLength(client_sock);
-	Byte* data = getData(client_sock, dataLength);
-	int i = 0;
-	for (i = 0; i < dataLength; i++)
-	{
-		buff.push_back(data[i]);
-	}
-	return buff;
+	char* data = getData(client_sock, dataLength);
+	return string(data);
 }
 
 
@@ -52,31 +42,21 @@ Buffer Helper::getDataBufferFromClient(SOCKET client_sock)
 /// <param name="client_socket"></param>
 /// <param name="numOfBytes">: number of bytes to get</param>
 /// <returns></returns>
-Byte* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
+char* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
 {
 	char* result = new char[numOfBytes];
 	int res = recv(client_sock, result, numOfBytes, 0);
 	if (res == INVALID_SOCKET)
 	{
-		std::string err = "Error while recieving from socket: ";
+		string err = "Error while recieving from socket: ";
 		err += std::to_string(client_sock);
 		throw MyException(err);
 	}
-	return (Byte*)result;
+	return result;
 }
 
 
-/// <summary>
-/// getting the request/response id from a client acording to protocol
-/// </summary>
-/// <param name="client_sock"></param>
-/// <returns>a single byte representing id</returns>
-Byte Helper::getId(SOCKET client_sock)
-{
-	Byte* idBuff = (readFromClient(client_sock, 1));
-	Byte id = *idBuff;
-	return id;
-}
+
 
 
 /// <summary>
@@ -86,7 +66,7 @@ Byte Helper::getId(SOCKET client_sock)
 /// <returns>data length</returns>
 int Helper::getDataLength(SOCKET client_sock)
 {
-	Byte* lengthBuff = readFromClient(client_sock, 4);
+	Byte* lengthBuff = (Byte*)readFromClient(client_sock, 4);
 	int dataLength = lengthBuff[0] << 24 | lengthBuff[1] << 16 | lengthBuff[2] << 24 | lengthBuff[3]; // using bitwise operators cause length is 4 bytes
 	return dataLength;
 }
@@ -98,22 +78,12 @@ int Helper::getDataLength(SOCKET client_sock)
 /// <param name="client_sock"></param>
 /// <param name="dataLength"></param>
 /// <returns>data</returns>
-Byte* Helper::getData(SOCKET client_sock, int dataLength)
+char* Helper::getData(SOCKET client_sock, int dataLength)
 {
-	Byte* data = readFromClient(client_sock, dataLength);
+	char* data = readFromClient(client_sock, dataLength);
 	return data;
 }
 
-
-/// <summary>
-/// casting an id to an requestId enum
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-RequestId Helper::getRequestId(Byte id)
-{
-	return (RequestId)(id);
-}
 
 
 /// <summary>
@@ -125,13 +95,10 @@ RequestId Helper::getRequestId(Byte id)
 Buffer Helper::createLoadedBuffer(int id, string data)
 {
 	Buffer buff;
-
 	int dataLength = data.size();
-	buff.push_back((Byte)id); // id - 1 byte
 	Buffer dataLenBuff = intTo4Bytes(dataLength + 1);
 	std::copy(dataLenBuff.begin(), dataLenBuff.end(), std::back_inserter(buff)); // data length - 4 bytes
 	std::copy(data.begin(), data.end(), std::back_inserter(buff)); // data - N bytes
-	
 	return buff;
 }
 

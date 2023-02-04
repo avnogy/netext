@@ -86,8 +86,6 @@ void PeerServer::startHandleRequests(SOCKET client_sock)
 	{
 		try
 		{
-			id = Helper::getId(client_sock);
-			idReq = Helper::getRequestId(id);
 			buff = Helper::getDataBufferFromClient(client_sock);
 			
 			
