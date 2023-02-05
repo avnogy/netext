@@ -2,15 +2,15 @@
 
 #include "PeerServer.h"
 
-PeerServer::PeerServer(int port , string ip) : 
-	_port(port) , _ip(ip)
+PeerServer::PeerServer(boost::asio::io_context& io_context, int port) :
+	_port(port), _acceptor(io_context , tcp::endpoint(tcp::v4() , port))
 {
-	_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-}
 
+
+}
 PeerServer::~PeerServer()
 {
-	closesocket(_serverSocket);
+	
 }
 
 
@@ -19,76 +19,41 @@ PeerServer::~PeerServer()
 /// </summary>
 void PeerServer::run()
 {
-	bindAndListen();
 	acceptClients();
 }
 
-/// <summary>
-/// binding the peer server socket and start listening to connections.
-/// </summary>
-void PeerServer::bindAndListen()
-{
 
-
-	struct sockaddr_in server;
-
-	memset(&server, 0, sizeof(struct sockaddr_in));
-
-	server.sin_family = AF_INET;
-	server.sin_port = htons(_port);
-	inet_pton(AF_INET, _ip.c_str(), &server.sin_addr);
-
-	if (bind(_serverSocket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
-		throw std::exception(__FUNCTION__ " - bind");
-	
-	if (listen(_serverSocket, SOMAXCONN) == SOCKET_ERROR)
-		throw std::exception(__FUNCTION__ " - listen");
-
-
-	
-}
 
 /// <summary>
 /// accepting incoming connections and runing handle thread for each connection
 /// </summary>
 void PeerServer::acceptClients()
 {
-	SOCKET clientSock;
-	struct sockaddr_in client;
-
 	while (true)
 	{
-		int clientlen = sizeof(struct sockaddr_in);
-
-		if ((clientSock = accept(_serverSocket, (struct sockaddr*)&client, &clientlen)) == -1)
-			throw std::runtime_error("Server::startListening: Failed to establish connection with client");
+		tcp::socket socket(_acceptor.get_executor().context());
+		_acceptor.accept(socket);
 
 		std::cout << "Connected!" << std::endl;
-
-
-		boost::thread th(&startHandleRequests, clientSock);
+		boost::thread th(&PeerServer::startHandleRequests, this, std::move(socket));
 	}
 }
 
 /// <summary>
 /// handling client requests
 /// </summary>
-/// <param name="client_sock">client socket(SOCKET)</param>
-void PeerServer::startHandleRequests(SOCKET client_sock)
+/// <param name="client_sock"></param>
+void PeerServer::startHandleRequests(tcp::socket client_sock)
 {
 	std::cout << "Client accepted!" << std::endl;
-
-	Byte id;
-	RequestId idReq;
-	Buffer buff;
-
+	string data;
 	while (true)
 	{
 		try
 		{
-			buff = Helper::getDataBufferFromClient(client_sock);
-			
-			
+			data = Helper::receiveDataFromClient(client_sock);
+
+
 		}
 		catch (std::exception& e)
 		{

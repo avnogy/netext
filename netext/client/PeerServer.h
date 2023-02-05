@@ -8,20 +8,18 @@ class PeerServer
 {
 public:
 	// Ctor
-	PeerServer(int port, string ip);
+	PeerServer(boost::asio::io_context& io_context ,int port);
 
 	// Dtor
 	~PeerServer();
 
 	void run();
 
-	static void startHandleRequests(SOCKET client_sock);
+	static void startHandleRequests(tcp::socket client_sock);
 
 private:
-	void bindAndListen();
 	void acceptClients();
 
-	SOCKET _serverSocket;
+	tcp::acceptor _acceptor;
 	int _port;
-	string _ip;
 };

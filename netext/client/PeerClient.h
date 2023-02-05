@@ -8,7 +8,7 @@ class PeerClient
 {
 public:
 	// Ctor
-	PeerClient();
+	PeerClient(boost::asio::io_context& io_context);
 
 	// Dtor
 	~PeerClient();
@@ -21,5 +21,5 @@ private:
 	void createSession();
 	void joinSession();
 
-	SOCKET _sock;
+	tcp::socket _sock;
 };

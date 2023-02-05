@@ -1,143 +1,47 @@
 #include "Utilities.h"
 
 /// <summary>
-/// sending a buffer of bytes to another client 
-/// </summary>
-/// <param name="client_socket"></param>
-/// <param name="buffer"></param>
-void Helper::sendBufferToClient(SOCKET client_sock, Buffer buff)
-{
-	char* data = new char[buff.size()];
-	int i = 0;
-	for (i = 0; i < buff.size(); i++)
-	{
-		data[i] = buff[i];
-	}
-
-	if (send(client_sock, data, buff.size(), 0) == INVALID_SOCKET)
-	{
-		throw std::exception("Error while sending message to client");
-	}
-	delete[] data;
-}
-
-
-
-/// <summary>
-/// getting a fully  data from a client 
+///  sending data to another client through socket
 /// </summary>
 /// <param name="client_sock"></param>
-/// <returns>the received data</returns>
-string Helper::getDataBufferFromClient(SOCKET client_sock)
+/// <param name="data"></param>
+void Helper::sendDataToClient(tcp::socket& client_sock, string data)
 {
-	int dataLength = getDataLength(client_sock);
-	char* data = getData(client_sock, dataLength);
-	return string(data);
+	boost::asio::write(client_sock, boost::asio::buffer(data));
 }
+
 
 
 /// <summary>
 /// receiving data from a client using socket
 /// </summary>
-/// <param name="client_socket"></param>
-/// <param name="numOfBytes">: number of bytes to get</param>
+/// <param name="client_sock"></param>
 /// <returns></returns>
-char* Helper::readFromClient(SOCKET client_sock, int numOfBytes)
+string Helper::receiveDataFromClient(tcp::socket& client_sock)
 {
-	char* result = new char[numOfBytes];
-	int res = recv(client_sock, result, numOfBytes, 0);
-	if (res == INVALID_SOCKET)
-	{
-		string err = "Error while recieving from socket: ";
-		err += std::to_string(client_sock);
-		throw MyException(err);
-	}
-	return result;
+	char buff[BUFSIZE];
+	size_t dataLength = boost::asio::read(client_sock, boost::asio::buffer(buff));
+	buff[dataLength] = '\0';
+	return string(buff);
 }
 
 
-
-
-
-/// <summary>
-/// getting the data length as 4 bytes acording to protocol
-/// </summary>
-/// <param name="client_sock"></param>
-/// <returns>data length</returns>
-int Helper::getDataLength(SOCKET client_sock)
+string Helper::createDataRequestMessage(int code, json requestData)
 {
-	Byte* lengthBuff = (Byte*)readFromClient(client_sock, 4);
-	int dataLength = lengthBuff[0] << 24 | lengthBuff[1] << 16 | lengthBuff[2] << 24 | lengthBuff[3]; // using bitwise operators cause length is 4 bytes
-	return dataLength;
+	time_t timeNow = time(TIME_NOW);
+	RequestMessage msg = { code , timeNow , requestData };
+	string msgData = SerializeRequest(msg);
+	return msgData;
 }
 
 
-/// <summary>
-/// getting the data chunk from a client message acording to protocol
-/// </summary>
-/// <param name="client_sock"></param>
-/// <param name="dataLength"></param>
-/// <returns>data</returns>
-char* Helper::getData(SOCKET client_sock, int dataLength)
+tcp::socket Helper::createCentralServerSocket()
 {
-	char* data = readFromClient(client_sock, dataLength);
-	return data;
-}
-
-
-
-/// <summary>
-/// using an id and a data to create a full message buffer acording to protocol
-/// </summary>
-/// <param name="id"></param>
-/// <param name="data"></param>
-/// <returns>the whole buffer</returns>
-Buffer Helper::createLoadedBuffer(int id, string data)
-{
-	Buffer buff;
-	int dataLength = data.size();
-	Buffer dataLenBuff = intTo4Bytes(dataLength + 1);
-	std::copy(dataLenBuff.begin(), dataLenBuff.end(), std::back_inserter(buff)); // data length - 4 bytes
-	std::copy(data.begin(), data.end(), std::back_inserter(buff)); // data - N bytes
-	return buff;
-}
-
-/// <summary>
-/// converting a number to a 4 byte buffer
-/// </summary>
-/// <param name="num"></param>
-/// <returns>the 4 byte number </returns>
-Buffer Helper::intTo4Bytes(int num)
-{
-	Buffer bytes(4);
-	int i = 0;
-	for (i = 0; i < 4; i++)
-	{
-		bytes[3 - i] = (num << (i * 8)); // using bitwise operator (shift right) to set each byte
-	}
-	return bytes;
-}
-
-
-/// <summary>
-/// creating a socket with the central server
-/// </summary>
-/// <returns>the binded socket</returns>
-SOCKET Helper::createCentralSocket()
-{
-	SOCKET centralSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	sockaddr_in serverAddr;
-	memset((char*)&serverAddr, 0, sizeof(serverAddr));
-	serverAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, CENTRAL_IP, &serverAddr.sin_addr);
-	serverAddr.sin_port = htons(CENTRAL_PORT);
-
-	int status = connect(centralSock, (sockaddr*)&serverAddr, sizeof(serverAddr));
-	if (status < 0)
-	{
-		throw MyException("Error: Failed to connect to the socket");
-	}
+	boost::asio::io_context ioc;
+	tcp::socket centralSock(ioc);
+	
+	tcp::endpoint centralEndpoint(boost::asio::ip::address::from_string(CENTRAL_IP), CENTRAL_PORT);
+	centralSock.connect(centralEndpoint);
 
 	return centralSock;
 }

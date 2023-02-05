@@ -1,13 +1,14 @@
 #include "PeerClient.h"
 
-PeerClient::PeerClient()
+PeerClient::PeerClient(boost::asio::io_context& io_context) :
+	_sock(io_context)
 {
-	_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	
 }
 
 PeerClient::~PeerClient()
 {
-	closesocket(_sock);
+	_sock.close();
 }
 
 
@@ -58,19 +59,17 @@ void PeerClient::run()
 /// <param name="port">peer's port</param>
 void PeerClient::connectToOtherPeer(string ip, int port)
 {
-	sockaddr_in serverAddr;
-	memset((char*)&serverAddr, 0 ,sizeof(serverAddr));
-	serverAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, ip.c_str(), &serverAddr.sin_addr);
-	serverAddr.sin_port = htons(port);
-
-	int status = connect(_sock, (sockaddr*)&serverAddr, sizeof(serverAddr));
-
-	if (status < 0)
+	tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
+	
+	try
+	{
+		_sock.connect(endpoint);
+		std::cout << "Connected to the Peer! , ip : " << ip << ", port : " << std::to_string(port) << std::endl;
+	}
+	catch (const std::exception& e)
 	{
 		throw MyException("Error: Failed to connect to the socket");
 	}
-	std::cout << "Connected to the Peer! , ip : " << ip << ", port : " << std::to_string(port) << std::endl;
 }
 
 
@@ -87,8 +86,6 @@ void PeerClient::createSession()
 
 	string name = "";
 	string key = "";
-	string ip = "";
-	int port = 0;
 
 	cout << "Session Name: ";
 	cin >> name;
@@ -96,33 +93,22 @@ void PeerClient::createSession()
 	cout << "Session Key: ";
 	cin >> key;
 
-	cout << "Session ip: ";
-	cin >> ip;
-
-	cout << "Session port: ";
-	cin >> port;
-
 	jsonData["name"] = name;
 	jsonData["key"] = key;
-	jsonData["ip"] = ip;
-	jsonData["port"] = port;
 
-	Buffer buff = Helper::createLoadedBuffer(CREATE_SESSION_REQUEST, jsonData.dump());
+	time_t timeNow = time(TIME_NOW);
+	RequestMessage msg = {CREATE_SESSION_REQUEST , timeNow , jsonData};
+	string msgData = SerializeRequest(msg);
 
-	SOCKET centralSock = Helper::createCentralSocket();
+	tcp::socket centralSock = Helper::createCentralServerSocket();
+	Helper::sendDataToClient(centralSock, msgData);
+	string response = Helper::receiveDataFromClient(centralSock);
 
-	Helper::sendBufferToClient(centralSock, buff);
-
-	int responseId = Helper::getRequestId(Helper::getId(centralSock));
-	Buffer responseData = Helper::getDataBufferFromClient(centralSock);
-
-	string data(responseData.begin(), responseData.end());
-
-	json result = json::parse(data);
+	json result = json::parse(response);
 
 	cout << "Status: " << result["status"] << endl;
 
-	closesocket(centralSock);
+	centralSock.close();
 }
 
 
@@ -132,46 +118,26 @@ void PeerClient::createSession()
 /// </summary>
 void PeerClient::joinSession()
 {
-
 	json jsonData;
-
-	string name = "";
-	string key = "";
+	string hashName = "";
 	string ip = "";
 	int port = 0;
+	
+	cout << "Enter Session Hash Code: ";
+	cin >> hashName;
+	jsonData["hash"] = hashName;
 
-	cout << "Session Name To Join: ";
-
-	cin >> name;
-
-	cout << "Enter Session Key: ";
-
-	cin >> key;
-
-	jsonData["session"] = name;
-	jsonData["key"] = key;
-
-	Buffer buff = Helper::createLoadedBuffer(JOIN_SESSION_REQUEST, jsonData.dump());
-
-	SOCKET centralSock = Helper::createCentralSocket();
-
-	Helper::sendBufferToClient(centralSock, buff);
-
-	int responseId = Helper::getRequestId(Helper::getId(centralSock));
-	Buffer responseData = Helper::getDataBufferFromClient(centralSock);
-
-	string data(responseData.begin(), responseData.end());
-
-	json result = json::parse(data);
+	tcp::socket centralSock = Helper::createCentralServerSocket();
+	string msgData = Helper::createDataRequestMessage(JOIN_SESSION_REQUEST, jsonData);
+	Helper::sendDataToClient(centralSock, msgData);
+	string response = Helper::receiveDataFromClient(centralSock);
+	json result = json::parse(response);
 
 	int status = result["status"];
 	ip = result["ip"];
 	port = result["port"];
 
-
 	cout << "Status: " << status << endl;
-
-	closesocket(centralSock);
 
 	if (status == SUCCESS)
 	{
