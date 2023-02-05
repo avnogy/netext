@@ -22,12 +22,18 @@
 #include <ctime>
 #include <Exception>
 #include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
+
+struct RequestMessage;
 
 #define CENTRAL_IP "18.196.140.61"
 #define CENTRAL_PORT 1234
 #define SUCCESS 1
 #define FAIL 0
 #define DISCONNECT -1
+#define TIME_NOW 0
+
+#define BUFSIZE 1024
 
 using json = nlohmann::json;
 using std::string;
@@ -36,35 +42,31 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
+using boost::asio::ip::tcp;
 
 typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
-enum RequestId {
+enum RequestCode {
 	CREATE_SESSION_REQUEST = 1, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST, LAST_ENUM
 };
 
-enum ResponseId {
+enum ResponseCode {
 	ERROR_RESPONSE = LAST_ENUM, CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE
 };
 
 class Helper
 {
 public:
-	static void sendBufferToClient(SOCKET client_sock, Buffer buff);
-	static string getDataBufferFromClient(SOCKET client_sock);
-	static char* readFromClient(SOCKET client_sock, int numOfBytes);
+	static void sendDataToClient(tcp::socket& client_sock, string data);
+	static string receiveDataFromClient(tcp::socket& client_sock);
+
+	static string createDataRequestMessage(int code, json requestData);
+
+	static tcp::socket createCentralServerSocket();
 
 
-	static int getDataLength(SOCKET client_sock);
-	static char* getData(SOCKET client_sock, int dataLength);
-
-
-	static Buffer createLoadedBuffer(int id, string data);
-	static Buffer intTo4Bytes(int num);
-
-	static SOCKET createCentralSocket();
 };
 
 #endif // !UTILITIES_H
