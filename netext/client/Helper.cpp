@@ -5,9 +5,10 @@
 /// </summary>
 /// <param name="client_sock"></param>
 /// <param name="data"></param>
-void Helper::sendDataToClient(tcp::socket& client_sock, string data)
+void Helper::sendDataToClient(tcp::socket& client_sock, const string& data)
 {
-	boost::asio::write(client_sock, boost::asio::buffer(data));
+	const string msg = data + "\n";
+	boost::asio::write(client_sock, boost::asio::buffer(msg));
 }
 
 
@@ -25,16 +26,43 @@ string Helper::receiveDataFromClient(tcp::socket& client_sock)
 	return string(buff);
 }
 
-
-string Helper::createDataRequestMessage(int code, json requestData)
+/// <summary>
+/// generating a port that is not in use
+/// </summary>
+/// <returns></returns>
+int Helper::generatePort()
 {
-	time_t timeNow = time(TIME_NOW);
-	RequestMessage msg = { code , timeNow , requestData };
-	string msgData = SerializeRequest(msg);
-	return msgData;
+	int port = 0;
+
+	srand(time(nullptr));
+
+	do
+	{
+		port = (rand() % (HIGHEST_PORT - LOWEST_PORT + 1)) + LOWEST_PORT;
+	} while (portInUse(port));
+	return port;
 }
 
+/// <summary>
+/// checking if a port is already in use
+/// </summary>
+/// <param name="port"></param>
+/// <returns></returns>
+bool Helper::portInUse(int port)
+{
+	boost::asio::io_service ioc;
+	tcp::acceptor a(ioc);
 
+	boost::system::error_code ec;
+	a.open(tcp::v4(), ec) || a.bind({ tcp::v4(), boost::asio::ip::port_type(port) }, ec);
+
+	return (ec == boost::asio::error::address_in_use);
+}
+
+/// <summary>
+/// creating a socket with the centralized server
+/// </summary>
+/// <returns></returns>
 tcp::socket Helper::createCentralServerSocket()
 {
 	boost::asio::io_context ioc;

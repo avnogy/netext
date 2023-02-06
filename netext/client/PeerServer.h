@@ -14,12 +14,11 @@ public:
 	~PeerServer();
 
 	void run();
-
-	static void startHandleRequests(tcp::socket client_sock);
+	static void startHandleRequests(tcp::socket& client_sock);
 
 private:
 	void acceptClients();
-
+	boost::asio::io_context& _ioc;
 	tcp::acceptor _acceptor;
 	int _port;
 };

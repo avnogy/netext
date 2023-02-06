@@ -24,7 +24,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp>
 
-struct RequestMessage;
+
 
 #define CENTRAL_IP "18.196.140.61"
 #define CENTRAL_PORT 1234
@@ -34,6 +34,9 @@ struct RequestMessage;
 #define TIME_NOW 0
 
 #define BUFSIZE 1024
+
+#define LOWEST_PORT 1024
+#define HIGHEST_PORT 40000
 
 using json = nlohmann::json;
 using std::string;
@@ -59,10 +62,11 @@ enum ResponseCode {
 class Helper
 {
 public:
-	static void sendDataToClient(tcp::socket& client_sock, string data);
+	static void sendDataToClient(tcp::socket& client_sock, const string& data);
 	static string receiveDataFromClient(tcp::socket& client_sock);
 
-	static string createDataRequestMessage(int code, json requestData);
+	static int generatePort();
+	static bool portInUse(int port);
 
 	static tcp::socket createCentralServerSocket();
 
