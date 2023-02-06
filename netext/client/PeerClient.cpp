@@ -11,9 +11,6 @@ PeerClient::~PeerClient()
 	_sock.close();
 }
 
-
-
-
 /// <summary>
 /// running the peer client object by using the helper functions in the class 
 /// </summary>
@@ -31,21 +28,29 @@ void PeerClient::run()
 	switch (option)
 	{
 		case 1:
-			
-
+		{
 			cout << "Enter ip: ";
 			cin >> ip;
 
 			cout << "Enter port: ";
 			cin >> port;
-			connectToOtherPeer(ip , port);
+			tcp::socket peer_sock = connectToOtherPeer(ip, port);
+
+			//string msg = Helper::receiveDataFromClient(peer_sock);
+			//cout << msg << endl;
 			break;
+		}
+			
 
 		case 2:
 			createSession();
 			break;
-		
-		
+
+		case 3:
+			joinSession();
+			break;
+
+
 	}
 	
 }
@@ -55,12 +60,12 @@ void PeerClient::run()
 /// <summary>
 /// connecting to another peer using the socket field
 /// </summary>
-/// <param name="ip">peer's ip</param>
-/// <param name="port">peer's port</param>
-void PeerClient::connectToOtherPeer(string ip, int port)
+/// <param name="ip"></param>
+/// <param name="port"></param>
+/// <returns></returns>
+tcp::socket PeerClient::connectToOtherPeer(string ip, int port)
 {
 	tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
-	
 	try
 	{
 		_sock.connect(endpoint);
@@ -71,11 +76,6 @@ void PeerClient::connectToOtherPeer(string ip, int port)
 		throw MyException("Error: Failed to connect to the socket");
 	}
 }
-
-
-
-
-
 
 /// <summary>
 /// inputing session details and updating central server with request
@@ -89,10 +89,8 @@ void PeerClient::createSession()
 
 	cout << "Session Name: ";
 	cin >> name;
-
 	cout << "Session Key: ";
 	cin >> key;
-
 	jsonData["name"] = name;
 	jsonData["key"] = key;
 
@@ -128,7 +126,11 @@ void PeerClient::joinSession()
 	jsonData["hash"] = hashName;
 
 	tcp::socket centralSock = Helper::createCentralServerSocket();
-	string msgData = Helper::createDataRequestMessage(JOIN_SESSION_REQUEST, jsonData);
+
+	time_t timeNow = time(TIME_NOW);
+	RequestMessage msg = { JOIN_SESSION_REQUEST , timeNow , jsonData };
+	string msgData = SerializeRequest(msg);
+
 	Helper::sendDataToClient(centralSock, msgData);
 	string response = Helper::receiveDataFromClient(centralSock);
 	json result = json::parse(response);
@@ -143,4 +145,6 @@ void PeerClient::joinSession()
 	{
 		connectToOtherPeer(ip , port);
 	}
+
+	centralSock.close();
 }

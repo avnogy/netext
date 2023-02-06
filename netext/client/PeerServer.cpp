@@ -3,7 +3,7 @@
 #include "PeerServer.h"
 
 PeerServer::PeerServer(boost::asio::io_context& io_context, int port) :
-	_port(port), _acceptor(io_context , tcp::endpoint(tcp::v4() , port))
+	_port(port), _ioc(io_context) , _acceptor(_ioc, tcp::endpoint(tcp::v4(), port))
 {
 
 
@@ -31,11 +31,11 @@ void PeerServer::acceptClients()
 {
 	while (true)
 	{
-		tcp::socket socket(_acceptor.get_executor().context());
+		tcp::socket socket(_ioc);
 		_acceptor.accept(socket);
 
 		std::cout << "Connected!" << std::endl;
-		boost::thread th(&PeerServer::startHandleRequests, this, std::move(socket));
+		boost::thread th(boost::bind(&PeerServer::startHandleRequests, boost::ref(socket)));
 	}
 }
 
@@ -43,21 +43,24 @@ void PeerServer::acceptClients()
 /// handling client requests
 /// </summary>
 /// <param name="client_sock"></param>
-void PeerServer::startHandleRequests(tcp::socket client_sock)
+void PeerServer::startHandleRequests(tcp::socket& client_sock)
 {
 	std::cout << "Client accepted!" << std::endl;
+	
 	string data;
 	while (true)
 	{
 		try
 		{
-			data = Helper::receiveDataFromClient(client_sock);
+			Helper::sendDataToClient(client_sock, "Hello!!");
+			//data = Helper::receiveDataFromClient(client_sock);
 
-
+			// TO DO: File Update Requests
 		}
 		catch (std::exception& e)
 		{
-			std::cout << "Client Disconnected" << std::endl;
+			cout << "Error: " << e.what() << endl;
+			cout << "Client Disconnected" << endl;
 			break;
 		}
 	}

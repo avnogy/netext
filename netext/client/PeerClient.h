@@ -1,5 +1,6 @@
 #pragma once
 #include "Utilities.h"
+#include "RequestMessage.h"
 
 /// <summary>
 /// class representing the side that request connections with other peers
@@ -17,7 +18,7 @@ public:
 
 private:
 	// menu functions
-	void connectToOtherPeer(string ip, int port);
+	tcp::socket connectToOtherPeer(string ip, int port);
 	void createSession();
 	void joinSession();
 

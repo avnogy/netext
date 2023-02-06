@@ -13,4 +13,5 @@ struct RequestMessage
 
 } typedef RequestMessage;
 
+//RequestMessage DeserializeRequest(const string request);
 string SerializeRequest(const RequestMessage request);

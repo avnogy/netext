@@ -1,6 +1,3 @@
-#pragma comment (lib , "ws2_32.lib")
-
-#include "WSAInitializer.h"
 #include "PeerClient.h"
 #include "PeerServer.h"
 
@@ -9,13 +6,20 @@ void main()
 {
 	try
 	{
-		WSAInitializer wsa_init;
+		boost::asio::io_context io_context;
 
-		PeerServer server(8080, "127.0.0.1");
-		PeerClient client;
+		int serverPort = Helper::generatePort();
+
+		cout << "Server port is: " << serverPort << endl;
+		PeerServer server(io_context , serverPort);
+		PeerClient client(io_context);
 
 		boost::thread serverThread(&(PeerServer::run), &server);
+		boost::thread clientThread(&(PeerClient::run), &client);
+		io_context.run();
 
+		serverThread.join();
+		clientThread.join();
 	}
 	catch (std::exception& e)
 	{
