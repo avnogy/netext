@@ -33,7 +33,7 @@
 #define DISCONNECT -1
 #define TIME_NOW 0
 
-#define BUFSIZE 1024
+#define BUFFSIZE 1024
 
 #define LOWEST_PORT 1024
 #define HIGHEST_PORT 40000
@@ -62,6 +62,7 @@ enum ResponseCode {
 class Helper
 {
 public:
+	
 	static void sendDataToClient(tcp::socket& client_sock, const string& data);
 	static string receiveDataFromClient(tcp::socket& client_sock);
 

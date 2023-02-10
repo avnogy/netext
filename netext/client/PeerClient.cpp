@@ -16,12 +16,16 @@ PeerClient::~PeerClient()
 /// </summary>
 void PeerClient::run()
 {
-	// TEMPORARLY MENU UNTIL GUI
-	cout << "Menu:" << endl << "1. Connect to another peer" << endl << "2. Create Session" << "3. Join Session" << "4. Delete Session (IF ALREADY EXISTED)" << endl;
-
 	int option = 0;
 	string ip = "";
 	int port = 0;
+	// TEMPORARLY MENU UNTIL GUI
+	cout << "Menu:" << endl << "1. Connect to another peer" << endl << "2. Create Session" << endl << "3. Join Session" << endl
+		<< "4. Delete Session (IF ALREADY EXISTED)" << endl;
+
+	
+	cout << "Option: ";
+	
 
 	cin >> option;
 
@@ -34,14 +38,13 @@ void PeerClient::run()
 
 			cout << "Enter port: ";
 			cin >> port;
-			tcp::socket peer_sock = connectToOtherPeer(ip, port);
+			connectToOtherPeer(ip, port);
 
-			//string msg = Helper::receiveDataFromClient(peer_sock);
-			//cout << msg << endl;
+			string msg = Helper::receiveDataFromClient(_sock);
+			cout << msg << endl;
 			break;
 		}
 			
-
 		case 2:
 			createSession();
 			break;
@@ -49,8 +52,6 @@ void PeerClient::run()
 		case 3:
 			joinSession();
 			break;
-
-
 	}
 	
 }
@@ -63,11 +64,11 @@ void PeerClient::run()
 /// <param name="ip"></param>
 /// <param name="port"></param>
 /// <returns></returns>
-tcp::socket PeerClient::connectToOtherPeer(string ip, int port)
+void PeerClient::connectToOtherPeer(string ip, int port)
 {
-	tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 	try
 	{
+		tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 		_sock.connect(endpoint);
 		std::cout << "Connected to the Peer! , ip : " << ip << ", port : " << std::to_string(port) << std::endl;
 	}
@@ -148,3 +149,4 @@ void PeerClient::joinSession()
 
 	centralSock.close();
 }
+

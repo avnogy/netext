@@ -7,6 +7,9 @@
 /// <param name="data"></param>
 void Helper::sendDataToClient(tcp::socket& client_sock, const string& data)
 {
+	if (!client_sock.is_open()) {
+		throw MyException("Write Function: Socket is not open");
+	}
 	const string msg = data + "\n";
 	boost::asio::write(client_sock, boost::asio::buffer(msg));
 }
@@ -20,10 +23,12 @@ void Helper::sendDataToClient(tcp::socket& client_sock, const string& data)
 /// <returns></returns>
 string Helper::receiveDataFromClient(tcp::socket& client_sock)
 {
-	char buff[BUFSIZE];
-	size_t dataLength = boost::asio::read(client_sock, boost::asio::buffer(buff));
-	buff[dataLength] = '\0';
-	return string(buff);
+	if (!client_sock.is_open()) {
+		throw MyException("Write Function: Socket is not open");
+	}
+	string data = "";
+	boost::asio::read_until(client_sock, boost::asio::dynamic_buffer(data), "\n");
+	return data;
 }
 
 /// <summary>

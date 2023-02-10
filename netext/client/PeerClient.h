@@ -18,9 +18,10 @@ public:
 
 private:
 	// menu functions
-	tcp::socket connectToOtherPeer(string ip, int port);
+	void connectToOtherPeer(string ip, int port);
 	void createSession();
 	void joinSession();
+
 
 	tcp::socket _sock;
 };
