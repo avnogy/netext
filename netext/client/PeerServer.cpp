@@ -34,34 +34,39 @@ void PeerServer::acceptClients()
 		tcp::socket socket(_ioc);
 		_acceptor.accept(socket);
 
-		std::cout << "Connected!" << std::endl;
-		boost::thread th(boost::bind(&PeerServer::startHandleRequests, boost::ref(socket)));
+		auto client_socket = std::make_shared<tcp::socket>(std::move(socket));
+
+		boost::thread th(boost::bind(&PeerServer::startHandleRequests, client_socket));
 	}
 }
+
 
 /// <summary>
 /// handling client requests
 /// </summary>
 /// <param name="client_sock"></param>
-void PeerServer::startHandleRequests(tcp::socket& client_sock)
+void PeerServer::startHandleRequests(std::shared_ptr<tcp::socket> sock)
 {
-	std::cout << "Client accepted!" << std::endl;
+	tcp::socket& client_sock = *sock;
+
+	if(client_sock.is_open())
+		std::cout << "Client accepted!" << std::endl;
+	
 	
 	string data;
-	while (true)
+	try
 	{
-		try
-		{
-			Helper::sendDataToClient(client_sock, "Hello!!");
-			//data = Helper::receiveDataFromClient(client_sock);
+		
+		Helper::sendDataToClient(client_sock, "Hello!!");
+		//data = Helper::receiveDataFromClient(client_sock);
 
-			// TO DO: File Update Requests
-		}
-		catch (std::exception& e)
-		{
-			cout << "Error: " << e.what() << endl;
-			cout << "Client Disconnected" << endl;
-			break;
-		}
+		// TO DO: File Update Requests
 	}
+	catch (std::exception& e)
+	{
+		cout << "Error: " << e.what() << endl;
+		cout << "Client Disconnected" << endl;
+		
+	}
+
 }
