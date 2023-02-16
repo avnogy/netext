@@ -1,4 +1,4 @@
-#include "PeerClient.h"
+#include "include/PeerClient.h"
 
 PeerClient::PeerClient(boost::asio::io_context& io_context) :
 	_sock(io_context)
@@ -53,9 +53,7 @@ void PeerClient::run()
 			joinSession();
 			break;
 	}
-	
 }
-
 
 
 /// <summary>

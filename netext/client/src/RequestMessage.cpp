@@ -1,5 +1,5 @@
-
-#include "RequestMessage.h"
+#pragma once
+#include "include/RequestMessage.h"
 
 
 /// <summary>

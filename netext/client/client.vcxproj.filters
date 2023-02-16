@@ -15,63 +15,63 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PeerClient.cpp">
+    <ClCompile Include="src\AES.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyException.cpp">
+    <ClCompile Include="src\DHkey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PeerServer.cpp">
+    <ClCompile Include="src\Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WSAInitializer.cpp">
+    <ClCompile Include="src\MyException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src\Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helper.cpp">
+    <ClCompile Include="src\PeerClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AES.cpp">
+    <ClCompile Include="src\PeerServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DHkey.cpp">
+    <ClCompile Include="src\RequestMessage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RequestMessage.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PeerClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PeerServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MyException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WSAInitializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AES.h">
+    <ClInclude Include="include\AES.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DHkey.h">
+    <ClInclude Include="include\DHkey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileSystem.h">
+    <ClInclude Include="include\FileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RequestMessage.h">
+    <ClInclude Include="include\MyException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PeerClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PeerServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RequestMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

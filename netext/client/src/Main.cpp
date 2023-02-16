@@ -1,5 +1,5 @@
-#include "PeerClient.h"
-#include "PeerServer.h"
+#include "include/PeerServer.h"
+#include "include/PeerClient.h"
 
 
 void main()

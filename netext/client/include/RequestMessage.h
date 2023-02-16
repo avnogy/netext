@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Utilities.h"
 
 /// <summary>

@@ -1,6 +1,4 @@
-#include "AES.h"
-
-
+#include "include/AES.h"
 
 /// <summary>
 /// function Initializes the AES class with the given key. The key should be an array of 16 std::uint8_t values.
