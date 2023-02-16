@@ -2,11 +2,7 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include <WinSock2.h>
-#include <WS2tcpip.h>
 #include <string>
-#include "MyException.h"
-#include "json.hpp"
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include <format>
@@ -22,26 +18,27 @@
 #include <ctime>
 #include <Exception>
 #include <boost/thread/thread.hpp>
+#include "json.hpp"
 #include <boost/asio.hpp>
+#include "MyException.h"
 
 
-
-#define CENTRAL_IP "18.196.140.61"
-#define CENTRAL_PORT 1234
+#define SERVER_IP "18.196.140.61"
+#define SERVER_PORT 55555
 #define SUCCESS 1
-#define FAIL 0
+#define FAILURE 0
 #define DISCONNECT -1
-#define TIME_NOW 0
-
-#define BUFFSIZE 1024
-
+#define AUTO_SRC_PORT 0
+#define BUFSIZE 1024
 #define LOWEST_PORT 1024
 #define HIGHEST_PORT 40000
+#define TIME_NOW 0
 
 using json = nlohmann::json;
 using std::string;
 using std::cin;
 using std::cout;
+using std::cerr;
 using std::endl;
 using std::to_string;
 
@@ -52,11 +49,11 @@ typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
 enum RequestCode {
-	CREATE_SESSION_REQUEST = 1, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST, LAST_ENUM
+	CREATE_SESSION_REQUEST = 100, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST
 };
 
 enum ResponseCode {
-	ERROR_RESPONSE = LAST_ENUM, CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE
+	ERROR_RESPONSE = 200 ,CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE
 };
 
 class Helper

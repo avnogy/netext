@@ -151,27 +151,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AES.cpp" />
-    <ClCompile Include="DHkey.cpp" />
-    <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MyException.cpp" />
-    <ClCompile Include="PeerClient.cpp" />
-    <ClCompile Include="PeerServer.cpp" />
-    <ClCompile Include="RequestMessage.cpp" />
-    <ClCompile Include="WSAInitializer.cpp" />
+    <ClCompile Include="src\AES.cpp" />
+    <ClCompile Include="src\DHkey.cpp" />
+    <ClCompile Include="src\Helper.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\MyException.cpp" />
+    <ClCompile Include="src\Network.cpp" />
+    <ClCompile Include="src\PeerClient.cpp" />
+    <ClCompile Include="src\PeerServer.cpp" />
+    <ClCompile Include="src\RequestMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AES.h" />
-    <ClInclude Include="DHkey.h" />
-    <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="RequestMessage.h" />
-    <ClInclude Include="Utilities.h" />
+    <ClInclude Include="include\AES.h" />
+    <ClInclude Include="include\DHkey.h" />
+    <ClInclude Include="include\FileSystem.h" />
+    <ClInclude Include="include\MyException.h" />
+    <ClInclude Include="include\Network.h" />
+    <ClInclude Include="include\PeerClient.h" />
+    <ClInclude Include="include\PeerServer.h" />
+    <ClInclude Include="include\RequestMessage.h" />
+    <ClInclude Include="include\Utilities.h" />
     <ClInclude Include="json.hpp" />
-    <ClInclude Include="MyException.h" />
-    <ClInclude Include="PeerClient.h" />
-    <ClInclude Include="PeerServer.h" />
-    <ClInclude Include="WSAInitializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
