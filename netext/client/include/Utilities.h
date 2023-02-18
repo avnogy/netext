@@ -21,6 +21,8 @@
 #include "json.hpp"
 #include <boost/asio.hpp>
 #include "MyException.h"
+#include "PeerClient.h"
+#include "PeerServer.h"
 
 
 #define SERVER_IP "18.196.140.61"
@@ -30,8 +32,6 @@
 #define DISCONNECT -1
 #define AUTO_SRC_PORT 0
 #define BUFSIZE 1024
-#define LOWEST_PORT 1024
-#define HIGHEST_PORT 40000
 #define TIME_NOW 0
 
 using json = nlohmann::json;
