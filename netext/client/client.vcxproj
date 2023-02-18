@@ -155,6 +155,7 @@
     <ClCompile Include="src\DHkey.cpp" />
     <ClCompile Include="src\Helper.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\MyException.cpp" />
     <ClCompile Include="src\Network.cpp" />
     <ClCompile Include="src\PeerClient.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="include\DHkey.h" />
     <ClInclude Include="include\FileSystem.h" />
     <ClInclude Include="include\json.hpp" />
+    <ClInclude Include="include\Menu.h" />
     <ClInclude Include="include\MyException.h" />
     <ClInclude Include="include\Network.h" />
     <ClInclude Include="include\PeerClient.h" />
