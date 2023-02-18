@@ -59,7 +59,8 @@ enum ResponseCode {
 class Helper
 {
 public:
-	
+	static int getInt();
+
 	static void sendDataToClient(tcp::socket& client_sock, const string& data);
 	static string receiveDataFromClient(tcp::socket& client_sock);
 

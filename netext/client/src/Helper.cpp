@@ -1,6 +1,27 @@
 #include "include/Utilities.h"
 
 /// <summary>
+/// gets a valid int value
+/// </summary>
+/// <returns></returns>
+int Helper::getInt()
+{
+	int num = 0;
+	cin >> num;
+	while (!cin.good())
+	{
+		//reset buffer
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		//trying again
+		cout << "Invalid input, Try again." << endl;
+		cin >> num;
+	}
+	return num;
+}
+
+/// <summary>
 ///  sending data to another client through socket
 /// </summary>
 /// <param name="client_sock"></param>
