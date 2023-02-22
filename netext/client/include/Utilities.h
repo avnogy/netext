@@ -23,6 +23,7 @@
 #include "MyException.h"
 #include "PeerClient.h"
 #include "PeerServer.h"
+#include "Network.h"
 
 
 #define SERVER_IP "18.196.140.61"
@@ -68,7 +69,6 @@ public:
 	static bool portInUse(int port);
 
 	static tcp::socket createCentralServerSocket();
-
 
 };
 
