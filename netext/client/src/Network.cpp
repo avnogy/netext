@@ -14,22 +14,29 @@ ip::udp::socket Network::sock = ip::udp::socket(context, ip::udp::endpoint(ip::u
 ip::udp::endpoint Network::rendezvous = ip::udp::endpoint(ip::address::from_string(SERVER_IP), SERVER_PORT);
 ip::udp::endpoint Network::senderEndpoint = ip::udp::endpoint();
 char Network::buffer[BUFSIZE];
-json Network::peerInfo = json();
 
-bool Network::NotifyServer()
+string Network::CreateSession()
 {
     sock.send_to(boost::asio::buffer(Network::getLocalIP()), rendezvous);
     size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
     if (recv_len <= 0)
     {
-        return FAILURE;
+        throw MyException("Error in creating session, No response.");
     }
     buffer[recv_len] = '\0';
-    return string(buffer) == "ready";
+
+    json data = json::parse(string(buffer));
+    if (data["code"] != ResponseCode::CREATE_SESSION_RESPONSE)
+    {
+        throw MyException("Error in creating session, Got wrong code.");
+    }
+
+    return data["data"]["key"];
 }
 
-bool Network::getPeerInfo()
+json Network::getPeerInfo()
 {
+    json peerInfo;
     size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
     if (recv_len <= 0)
     {
@@ -41,7 +48,7 @@ bool Network::getPeerInfo()
     return SUCCESS;
 }
 
-void Network::printPeerInfo()
+void Network::printPeerInfo(const json peerInfo)
 {
     cout << "got peer" << endl;
     cout << " source ip: " << peerInfo["source_ip"] << endl;
@@ -50,7 +57,7 @@ void Network::printPeerInfo()
     cout << " dest port: " << peerInfo["dest_port"] << endl;
 }
 
-ip::udp::endpoint Network::punchHole()
+ip::udp::endpoint Network::punchHole(const json peerInfo)
 {
     ip::udp::endpoint peer(boost::asio::ip::address::from_string(peerInfo["source_ip"]), peerInfo["source_port"]);
     sock.send_to(boost::asio::buffer("ready"), peer);

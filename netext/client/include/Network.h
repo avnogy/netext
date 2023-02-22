@@ -8,10 +8,10 @@ using namespace boost::asio;
 class Network {
 public:
     //static bool init();
-    static bool NotifyServer();
-    static bool getPeerInfo();
-    static void printPeerInfo();
-    static ip::udp::endpoint punchHole();
+    static string CreateSession();
+    static json getPeerInfo();
+    static void printPeerInfo(const json peerInfo);
+    static ip::udp::endpoint punchHole(const json peerInfo);
 
     static void receiveMessage(ip::udp::socket& sock);
     static void sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer);
@@ -22,8 +22,6 @@ public:
     static ip::udp::socket sock;
     static ip::udp::endpoint rendezvous;
     static ip::udp::endpoint senderEndpoint;
-
-    static json peerInfo;
 };
 
 #endif // !NETWORK_H

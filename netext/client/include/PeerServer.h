@@ -7,19 +7,9 @@
 class PeerServer
 {
 public:
-	// Ctor
-	PeerServer(boost::asio::io_context& io_context ,int port);
-
-	// Dtor
-	~PeerServer();
-
-	void run();
+	static bool CreateSession();
 	static void startHandleRequests(std::shared_ptr<tcp::socket> sock);
 
 private:
-	void acceptClients();
-
-	boost::asio::io_context& _ioc;
-	tcp::acceptor _acceptor;
-	int _port;
+	static void acceptClients();
 };
