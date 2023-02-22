@@ -7,8 +7,8 @@
 class PeerServer
 {
 public:
-	static bool CreateSession();
-	static void startHandleRequests(std::shared_ptr<tcp::socket> sock);
+	static bool createSession();
+	static void startHandleRequests(ip::udp::endpoint peer);
 
 private:
 	static void acceptClients();

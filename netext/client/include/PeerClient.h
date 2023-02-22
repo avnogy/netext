@@ -8,20 +8,6 @@
 class PeerClient
 {
 public:
-	// Ctor
-	PeerClient(boost::asio::io_context& io_context);
-
-	// Dtor
-	~PeerClient();
-
-	void run();
-
-private:
-	// menu functions
-	void connectToOtherPeer(string ip, int port);
-	void createSession();
-	void joinSession();
-
-
-	tcp::socket _sock;
+	static bool joinSession();
+	static void startHandleRequests(ip::udp::endpoint peer);
 };
