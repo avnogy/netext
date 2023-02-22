@@ -8,7 +8,8 @@ using namespace boost::asio;
 class Network {
 public:
     //static bool init();
-    static string CreateSession();
+    static string createSession(const string request);
+    static json joinSession(const string request);
     static json getPeerInfo();
     static void printPeerInfo(const json peerInfo);
     static ip::udp::endpoint punchHole(const json peerInfo);
