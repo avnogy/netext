@@ -8,6 +8,6 @@
 class PeerClient
 {
 public:
-	static bool joinSession();
+	static void joinSession();
 	static void startHandleRequests(ip::udp::endpoint peer);
 };

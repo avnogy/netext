@@ -12,7 +12,7 @@ void PeerServer::acceptClients()
 }
 
 
-bool PeerServer::createSession()
+void PeerServer::createSession()
 {
 	json jsonData;
 	string name = "";

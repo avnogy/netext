@@ -7,7 +7,7 @@
 class PeerServer
 {
 public:
-	static bool createSession();
+	static void createSession();
 	static void startHandleRequests(ip::udp::endpoint peer);
 
 private:
