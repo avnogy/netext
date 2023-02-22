@@ -24,7 +24,7 @@ void PeerServer::createSession()
 	time_t timeNow = time(TIME_NOW);
 
 	RequestMessage msg = { CREATE_SESSION_REQUEST , timeNow , jsonData };
-	string key = Network::createSession(SerializeRequest(msg));
+	string key = Network::createSession(serializeRequest(msg));
 
 	cout << "key: " << key << endl;
 	cout << "waiting for connections.." << endl;

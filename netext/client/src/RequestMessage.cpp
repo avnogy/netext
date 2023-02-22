@@ -7,7 +7,7 @@
 /// </summary>
 /// <param name="request"></param>
 /// <returns></returns>
-string SerializeRequest(const RequestMessage request)
+string serializeRequest(const RequestMessage request)
 {
 	json requestJson;
 
