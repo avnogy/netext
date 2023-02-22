@@ -3,7 +3,7 @@
 /// <summary>
 /// inputing session details and checking with central server if information is valid to enter
 /// </summary>
-bool PeerClient::joinSession()
+void PeerClient::joinSession()
 {
 	json jsonData;
 	string key = "";
@@ -21,8 +21,6 @@ bool PeerClient::joinSession()
 	cout << "joined session! " << endl;
 
 	PeerClient::startHandleRequests(sock);
-
-
 }
 
 /// <summary>
