@@ -4,7 +4,10 @@ int main()
 {
 	try
 	{
-		Menu::mainMenu();
+		while (true)
+		{
+			Menu::mainMenu();
+		}
 		return 0;
 	}
 	catch (std::exception& e)
