@@ -39,9 +39,12 @@ void PeerServer::createSession()
 /// </summary>
 void PeerServer::deleteSession()
 {
-	cout << "Are you sure you want to delete the session?" << endl;
-	char ch = std::getchar();
-	if ( ch == 'Y' && ch == 'y')
+	cout << "Are you sure you want to delete the session? (y/n)" << endl;
+	char ch;
+	cin >> ch;
+	cin.clear();
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	if ( ch == 'Y' || ch == 'y')
 	{
 		json jsonData;
 		string key = "";

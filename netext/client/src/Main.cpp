@@ -1,12 +1,10 @@
-#include "include/PeerServer.h"
-#include "include/PeerClient.h"
-
+#include "include/Utilities.h"
 
 int main()
 {
 	try
 	{
-		cout << "hello world" << endl;
+		Menu::mainMenu();
 		return 0;
 	}
 	catch (std::exception& e)
