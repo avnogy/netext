@@ -52,7 +52,27 @@ enum RequestCode {
 enum ResponseCode {
 	ERROR_RESPONSE = 200 ,CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE, PEER_INFO_RESPONSE
 };
-int getInt();
+
+/// <summary>
+/// gets a valid int value
+/// </summary>
+/// <returns></returns>
+int getInt()
+{
+	int num = 0;
+	cin >> num;
+	while (!cin.good())
+	{
+		//reset buffer
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		//trying again
+		cout << "Invalid input, Try again." << endl;
+		cin >> num;
+	}
+	return num;
+}
 
 #include "MyException.h"
 #include "PeerClient.h"
