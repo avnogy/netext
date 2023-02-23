@@ -26,10 +26,8 @@ void PeerServer::createSession()
 	cin >> name;
 	jsonData["name"] = name;
 	jsonData["localIp"] = Network::getLocalIP();
-	time_t timeNow = time(TIME_NOW);
 
-	RequestMessage msg = { CREATE_SESSION_REQUEST , timeNow , jsonData };
-	string key = Network::createSession(serializeRequest(msg));
+	string key = Network::createSession(Network::serializeRequest(CREATE_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
 	cout << "key: " << key << endl;
 
@@ -52,10 +50,8 @@ void PeerServer::deleteSession()
 		cin >> key;
 		jsonData["key"] = key;
 		jsonData["localIp"] = Network::getLocalIP();
-		time_t timeNow = time(TIME_NOW);
 
-		RequestMessage msg = { DELETE_SESSION_REQUEST , timeNow , jsonData };
-		Network::deleteSession(serializeRequest(msg));
+		Network::deleteSession(Network::serializeRequest(DELETE_SESSION_REQUEST, time(TIME_NOW), jsonData));
 		//tell threads to finish
 	}
 	else

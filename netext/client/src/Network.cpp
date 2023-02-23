@@ -155,6 +155,17 @@ void Network::sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer)
     }
 }
 
+string Network::serializeRequest(const int code, const Timestamp time, const json requestData)
+{
+    json requestJson;
+
+    requestJson["code"] = code;
+    requestJson["time"] = time;
+    requestJson["data"] = requestData;
+
+    return requestJson.dump();
+}
+
 /// <summary>
 /// function to get the local ip address of the machine
 /// </summary>

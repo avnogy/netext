@@ -1,6 +1,5 @@
 #pragma once
 #include "Utilities.h"
-#include "RequestMessage.h"
 
 /// <summary>
 /// class representing the side that request connections with other peers
