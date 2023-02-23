@@ -64,5 +64,6 @@ int getInt();
 #include "PeerClient.h"
 #include "PeerServer.h"
 #include "Network.h"
+#include "Menu.h"
 
 #endif // !UTILITIES_H
