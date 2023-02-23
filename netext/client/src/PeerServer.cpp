@@ -5,13 +5,18 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
+	//will be in a loop later for getting multiple clients 
+
+	cout << "waiting for connections.." << endl;
 	json peerInfo = Network::getPeerInfo();
 	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
 
 	boost::thread th(boost::bind(&PeerServer::startHandleRequests, sock));
 }
 
-
+/// <summary>
+/// gets information from user and creates a session. 
+/// </summary>
 void PeerServer::createSession()
 {
 	json jsonData;
@@ -27,8 +32,36 @@ void PeerServer::createSession()
 	string key = Network::createSession(serializeRequest(msg));
 
 	cout << "key: " << key << endl;
-	cout << "waiting for connections.." << endl;
+
 	acceptClients();
+}
+
+/// <summary>
+/// deletes session at server
+/// </summary>
+void PeerServer::deleteSession()
+{
+	cout << "Are you sure you want to delete the session?" << endl;
+	char ch = std::getchar();
+	if ( ch == 'Y' && ch == 'y')
+	{
+		json jsonData;
+		string key = "";
+
+		cout << "Session Key: ";
+		cin >> key;
+		jsonData["key"] = key;
+		jsonData["localIp"] = Network::getLocalIP();
+		time_t timeNow = time(TIME_NOW);
+
+		RequestMessage msg = { DELETE_SESSION_REQUEST , timeNow , jsonData };
+		Network::deleteSession(serializeRequest(msg));
+		//tell threads to finish
+	}
+	else
+	{
+		cout << "Deletion Cancled." << endl;
+	}
 }
 
 /// <summary>
