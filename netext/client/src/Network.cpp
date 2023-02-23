@@ -52,6 +52,23 @@ json Network::joinSession(const string request)
     return data;
 }
 
+void Network::deleteSession(const string request)
+{
+    sock.send_to(boost::asio::buffer(request), rendezvous);
+    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    if (recv_len <= 0)
+    {
+        throw MyException("Error while deleting session, No response.");
+    }
+    buffer[recv_len] = '\0';
+
+    json data = json::parse(string(buffer));
+    if (data["code"] != ResponseCode::DELETE_SESSION_RESPONSE)
+    {
+        throw MyException("Error while deleting session, Got wrong code.");
+    }
+}
+
 json Network::getPeerInfo()
 {
     size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);

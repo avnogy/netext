@@ -4,13 +4,13 @@
 /// <summary>
 /// structured request message 
 /// </summary>
-struct RequestMessage
+typedef struct RequestMessage
 {
 	const int code;
 	const Timestamp time;
 	json requestData;
 
-} typedef RequestMessage;
+}RequestMessage;
 
 //RequestMessage DeserializeRequest(const string request);
 string serializeRequest(const RequestMessage request);

@@ -14,10 +14,10 @@ bool Menu::HandleChoice(int choice)
 	switch (choice)
 	{
 	case Menu::Choices::CREATE_SESSION:
-		//peerserver create
+		PeerServer::createSession();
 		break;
 	case Menu::Choices::JOIN_SESSION:
-		//peerclient join
+		PeerClient::joinSession();
 		break;
 	case Menu::Choices::DELETE_SESSION:
 		//peerserver delete
