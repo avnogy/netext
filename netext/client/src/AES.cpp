@@ -17,11 +17,11 @@ void AES::Init(const std::array<std::uint8_t, 16>& key)
 /// <returns></returns>
 std::uint32_t AES::rotateWord(std::uint32_t word)
 {
-    std::uint8_t a = (word >> 24) & 0xFF;
-    std::uint8_t b = (word >> 16) & 0xFF;
-    std::uint8_t c = (word >> 8) & 0xFF;
-    std::uint8_t d = word & 0xFF;
-    return (d << 24) | (a << 16) | (b << 8) | c;
+	std::uint8_t a = (word >> 24) & 0xFF;
+	std::uint8_t b = (word >> 16) & 0xFF;
+	std::uint8_t c = (word >> 8) & 0xFF;
+	std::uint8_t d = word & 0xFF;
+	return (d << 24) | (a << 16) | (b << 8) | c;
 }
 
 /// <summary>
@@ -29,10 +29,10 @@ std::uint32_t AES::rotateWord(std::uint32_t word)
 /// </summary>
 void AES::subBytes()
 {
-    for (int i = 0; i < 16; ++i) 
-    {
-        state[i] = kSBox[state[i]];
-    }
+	for (int i = 0; i < 16; ++i) 
+	{
+		state[i] = kSBox[state[i]];
+	}
 }
 
 /// <summary>
@@ -40,10 +40,10 @@ void AES::subBytes()
 /// </summary>
 void AES::invSubBytes()
 {
-    for (int i = 0; i < 16; ++i) 
-    {
-        state[i] = kInvSBox[state[i]];
-    }
+	for (int i = 0; i < 16; ++i) 
+	{
+		state[i] = kInvSBox[state[i]];
+	}
 }
 
 /// <summary>
@@ -51,11 +51,11 @@ void AES::invSubBytes()
 /// </summary>
 void AES::shiftRows() 
 {
-    for (int i = 0; i < 4; ++i) 
-    {
-        // Shift the row by i bytes to the left.
-        std::rotate(state.begin() + i * 4, state.begin() + i * 4 + i, state.begin() + i * 4 + 4);
-    }
+	for (int i = 0; i < 4; ++i) 
+	{
+		// Shift the row by i bytes to the left.
+		std::rotate(state.begin() + i * 4, state.begin() + i * 4 + i, state.begin() + i * 4 + 4);
+	}
 }
 
 
@@ -64,11 +64,11 @@ void AES::shiftRows()
 /// </summary>
 void AES::invShiftRows() 
 {
-    for (int i = 0; i < 4; ++i) 
-    {
-        // Shift the row by i bytes to the right.
-        std::rotate(state.begin() + i * 4, state.begin() + i * 4 + 4 - i, state.begin() + i * 4 + 4);
-    }
+	for (int i = 0; i < 4; ++i) 
+	{
+		// Shift the row by i bytes to the right.
+		std::rotate(state.begin() + i * 4, state.begin() + i * 4 + 4 - i, state.begin() + i * 4 + 4);
+	}
 }
 
 
@@ -77,18 +77,18 @@ void AES::invShiftRows()
 /// </summary>
 void AES::mixColumns()
 {
-    std::array<std::uint8_t, 4> column;
-    for (int i = 0; i < 4; ++i) 
-    {
-        for (int j = 0; j < 4; ++j) 
-        {
-            column[j] = state[i + j * 4];
-        }
-        state[i] = kMixColumnsMatrix[i + 0] * column[0] ^ kMixColumnsMatrix[i + 4] * column[1] ^ kMixColumnsMatrix[i + 8] * column[2] ^ kMixColumnsMatrix[i + 12] * column[3];
-        state[i + 4] = kMixColumnsMatrix[i + 0] * column[1] ^ kMixColumnsMatrix[i + 4] * column[2] ^ kMixColumnsMatrix[i + 8] * column[3] ^ kMixColumnsMatrix[i + 12] * column[0];
-        state[i + 8] = kMixColumnsMatrix[i + 0] * column[2] ^ kMixColumnsMatrix[i + 4] * column[3] ^ kMixColumnsMatrix[i + 8] * column[0] ^ kMixColumnsMatrix[i + 12] * column[1];
-        state[i + 12] = kMixColumnsMatrix[i + 0] * column[3] ^ kMixColumnsMatrix[i + 4] * column[0] ^ kMixColumnsMatrix[i + 8] * column[1] ^ kMixColumnsMatrix[i + 12] * column[2];
-    }
+	std::array<std::uint8_t, 4> column;
+	for (int i = 0; i < 4; ++i) 
+	{
+		for (int j = 0; j < 4; ++j) 
+		{
+			column[j] = state[i + j * 4];
+		}
+		state[i] = kMixColumnsMatrix[i + 0] * column[0] ^ kMixColumnsMatrix[i + 4] * column[1] ^ kMixColumnsMatrix[i + 8] * column[2] ^ kMixColumnsMatrix[i + 12] * column[3];
+		state[i + 4] = kMixColumnsMatrix[i + 0] * column[1] ^ kMixColumnsMatrix[i + 4] * column[2] ^ kMixColumnsMatrix[i + 8] * column[3] ^ kMixColumnsMatrix[i + 12] * column[0];
+		state[i + 8] = kMixColumnsMatrix[i + 0] * column[2] ^ kMixColumnsMatrix[i + 4] * column[3] ^ kMixColumnsMatrix[i + 8] * column[0] ^ kMixColumnsMatrix[i + 12] * column[1];
+		state[i + 12] = kMixColumnsMatrix[i + 0] * column[3] ^ kMixColumnsMatrix[i + 4] * column[0] ^ kMixColumnsMatrix[i + 8] * column[1] ^ kMixColumnsMatrix[i + 12] * column[2];
+	}
 }
 
 /// <summary>
@@ -96,26 +96,26 @@ void AES::mixColumns()
 /// </summary>
 void AES::invMixColumns() 
 {
-    std::array<std::uint8_t, 4> column;
-    for (int i = 0; i < 4; ++i) 
-    {
-        for (int j = 0; j < 4; ++j) 
-        {
-            column[j] = state[i + j * 4];
-        }
-        state[i] = kInvMixColumnsMatrix[i + 0] * column[0] ^ kInvMixColumnsMatrix[i + 4] * column[1] ^ kInvMixColumnsMatrix[i + 8] * column[2] ^ kInvMixColumnsMatrix[i + 12] * column[3];
-        state[i + 4] = kInvMixColumnsMatrix[i + 0] * column[1] ^ kInvMixColumnsMatrix[i + 4] * column[2] ^ kInvMixColumnsMatrix[i + 8] * column[3] ^ kInvMixColumnsMatrix[i + 12] * column[0];
-        state[i + 8] = kInvMixColumnsMatrix[i + 0] * column[2] ^ kInvMixColumnsMatrix[i + 4] * column[3] ^ kInvMixColumnsMatrix[i + 8] * column[0] ^ kInvMixColumnsMatrix[i + 12] * column[1];
-        state[i + 12] = kInvMixColumnsMatrix[i + 0] * column[3] ^ kInvMixColumnsMatrix[i + 4] * column[0] ^ kInvMixColumnsMatrix[i + 8] * column[1] ^ kInvMixColumnsMatrix[i + 12] * column[2];
-    }
+	std::array<std::uint8_t, 4> column;
+	for (int i = 0; i < 4; ++i) 
+	{
+		for (int j = 0; j < 4; ++j) 
+		{
+			column[j] = state[i + j * 4];
+		}
+		state[i] = kInvMixColumnsMatrix[i + 0] * column[0] ^ kInvMixColumnsMatrix[i + 4] * column[1] ^ kInvMixColumnsMatrix[i + 8] * column[2] ^ kInvMixColumnsMatrix[i + 12] * column[3];
+		state[i + 4] = kInvMixColumnsMatrix[i + 0] * column[1] ^ kInvMixColumnsMatrix[i + 4] * column[2] ^ kInvMixColumnsMatrix[i + 8] * column[3] ^ kInvMixColumnsMatrix[i + 12] * column[0];
+		state[i + 8] = kInvMixColumnsMatrix[i + 0] * column[2] ^ kInvMixColumnsMatrix[i + 4] * column[3] ^ kInvMixColumnsMatrix[i + 8] * column[0] ^ kInvMixColumnsMatrix[i + 12] * column[1];
+		state[i + 12] = kInvMixColumnsMatrix[i + 0] * column[3] ^ kInvMixColumnsMatrix[i + 4] * column[0] ^ kInvMixColumnsMatrix[i + 8] * column[1] ^ kInvMixColumnsMatrix[i + 12] * column[2];
+	}
 }
 
 // Performs the AddRoundKey step.
 void AES::addRoundKey(int round) 
 {
-    for (int i = 0; i < 16; ++i) {
-        state[i] ^= key_schedule[i + round * 16];
-    }
+	for (int i = 0; i < 16; ++i) {
+		state[i] ^= key_schedule[i + round * 16];
+	}
 }
 
 
@@ -125,20 +125,20 @@ void AES::addRoundKey(int round)
 /// <param name="key"></param>
 void AES::keyExpansion(const std::array<std::uint8_t, 16>& key) 
 {
-    for (int i = 0; i < 16; ++i) 
-    {
-        key_schedule[i] = key[i];
-    }
-    std::uint32_t temp;
-    for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i) 
-    {
-        temp = key_schedule[i - 1];
-        if (i % 4 == 0) 
-        {
-            temp = rotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
-        }
-        key_schedule[i] = key_schedule[i - 4] ^ temp;
-    }
+	for (int i = 0; i < 16; ++i) 
+	{
+		key_schedule[i] = key[i];
+	}
+	std::uint32_t temp;
+	for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i) 
+	{
+		temp = key_schedule[i - 1];
+		if (i % 4 == 0) 
+		{
+			temp = rotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
+		}
+		key_schedule[i] = key_schedule[i - 4] ^ temp;
+	}
 }
 
 
@@ -149,16 +149,16 @@ void AES::keyExpansion(const std::array<std::uint8_t, 16>& key)
 /// <returns></returns>
 std::array<std::uint8_t, 16> AES::encrypt(const std::array<std::uint8_t, 16>& plaintext) {
 
-    state = plaintext;
-    addRoundKey(0);
-    for (int round = 1; round <= K_NUM_ROUNDS; ++round) 
-    {
-        subBytes();
-        shiftRows();
-        mixColumns();
-        addRoundKey(round);
-    }
-    return state;
+	state = plaintext;
+	addRoundKey(0);
+	for (int round = 1; round <= K_NUM_ROUNDS; ++round) 
+	{
+		subBytes();
+		shiftRows();
+		mixColumns();
+		addRoundKey(round);
+	}
+	return state;
 }
 
 /// <summary>
@@ -168,14 +168,14 @@ std::array<std::uint8_t, 16> AES::encrypt(const std::array<std::uint8_t, 16>& pl
 /// <returns></returns>
 std::array<std::uint8_t, 16> AES::decrypt(const std::array<std::uint8_t, 16>& ciphertext) {
 
-    state = ciphertext;
-    addRoundKey(K_NUM_ROUNDS);
-    for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) 
-    {
-        invMixColumns();
-        invShiftRows();
-        invSubBytes();
-        addRoundKey(round);
-    }
-    return state;
+	state = ciphertext;
+	addRoundKey(K_NUM_ROUNDS);
+	for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) 
+	{
+		invMixColumns();
+		invShiftRows();
+		invSubBytes();
+		addRoundKey(round);
+	}
+	return state;
 }

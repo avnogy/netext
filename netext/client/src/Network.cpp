@@ -96,7 +96,7 @@ void Network::printPeerInfo(const json peerInfo)
 
 ip::udp::endpoint Network::punchHole(const json peerInfo)
 {
-    ip::udp::endpoint peer(boost::asio::ip::address::from_string(peerInfo["ip"]), peerInfo["port"]);
+    ip::udp::endpoint peer(ip::address::from_string(peerInfo["ip"]), peerInfo["port"]);
     sock.send_to(boost::asio::buffer("ready"), peer);
     return peer;
 }
@@ -110,7 +110,7 @@ void Network::receiveMessage(ip::udp::socket& sock)
     char buffer[BUFSIZE];
     try
     {
-        boost::asio::ip::udp::endpoint sender_endpoint;
+       ip::udp::endpoint sender_endpoint;
 
         while (true)
         {
@@ -164,12 +164,12 @@ string Network::getLocalIP()
     string local_ip;
     try
     {
-        io_service io_service;
-        ip::tcp::resolver resolver(io_service);
-        ip::tcp::resolver::query query(ip::host_name(), "");
-        ip::tcp::resolver::iterator iterator = resolver.resolve(query);
+        io_context io_context;
+        ip::udp::resolver resolver(io_context);
+        ip::udp::resolver::query query(ip::host_name(), "");
+        ip::udp::resolver::iterator iterator = resolver.resolve(query);
 
-        while (iterator != ip::tcp::resolver::iterator())
+        while (iterator != ip::udp::resolver::iterator())
         {
             ip::address addr = (iterator++)->endpoint().address();
             if (addr.is_v4())
