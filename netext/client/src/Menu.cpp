@@ -2,8 +2,8 @@
 
 void Menu::mainMenu()
 {
-    cout << WELCOME_SCREEN << endl << "Option: ";
-	while (!HandleChoice(Helper::getInt()))
+	cout << WELCOME_SCREEN << endl << "Option: ";
+	while (!HandleChoice(getInt()))
 	{
 		cout << INVALID_CHOICE;
 	}
@@ -20,7 +20,7 @@ bool Menu::HandleChoice(int choice)
 		PeerClient::joinSession();
 		break;
 	case Menu::Choices::DELETE_SESSION:
-		//peerserver delete
+		PeerServer::deleteSession();
 		break;
 	default:
 		return FAILURE;

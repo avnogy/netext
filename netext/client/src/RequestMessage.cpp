@@ -1,6 +1,6 @@
 #include "include/RequestMessage.h"
 
-RequestMessage;
+
 /// <summary>
 ///  This function is used to convert a RequestMessage object to a JSON string.
 /// </summary>
