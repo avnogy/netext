@@ -50,9 +50,6 @@
     <ClInclude Include="include\DHkey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\FileSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\MyException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
