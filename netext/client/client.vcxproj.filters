@@ -33,9 +33,6 @@
     <ClCompile Include="src\PeerServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RequestMessage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PeerServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RequestMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Utilities.h">

@@ -160,7 +160,6 @@
     <ClCompile Include="src\Network.cpp" />
     <ClCompile Include="src\PeerClient.cpp" />
     <ClCompile Include="src\PeerServer.cpp" />
-    <ClCompile Include="src\RequestMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AES.h" />
@@ -172,7 +171,6 @@
     <ClInclude Include="include\Network.h" />
     <ClInclude Include="include\PeerClient.h" />
     <ClInclude Include="include\PeerServer.h" />
-    <ClInclude Include="include\RequestMessage.h" />
     <ClInclude Include="include\Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

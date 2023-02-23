@@ -57,27 +57,12 @@ enum ResponseCode {
 /// gets a valid int value
 /// </summary>
 /// <returns></returns>
-int getInt()
-{
-	int num = 0;
-	cin >> num;
-	while (!cin.good())
-	{
-		//reset buffer
-		cin.clear();
-		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+int getInt();
 
-		//trying again
-		cout << "Invalid input, Try again." << endl;
-		cin >> num;
-	}
-	return num;
-}
 
 #include "MyException.h"
 #include "PeerClient.h"
 #include "PeerServer.h"
 #include "Network.h"
-
 
 #endif // !UTILITIES_H

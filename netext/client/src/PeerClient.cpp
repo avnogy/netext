@@ -12,10 +12,8 @@ void PeerClient::joinSession()
 	cin >> key;
 	jsonData["key"] = key;
 	jsonData["localIp"] = Network::getLocalIP();
-	time_t timeNow = time(TIME_NOW);
 
-	RequestMessage msg = { JOIN_SESSION_REQUEST , timeNow , jsonData };
-	json peerInfo = Network::joinSession(serializeRequest(msg));
+	json peerInfo = Network::joinSession(Network::serializeRequest(JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
 	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
 	cout << "joined session! " << endl;
