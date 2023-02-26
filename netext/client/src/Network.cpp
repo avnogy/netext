@@ -49,7 +49,7 @@ json Network::joinSession(const string request)
     {
         throw MyException("Error while joining session, Got wrong code.");
     }
-    return data;
+    return data["data"];
 }
 
 void Network::deleteSession(const string request)

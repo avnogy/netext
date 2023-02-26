@@ -15,10 +15,7 @@ void PeerClient::joinSession()
 
 	json peerInfo = Network::joinSession(Network::serializeRequest(JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
-	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
-	cout << "joined session! " << endl;
-
-	PeerClient::startHandleRequests(sock);
+	PeerClient::startHandleRequests(Network::punchHole(peerInfo));
 }
 
 /// <summary>
@@ -28,7 +25,6 @@ void PeerClient::joinSession()
 void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 {
 	cout << "Host found!" << endl;
-
 	try
 	{
 		// Creating a sender thread
