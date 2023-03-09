@@ -15,6 +15,8 @@ void PeerClient::joinSession()
 
 	json peerInfo = Network::joinSession(Network::serializeRequest(JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
+	std::this_thread::sleep_for(chrono::milliseconds(5000));
+
 	PeerClient::startHandleRequests(Network::punchHole(peerInfo));
 }
 

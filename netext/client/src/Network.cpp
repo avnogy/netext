@@ -17,8 +17,13 @@ char Network::buffer[BUFSIZE];
 
 string Network::createSession(const string request)
 {
+    size_t recv_len = 0;
+
     sock.send_to(boost::asio::buffer(request), rendezvous);
-    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    do
+    {
+        recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    } while (senderEndpoint != rendezvous);
     if (recv_len <= 0)
     {
         throw MyException("Error while creating session, No response.");
@@ -36,8 +41,13 @@ string Network::createSession(const string request)
 
 json Network::joinSession(const string request)
 {
+    size_t recv_len = 0; 
+
     sock.send_to(boost::asio::buffer(request), rendezvous);
-    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    do
+    {
+        recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    } while (senderEndpoint != rendezvous);
     if (recv_len <= 0)
     {
         throw MyException("Error while joining session, No response.");
@@ -54,8 +64,13 @@ json Network::joinSession(const string request)
 
 void Network::deleteSession(const string request)
 {
+    size_t recv_len = 0;
+
     sock.send_to(boost::asio::buffer(request), rendezvous);
-    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    do
+    {
+        recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    } while (senderEndpoint != rendezvous);
     if (recv_len <= 0)
     {
         throw MyException("Error while deleting session, No response.");
@@ -71,21 +86,36 @@ void Network::deleteSession(const string request)
 
 json Network::getPeerInfo()
 {
-    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    size_t recv_len = 0;
+    do
+    {
+        recv_len = sock.receive_from(boost::asio::buffer(buffer), senderEndpoint);
+    } while (senderEndpoint != rendezvous);
     if (recv_len <= 0)
     {
-        throw std::exception("Error while getting peer info.");
+        throw MyException("Error while getting peer info.");
         return FAILURE;
     }
-    cout << buffer << endl;
+    buffer[recv_len] = '\0';
 
-    json peerInfo = json::parse(buffer);
-    if (peerInfo["code"] != ResponseCode::PEER_INFO_RESPONSE)
+    try
     {
-        throw MyException("Error while getting session information, Got wrong code.");
+        json peerInfo = json::parse(buffer);
+
+        if (peerInfo["code"] != ResponseCode::PEER_INFO_RESPONSE)
+        {
+            throw MyException("Error while getting session information, Got wrong code.");
+        }
+        return peerInfo;
     }
-    return peerInfo;
+    catch (const std::exception&)
+    {
+        std::ostringstream message;
+        message << "Error while getting session information, Couldnt parse message." << endl << "data: " << buffer << endl;
+        throw MyException(message.str());
+    }
 }
+
 
 void Network::printPeerInfo(const json peerInfo)
 {
