@@ -9,8 +9,8 @@ void PeerServer::acceptClients()
 
 	cout << "waiting for connections.." << endl;
 	json peerInfo = Network::getPeerInfo();
+	std::this_thread::sleep_for(chrono::milliseconds(5000));
 	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
-
 	boost::thread th(boost::bind(&PeerServer::startHandleRequests, sock));
 }
 
@@ -26,6 +26,7 @@ void PeerServer::createSession()
 	cin >> name;
 	jsonData["name"] = name;
 	jsonData["localIp"] = Network::getLocalIP();
+
 
 	string key = Network::createSession(Network::serializeRequest(CREATE_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
