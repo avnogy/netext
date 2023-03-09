@@ -53,7 +53,6 @@ void PeerServer::deleteSession()
 		cout << "Session Key: ";
 		cin >> key;
 		jsonData["key"] = key;
-		jsonData["localIp"] = Network::getLocalIP();
 
 		Network::deleteSession(Network::serializeRequest(DELETE_SESSION_REQUEST, time(TIME_NOW), jsonData));
 		//tell threads to finish
