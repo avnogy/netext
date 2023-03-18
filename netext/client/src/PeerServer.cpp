@@ -73,6 +73,10 @@ void PeerServer::startHandleRequests(ip::udp::endpoint peer)
 
 	try
 	{
+		//// TODO:
+		//	 remove the sender thread and create a handler function.
+
+
 		// Creating a sender thread
 		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
