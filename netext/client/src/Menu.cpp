@@ -23,7 +23,7 @@ bool Menu::HandleChoice(int choice)
 		PeerServer::deleteSession();
 		break;
 	case Menu::Choices::EXIT_MENU:
-		//delete existing sessions and clear everything
+		//TODO delete existing sessions and clear everything
 		exit(EXIT_SUCCESS);
 		break;
 	default:
