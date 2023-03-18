@@ -29,6 +29,10 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 	cout << "Host found!" << endl;
 	try
 	{
+		//// TODO:
+		//	 remove the receiver thread and make the sending work without the menu getting in the way.
+
+		
 		// Creating a sender thread
 		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
