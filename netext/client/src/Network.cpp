@@ -135,30 +135,22 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
 /// test thread to recieve messages, content will be used later for actual recieving.
 /// </summary>
 /// <param name="sock"></param>
-void Network::receiveMessage(ip::udp::socket& sock)
+string Network::receiveMessage(ip::udp::socket& sock)
 {
     char buffer[BUFSIZE];
-    try
+    
+    ip::udp::endpoint sender_endpoint;
+    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), sender_endpoint);
+    cout << "sender: " << sender_endpoint.address().to_string() << endl;
+    if (recv_len > 0)
     {
-       ip::udp::endpoint sender_endpoint;
-
-        while (true)
-        {
-            size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), sender_endpoint);
-            if (recv_len > 0)
-            {
-                buffer[recv_len] = '\0';
-                cout << endl << "peer: " << buffer << endl;
-            }
-            else
-            {
-                throw std::exception("connection closed.");
-            }
-        }
+        buffer[recv_len] = '\0';
+        return string(buffer);
     }
-    catch (const std::exception& e)
+    else
     {
-        cerr << "Error receiving message: " << e.what() << endl;
+
+        throw MyException("Connection closed.");
     }
 }
 
@@ -175,7 +167,7 @@ void Network::sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer)
         {
             string message;
             cout << "you: ";
-            std::getline(std::cin, message);
+            cin >> message;
             sock.send_to(boost::asio::buffer(message), peer);
         }
     }

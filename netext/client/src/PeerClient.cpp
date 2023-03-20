@@ -37,7 +37,9 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
 		// Creating a receiver thread
-		boost::thread receiver_thread(boost::bind(&Network::receiveMessage, boost::ref(Network::sock)));
+		//boost::thread receiver_thread(boost::bind(&Network::receiveMessage, boost::ref(Network::sock)));
+
+		sender_thread.join();
 
 		// TO DO: File Update Requests
 	}

@@ -11,7 +11,7 @@ public:
 	static void printPeerInfo(const json peerInfo);
 	static ip::udp::endpoint punchHole(const json peerInfo);
 
-	static void receiveMessage(ip::udp::socket& sock);
+	static string receiveMessage(ip::udp::socket& sock);
 	static void sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer);
 
 	static string serializeRequest(const int code, const Timestamp time, const json requestData);
