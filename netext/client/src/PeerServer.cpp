@@ -11,7 +11,7 @@ void PeerServer::acceptClients()
 	json peerInfo = Network::getPeerInfo();
 	std::this_thread::sleep_for(chrono::milliseconds(5000));
 	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
-	boost::thread th(boost::bind(&PeerServer::startHandleRequests, sock));
+	boost::thread th(boost::bind(&PeerServer::session, sock));
 }
 
 /// <summary>
@@ -67,7 +67,7 @@ void PeerServer::deleteSession()
 /// handling client requests
 /// </summary>
 /// <param name="client_sock"></param>
-void PeerServer::startHandleRequests(ip::udp::endpoint peer)
+void PeerServer::session(ip::udp::endpoint peer)
 {
 	cout << "Client accepted!" << endl;
 
@@ -78,10 +78,12 @@ void PeerServer::startHandleRequests(ip::udp::endpoint peer)
 
 
 		// Creating a sender thread
-		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
+		//boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
 		// Creating a receiver thread
-		boost::thread receiver_thread(boost::bind(&Network::receiveMessage, boost::ref(Network::sock)));
+		boost::thread receiver_thread(boost::bind(&PeerServer::handleRequests , boost::ref(Network::sock)));
+
+		receiver_thread.join();
 
 		// TO DO: File Update Requests
 	}
@@ -89,5 +91,23 @@ void PeerServer::startHandleRequests(ip::udp::endpoint peer)
 	{
 		cout << "Error: " << e.what() << endl;
 		cout << "Client Disconnected." << endl;
+	}
+}
+
+void PeerServer::handleRequests(ip::udp::socket& sock)
+{
+	string msg = "";
+	while (true)
+	{
+		try
+		{
+			msg = Network::receiveMessage(sock);
+			cout << "Peer's Request: " << msg << endl;
+		}
+		catch (const std::exception& e)
+		{
+			cout << "Error: " << e.what() << endl;
+		}
+		
 	}
 }
