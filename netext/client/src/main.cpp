@@ -1,7 +1,8 @@
-#include <boost/filesystem.hpp>
+
 #include <iostream>
+#include "include/FileHandler.h"
 
-int main(void) {
-
-  return 0;
+int main(void) 
+{
+	FileHandler handler;
 }
