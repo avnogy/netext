@@ -4,5 +4,5 @@
 
 int main(void) 
 {
-	FileHandler handler;
+	FileHandler& instance = FileHandler::getInstance();
 }
