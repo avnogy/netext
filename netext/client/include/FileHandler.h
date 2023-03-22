@@ -11,7 +11,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-#define SHOW_MENU "1. Create File\n2. Delete File\n3. Edit File\n4. Exit"
+#define SHOW_MENU "Menu:\n1. Create File\n2. Delete File\n3. Insert Into File\n4. Remove From File\n5. Exit"
 
 class FileHandler
 {
@@ -39,10 +39,13 @@ class FileHandler
 
 		void createFile(string path);
 		void deleteFile(string path);
-		void editFile(string path);
+		void insertIntoFile(string path);
+		void removeFromFile(string path);
 
-		void insert(string content);
-		string readEntireFile();
-
+		void insert(const int location , const string content, string path);
+		void remove(const int location , const int removeAmount, string path);
+		string readWholeFile(string path);
+		
 		int getInt();
+		string getPath();
 };
