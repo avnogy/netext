@@ -13,6 +13,9 @@ using std::endl;
 
 #define SHOW_MENU "Menu:\n1. Create File\n2. Delete File\n3. Insert Into File\n4. Remove From File\n5. Exit"
 
+/// <summary>
+/// class represents a simple file api for file functionallities
+/// </summary>
 class FileHandler
 {
 	public:
@@ -27,16 +30,10 @@ class FileHandler
 		FileHandler(const FileHandler&) = delete;
 		FileHandler& operator=(const FileHandler&) = delete;
 
-		
-		
-
 	private:
 		
 		FileHandler();
 		~FileHandler();
-		
-		
-
 		void createFile(string path);
 		void deleteFile(string path);
 		void insertIntoFile(string path);
@@ -48,4 +45,7 @@ class FileHandler
 		
 		int getInt();
 		string getPath();
+
+		bool validPosition(const int position , const int fileSize);
+		bool validRemoveAmount(const int position, const int amount, const int fileSize);
 };

@@ -13,6 +13,10 @@ FileHandler::~FileHandler()
 {
 }
 
+
+/// <summary>
+/// function runs menu to the user
+/// </summary>
 void FileHandler::Menu()
 {
 	int option = 0;
@@ -50,6 +54,11 @@ void FileHandler::Menu()
 	}
 }
 
+
+/// <summary>
+/// function creates a file 
+/// </summary>
+/// <param name="path"></param>
 void FileHandler::createFile(string path)
 {
 	if (!boost::filesystem::exists(path))
@@ -65,6 +74,10 @@ void FileHandler::createFile(string path)
 
 }
 
+/// <summary>
+/// function deletes a file (if exists)
+/// </summary>
+/// <param name="path"></param>
 void FileHandler::deleteFile(string path)
 {
 	if (boost::filesystem::exists(path))
@@ -78,7 +91,10 @@ void FileHandler::deleteFile(string path)
 }
 
 
-
+/// <summary>
+/// input int including handling invalid inpu
+/// </summary>
+/// <returns></returns>
 int FileHandler::getInt()
 {
 
@@ -98,34 +114,89 @@ int FileHandler::getInt()
 
 }
 
+
+/// <summary>
+/// function inserts data into existing file (appending)
+/// </summary>
+/// <param name="path"></param>
 void FileHandler::insertIntoFile(string path)
 {
+	if (!boost::filesystem::exists(path))
+	{
+		cout << "File does not exist!" << endl;
+		return;
+	}
+
 	int position = 0;
 	string data = "";
 
-	cout << "Position: ";
-	cin >> position;
+	cout << "File Size: " << boost::filesystem::file_size(path) << endl;
 
-	cout << "Data To Insert: ";
+	cout << "Enter Position: ";
+	position = getInt();
+
+	cout << "Enter Data To Insert: ";
 	cin >> data;
 
 	insert(position, data, path);
 }
 
+
+/// <summary>
+/// function removing data from a file
+/// </summary>
+/// <param name="path"></param>
 void FileHandler::removeFromFile(string path)
 {
+	if (!boost::filesystem::exists(path))
+	{
+		cout << "File does not exist!" << endl;
+		return;
+	}
+
+	bool flag = false;
 	int position = 0;
 	int amount = 0;
+	int fileSize = boost::filesystem::file_size(path);
+	cout << "File Size: " << fileSize << endl;
 
-	cout << "Position: ";
-	cin >> position;
-
-	cout << "Amount: ";
-	cin >> amount;
-
+	while (!flag)
+	{
+		cout << "Enter Position: ";
+		position = getInt();
+		if (validPosition(position , fileSize))
+		{
+			flag = true;
+		}
+		else
+		{
+			cout << "Invalid Position!" << endl;
+		}
+	}
+	flag = false;
+	
+	while (!flag)
+	{
+		cout << "Enter Amount: ";
+		amount = getInt();
+		if (validRemoveAmount(position,amount ,fileSize))
+		{
+			flag = true;
+		}
+		else
+		{
+			cout << "Invalid Position!" << endl;
+		}
+	}
 	remove(position, amount, path);
 }
 
+
+/// <summary>
+/// function reads an entire file
+/// </summary>
+/// <param name="path"></param>
+/// <returns></returns>
 string FileHandler::readWholeFile(string path)
 {
 	boost::filesystem::ifstream file(path, std::ios::in);
@@ -141,6 +212,10 @@ string FileHandler::readWholeFile(string path)
 	return data;
 }
 
+/// <summary>
+/// function inputing a path
+/// </summary>
+/// <returns></returns>
 string FileHandler::getPath()
 {
 	string path;
@@ -149,8 +224,37 @@ string FileHandler::getPath()
 	return path;
 }
 
+/// <summary>
+/// function checking if position of the file is valid
+/// </summary>
+/// <param name="position"></param>
+/// <param name="fileSize"></param>
+/// <returns></returns>
+bool FileHandler::validPosition(const int position , const int fileSize)
+{
+	return (position < fileSize&& position >= 0);
+}
 
 
+/// <summary>
+/// function checking if amount of characters to remove is valid
+/// </summary>
+/// <param name="position"></param>
+/// <param name="amount"></param>
+/// <param name="fileSize"></param>
+/// <returns></returns>
+bool FileHandler::validRemoveAmount(const int position , const int amount, const int fileSize)
+{
+	return (amount > 0 && amount <= fileSize - position);
+}
+
+
+/// <summary>
+/// insert subfunction
+/// </summary>
+/// <param name="location"></param>
+/// <param name="content"></param>
+/// <param name="path"></param>
 void FileHandler::insert(const int location , const string content , string path)
 {
 	string fileData = readWholeFile(path);
@@ -166,6 +270,13 @@ void FileHandler::insert(const int location , const string content , string path
 	file.close();
 }
 
+
+/// <summary>
+/// remove subfunction
+/// </summary>
+/// <param name="location"></param>
+/// <param name="removeAmount"></param>
+/// <param name="path"></param>
 void FileHandler::remove(const int location, const int removeAmount, string path)
 {
 	string fileData = readWholeFile(path);
