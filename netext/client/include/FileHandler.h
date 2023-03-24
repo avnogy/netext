@@ -5,11 +5,13 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <string>
+#include <queue>
 
 using std::string;
 using std::cout;
 using std::cin;
 using std::endl;
+using std::queue;
 
 #define SHOW_MENU "Menu:\n1. Create File\n2. Delete File\n3. Insert Into File\n4. Remove From File\n5. Exit"
 
@@ -34,18 +36,22 @@ class FileHandler
 		
 		FileHandler();
 		~FileHandler();
+
+		// menu functions
 		void createFile(string path);
 		void deleteFile(string path);
 		void insertIntoFile(string path);
 		void removeFromFile(string path);
 
+		// helper functions
 		void insert(const int location , const string content, string path);
 		void remove(const int location , const int removeAmount, string path);
 		string readWholeFile(string path);
-		
 		int getInt();
 		string getPath();
-
 		bool validPosition(const int position , const int fileSize);
 		bool validRemoveAmount(const int position, const int amount, const int fileSize);
+
+		
+
 };
