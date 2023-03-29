@@ -51,10 +51,15 @@ void FileHandler::Menu()
 	}
 }
 
+
+/// <summary>
+/// function inserting request into the queue
+/// </summary>
+/// <param name="request"></param>
 void FileHandler::insertRequest(json request)
 {
 	muRequests.lock();
-		editRequests.push(request);
+	editRequests.push(request);
 	muRequests.unlock();
 }
 
@@ -94,6 +99,10 @@ void FileHandler::test()
 	}
 }
 
+/// <summary>
+/// set function for file path field
+/// </summary>
+/// <param name="path"></param>
 void FileHandler::setPath(string path)
 {
 	filePath = path;
@@ -214,42 +223,52 @@ void FileHandler::removeFromFile()
 	remove(position, amount);
 }
 
+
+/// <summary>
+/// functuon handling requests from the queue (thread)
+/// </summary>
 void FileHandler::handleRequests()
 {
 	// NEXT PART: ADD LOOP AS AN INFINITE LOOP THREAD
 
-	muRequests.lock();
-	json request = editRequests.top();
-	editRequests.pop();
-	muRequests.unlock();
-
-	RequestCode id = (RequestCode)request["requestCode"];
-	json data = request["data"];
-
-	try
+	while (true)
 	{
-		switch (id)
+
+		muRequests.lock();
+		if (!editRequests.empty())
 		{
-		case FILE_INSERT_REQUEST:
-			
-			insert(data["position"], data["content"]);
-			break;
+			json request = editRequests.top();
+			editRequests.pop();
+			RequestCode id = (RequestCode)request["requestCode"];
+			json data = request["data"];
+			try
+			{
+				switch (id)
+				{
+					case FILE_INSERT_REQUEST:
 
-		case FILE_REMOVE_REQUEST:
-			remove(data["position"], data["amount"]);
-			break;
+						insert(data["position"], data["content"]);
+						break;
+
+					case FILE_REMOVE_REQUEST:
+						remove(data["position"], data["amount"]);
+						break;
+					
+					default:
+						break;
+				}
+			}
+			catch (std::exception& e)
+			{
+				cout << "Error: " << e.what() << endl;
+			}
 		}
+		muRequests.unlock();
 	}
-	catch (std::exception& e)
-	{
-		cout << "Error: " << e.what() << endl;
-	}
+		
 
 
 }
-
-
-
 
 /// <summary>
 /// function reads an entire file
