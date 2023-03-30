@@ -17,11 +17,15 @@
 #include <cmath>
 #include <ctime>
 #include <Exception>
+#include <queue>
+#include <mutex>
 
-#include <boost/filesystem.hpp>
 #include <boost/thread/thread.hpp>
-#include "json.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/asio.hpp>
+#include "json.hpp"
+
 
 #define BUFSIZE 1024
 #define SERVER_IP "18.196.140.61"
@@ -40,30 +44,31 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::to_string;
+using std::priority_queue;
+using std::mutex;
 
 typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
 enum RequestCode {
-	CREATE_SESSION_REQUEST = 100, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST
+	CREATE_SESSION_REQUEST = 100, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST , FILE_INSERT_REQUEST , FILE_REMOVE_REQUEST
 };
 
 enum ResponseCode {
 	ERROR_RESPONSE = 200 ,CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE, PEER_INFO_RESPONSE
 };
 
-/// <summary>
-/// gets a valid int value
-/// </summary>
-/// <returns></returns>
+
 int getInt();
+string getPath();
 
-
+#include "include/FileHandler.h"
 #include "MyException.h"
 #include "PeerClient.h"
 #include "PeerServer.h"
 #include "Network.h"
 #include "Menu.h"
+
 
 #endif // !UTILITIES_H

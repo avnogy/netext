@@ -154,6 +154,7 @@
     <ClCompile Include="include\Utilities.cpp" />
     <ClCompile Include="src\AES.cpp" />
     <ClCompile Include="src\DHkey.cpp" />
+    <ClCompile Include="src\FileHandler.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\MyException.cpp" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="include\AES.h" />
     <ClInclude Include="include\DHkey.h" />
+    <ClInclude Include="include\FileHandler.h" />
     <ClInclude Include="include\json.hpp" />
     <ClInclude Include="include\Menu.h" />
     <ClInclude Include="include\MyException.h" />

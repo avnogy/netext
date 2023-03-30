@@ -1,5 +1,9 @@
 #include "Utilities.h"
 
+/// <summary>
+/// input int including handling invalid inpu
+/// </summary>
+/// <returns></returns>
 int getInt()
 {
 
@@ -17,4 +21,16 @@ int getInt()
 	}
 	return num;
 
+}
+
+/// <summary>
+/// function inputing a path
+/// </summary>
+/// <returns></returns>
+string getPath()
+{
+	string path;
+	cout << "Enter Path: ";
+	cin >> path;
+	return path;
 }
