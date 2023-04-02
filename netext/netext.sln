@@ -5,22 +5,36 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcxproj", "{840424CF-1CAA-4147-AA09-28BD318BCB4F}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Frontend", "Frontent\Frontend.pyproj", "{942E26B6-E246-4FAB-B935-F025D9CD322D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|Any CPU.Build.0 = Debug|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|x64.ActiveCfg = Debug|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|x64.Build.0 = Debug|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|x86.ActiveCfg = Debug|Win32
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Debug|x86.Build.0 = Debug|Win32
+		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|Any CPU.ActiveCfg = Release|x64
+		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|Any CPU.Build.0 = Release|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|x64.ActiveCfg = Release|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|x64.Build.0 = Release|x64
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|x86.ActiveCfg = Release|Win32
 		{840424CF-1CAA-4147-AA09-28BD318BCB4F}.Release|x86.Build.0 = Release|Win32
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Release|x64.ActiveCfg = Release|Any CPU
+		{942E26B6-E246-4FAB-B935-F025D9CD322D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

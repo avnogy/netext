@@ -330,11 +330,11 @@ void FileHandler::insert(const int location , const string content)
 {
 	if (!boost::filesystem::exists(filePath))
 	{
-		throw std::exception("File does not exist");
+		throw MyException("File does not exist");
 	}
 	if (!validPosition(location, getFileSize()))
 	{
-		throw std::exception("Position is not valid");
+		throw MyException("Position is not valid");
 	}
 	string fileData = readWholeFile();
 
@@ -360,15 +360,15 @@ void FileHandler::remove(const int position, const int removeAmount)
 {
 	if (!boost::filesystem::exists(filePath))
 	{
-		throw std::exception("File does not exist");
+		throw MyException("File does not exist");
 	}
 	if (!validPosition(position, getFileSize()))
 	{
-		throw std::exception("Position is not valid");
+		throw MyException("Position is not valid");
 	}
 	if (!validRemoveAmount(position, removeAmount, getFileSize()))
 	{
-		throw std::exception("Remove Amount is not valid");
+		throw MyException("Remove Amount is not valid");
 	}
 	string fileData = readWholeFile();
 	fileData.erase(position, removeAmount);
