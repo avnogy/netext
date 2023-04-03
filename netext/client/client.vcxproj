@@ -159,6 +159,7 @@
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\MyException.cpp" />
     <ClCompile Include="src\Network.cpp" />
+    <ClCompile Include="src\Notifier.cpp" />
     <ClCompile Include="src\PeerClient.cpp" />
     <ClCompile Include="src\PeerServer.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="include\Menu.h" />
     <ClInclude Include="include\MyException.h" />
     <ClInclude Include="include\Network.h" />
+    <ClInclude Include="include\Notifier.h" />
     <ClInclude Include="include\PeerClient.h" />
     <ClInclude Include="include\PeerServer.h" />
     <ClInclude Include="include\Utilities.h" />
