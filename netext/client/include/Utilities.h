@@ -47,6 +47,8 @@ using std::endl;
 using std::to_string;
 using std::priority_queue;
 using std::mutex;
+using std::condition_variable;
+using std::unique_lock;
 
 typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data

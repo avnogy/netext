@@ -2,29 +2,35 @@
 
 bool Notifier::insert(const json event)
 {
-	muEvents.lock();
+	unique_lock<mutex> lck(muEvents);
 	events.push(event);
-	muEvents.unlock();
+	lck.unlock();
+	cvEvents.notify_all();
 }
 
 bool Notifier::notify()
 {
-	muEvents.lock();
-	while (!events.empty())
+	//TODO: add stop condition
+	while (true)
 	{
-		const string event = events.top().dump();
-		events.pop();
-		for (auto& endpoint: clients) 
+		unique_lock<mutex> lck(muEvents);
+		while (!events.empty())
 		{
-			if (Network::notify(endpoint, event))
+			const string event = events.top().dump();
+			events.pop();
+			for (auto& endpoint : clients)
 			{
-				cerr << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
-			}
-			{
-				cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
+				if (Network::notify(endpoint, event))
+				{
+					cerr << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
+				}
+				{
+					cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
+				}
 			}
 		}
+		lck.unlock();
+		cvEvents.wait(lck);
 	}
-	muEvents.unlock();
 
 }

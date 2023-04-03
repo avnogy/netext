@@ -20,6 +20,7 @@ private:
 	Notifier();
 	priority_queue<json, vector<json>, CompareJsonByTimestamp> events;
 	vector<ip::udp::endpoint> clients;
+	condition_variable cvEvents;
 	mutex muEvents;
 };
 
