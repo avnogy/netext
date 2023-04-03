@@ -222,3 +222,15 @@ string Network::getLocalIP()
     return local_ip;
 }
 
+void Network::writePortToFile()
+{
+    FileHandler& handler = FileHandler::getInstance();
+    handler.setPath(PORT_FILE_PATH);
+    
+    ip::udp::endpoint endpoint = sock.local_endpoint();
+    int port = endpoint.port();
+    cout << port << endl;
+
+    handler.writeToFile(std::to_string(port));
+}
+

@@ -4,6 +4,7 @@ int main()
 {
 	try
 	{
+		Network::writePortToFile();
 		while (true)
 		{
 			Menu::mainMenu();
@@ -13,5 +14,6 @@ int main()
 	catch (std::exception& e)
 	{
 		std::cout << "Error: " << e.what() << std::endl;
+		
 	}
 }

@@ -13,6 +13,8 @@ public:
 
 	void Menu();
 	void test();
+	void writeToFile(string content);
+	void createFile();
 	void setPath(string path);
 
 	void insertRequest(json request);
@@ -30,7 +32,7 @@ private:
 	~FileHandler();
 
 	// menu functions
-	void createFile();
+	
 	void deleteFile();
 	void insertIntoFile();
 	void removeFromFile();
@@ -63,9 +65,10 @@ private:
 	
 
 	// request priority queue (sorted)
-	priority_queue<json, std::vector<json>, CompareJsonByTimestamp> editRequests;
-	mutex muRequests;
-	string filePath;
+	priority_queue<json, std::vector<json>, CompareJsonByTimestamp> _editRequests;
+	mutex _muRequests;
+	condition_variable _cvRequests;
+	string _path;
 
 	
 };

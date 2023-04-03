@@ -29,7 +29,7 @@ void FileHandler::Menu()
 				cout << "Invalid option chosen , type a existed option!" << endl;
 			}
 		}
-		filePath = getPath();
+		_path = getPath();
 			switch (option)
 			{
 				case 1:
@@ -58,9 +58,10 @@ void FileHandler::Menu()
 /// <param name="request"></param>
 void FileHandler::insertRequest(json request)
 {
-	muRequests.lock();
-	editRequests.push(request);
-	muRequests.unlock();
+	unique_lock<mutex> lck(_muRequests);
+	_editRequests.push(request);
+	lck.unlock();
+	_cvRequests.notify_all();
 }
 
 void FileHandler::test()
@@ -93,10 +94,16 @@ void FileHandler::test()
 	insertRequest(r2);
 	insertRequest(r);
 
-	while (!editRequests.empty())
+	while (!_editRequests.empty())
 	{
 		handleRequests();
 	}
+}
+
+void FileHandler::writeToFile(string content)
+{
+	boost::filesystem::ofstream file(_path);
+	file << content;
 }
 
 /// <summary>
@@ -105,7 +112,7 @@ void FileHandler::test()
 /// <param name="path"></param>
 void FileHandler::setPath(string path)
 {
-	filePath = path;
+	_path = path;
 }
 
 
@@ -115,9 +122,9 @@ void FileHandler::setPath(string path)
 /// <param name="path"></param>
 void FileHandler::createFile()
 {
-	if (!boost::filesystem::exists(filePath))
+	if (!boost::filesystem::exists(_path))
 	{
-		boost::filesystem::ofstream file(filePath);
+		boost::filesystem::ofstream file(_path);
 		file.close();
 	}
 	else
@@ -133,9 +140,9 @@ void FileHandler::createFile()
 /// <param name="path"></param>
 void FileHandler::deleteFile()
 {
-	if (boost::filesystem::exists(filePath))
+	if (boost::filesystem::exists(_path))
 	{
-		boost::filesystem::remove(filePath.c_str());
+		boost::filesystem::remove(_path.c_str());
 	}
 	else
 	{
@@ -153,7 +160,7 @@ void FileHandler::deleteFile()
 /// <param name="path"></param>
 void FileHandler::insertIntoFile()
 {
-	if (!boost::filesystem::exists(filePath))
+	if (!boost::filesystem::exists(_path))
 	{
 		cout << "File does not exist!" << endl;
 		return;
@@ -162,7 +169,7 @@ void FileHandler::insertIntoFile()
 	int position = 0;
 	string data = "";
 
-	cout << "File Size: " << boost::filesystem::file_size(filePath) << endl;
+	cout << "File Size: " << boost::filesystem::file_size(_path) << endl;
 
 	cout << "Enter Position: ";
 	position = getInt();
@@ -180,7 +187,7 @@ void FileHandler::insertIntoFile()
 /// <param name="path"></param>
 void FileHandler::removeFromFile()
 {
-	if (!boost::filesystem::exists(filePath))
+	if (!boost::filesystem::exists(_path))
 	{
 		cout << "File does not exist!" << endl;
 		return;
@@ -189,7 +196,7 @@ void FileHandler::removeFromFile()
 	bool flag = false;
 	int position = 0;
 	int amount = 0;
-	int fileSize = boost::filesystem::file_size(filePath);
+	int fileSize = boost::filesystem::file_size(_path);
 	cout << "File Size: " << fileSize << endl;
 
 	while (!flag)
@@ -233,37 +240,40 @@ void FileHandler::handleRequests()
 
 	while (true)
 	{
-
-		muRequests.lock();
-		if (!editRequests.empty())
+		unique_lock<mutex> lck(_muRequests);
+		if (_editRequests.empty())
 		{
-			json request = editRequests.top();
-			editRequests.pop();
-			RequestCode id = (RequestCode)request["requestCode"];
-			json data = request["data"];
-			try
+			_cvRequests.wait(lck);
+		}
+		
+		
+		json request = _editRequests.top();
+		_editRequests.pop();
+		RequestCode id = (RequestCode)request["requestCode"];
+		json data = request["data"];
+		try
+		{
+			switch (id)
 			{
-				switch (id)
-				{
-					case FILE_INSERT_REQUEST:
+				case FILE_INSERT_REQUEST:
 
-						insert(data["position"], data["content"]);
-						break;
+					insert(data["position"], data["content"]);
+					break;
 
-					case FILE_REMOVE_REQUEST:
-						remove(data["position"], data["amount"]);
-						break;
+				case FILE_REMOVE_REQUEST:
+					remove(data["position"], data["amount"]);
+					break;
 					
-					default:
-						break;
-				}
-			}
-			catch (std::exception& e)
-			{
-				cout << "Error: " << e.what() << endl;
+				default:
+					break;
 			}
 		}
-		muRequests.unlock();
+		catch (std::exception& e)
+		{
+			cout << "Error: " << e.what() << endl;
+		}
+	
+		
 	}
 		
 
@@ -277,7 +287,7 @@ void FileHandler::handleRequests()
 /// <returns></returns>
 string FileHandler::readWholeFile()
 {
-	boost::filesystem::fstream file(filePath);
+	boost::filesystem::fstream file(_path);
 	string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	file.close();
 	
@@ -291,7 +301,7 @@ string FileHandler::readWholeFile()
 /// <returns></returns>
 int FileHandler::getFileSize()
 {
-	return boost::filesystem::file_size(filePath);
+	return boost::filesystem::file_size(_path);
 }
 
 
@@ -328,7 +338,7 @@ bool FileHandler::validRemoveAmount(const int position , const int amount, const
 /// <param name="path"></param>
 void FileHandler::insert(const int location , const string content)
 {
-	if (!boost::filesystem::exists(filePath))
+	if (!boost::filesystem::exists(_path))
 	{
 		throw MyException("File does not exist");
 	}
@@ -341,7 +351,7 @@ void FileHandler::insert(const int location , const string content)
 	string tmp1 = fileData.substr(0, location);
 	string tmp2 = fileData.substr(location, fileData.size() - 1);
 
-	boost::filesystem::ofstream file(filePath, std::ios::out);
+	boost::filesystem::ofstream file(_path, std::ios::out);
 	file << tmp1;
 	file << content;
 	file << tmp2;
@@ -358,7 +368,7 @@ void FileHandler::insert(const int location , const string content)
 /// <param name="path"></param>
 void FileHandler::remove(const int position, const int removeAmount)
 {
-	if (!boost::filesystem::exists(filePath))
+	if (!boost::filesystem::exists(_path))
 	{
 		throw MyException("File does not exist");
 	}
@@ -373,7 +383,7 @@ void FileHandler::remove(const int position, const int removeAmount)
 	string fileData = readWholeFile();
 	fileData.erase(position, removeAmount);
 
-	boost::filesystem::ofstream file(filePath);
+	boost::filesystem::ofstream file(_path);
 	file << fileData;
 	file.close();
 }
