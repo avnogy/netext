@@ -18,6 +18,7 @@
 #include <ctime>
 #include <Exception>
 #include <queue>
+#include <condition_variable>
 #include <mutex>
 
 #include <boost/thread/thread.hpp>

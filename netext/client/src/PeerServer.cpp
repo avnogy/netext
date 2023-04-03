@@ -5,7 +5,9 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
-	//will be in a loop later for getting multiple clients 
+	
+	ip::udp::endpoint frontendEndpoint = Network::acceptFrontend();
+	boost::thread frontendThread(boost::bind(&PeerServer::session, frontendEndpoint));
 
 	cout << "waiting for connections.." << endl;
 	json peerInfo = Network::getPeerInfo();

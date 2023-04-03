@@ -131,6 +131,13 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
     return peer;
 }
 
+ip::udp::endpoint Network::acceptFrontend()
+{
+    ip::udp::endpoint sender_endpoint;
+    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), sender_endpoint);
+    return sender_endpoint;
+}
+
 /// <summary>
 /// test thread to recieve messages, content will be used later for actual recieving.
 /// </summary>
@@ -225,5 +232,17 @@ string Network::getLocalIP()
     cout << "If computers are under the same network please write the local ip address." << endl << "Local: ";
     cin >> local_ip;
     return local_ip;
+}
+
+void Network::writePortToFile()
+{
+    FileHandler& handler = FileHandler::getInstance();
+    handler.setPath(PORT_FILE_PATH);
+    
+    ip::udp::endpoint endpoint = sock.local_endpoint();
+    int port = endpoint.port();
+    cout << port << endl;
+
+    handler.writeToFile(std::to_string(port));
 }
 
