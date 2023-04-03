@@ -22,7 +22,7 @@ bool Notifier::notify()
 			{
 				if (Network::notify(endpoint, event))
 				{
-					cerr << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
+					cout << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
 				}
 				{
 					cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
