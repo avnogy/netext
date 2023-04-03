@@ -34,3 +34,10 @@ bool Notifier::notify()
 	}
 
 }
+
+bool Notifier::addClient(ip::udp::endpoint& client)
+{
+	unique_lock<mutex> lck(muEvents);
+	clients.push_back(client);
+	lck.unlock();
+}

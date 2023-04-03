@@ -4,7 +4,7 @@
 class Notifier
 {
 public:
-	static Notifier& getInstance() 
+	static Notifier& getInstance()
 	{
 		static Notifier instance;
 		return instance;
@@ -15,6 +15,7 @@ public:
 
 	bool insert(const json event);
 	bool notify();
+	bool addClient(ip::udp::endpoint& client);
 
 private:
 	Notifier();
