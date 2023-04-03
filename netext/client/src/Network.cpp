@@ -177,6 +177,11 @@ void Network::sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer)
     }
 }
 
+bool Network::notify(ip::udp::endpoint recipient, const string message)
+{
+    return sock.send_to(boost::asio::buffer(message), recipient) == message.size();
+}
+
 string Network::serializeRequest(const int code, const Timestamp time, const json requestData)
 {
     json requestJson;

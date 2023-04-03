@@ -237,7 +237,8 @@ void FileHandler::handleRequests()
 		muRequests.lock();
 		if (!editRequests.empty())
 		{
-			json request = editRequests.top();
+			const json request = editRequests.top();
+			Notifier::getInstance().insert(request);
 			editRequests.pop();
 			RequestCode id = (RequestCode)request["requestCode"];
 			json data = request["data"];
