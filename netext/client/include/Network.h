@@ -1,7 +1,7 @@
 #pragma once
 #include "Utilities.h"
 
-#define PORT_FILE_PATH "E:\\MagshiProject\\magshiproject\\netext\\Frontent\\port.txt"
+#define PORT_FILE_PATH "port.txt"
 
 class Network {
 public:

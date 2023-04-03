@@ -10,7 +10,7 @@ import time
 
 DIFF_INSERT = 1
 DIFF_REMOVE = -1
-TIMER_MILLISECONDS = 1000 * 5
+TIMER_MILLISECONDS = 1000 * 3
 
 FILE_INSERT_REQUEST = 103
 FILE_REMOVE_REQUEST = 104
@@ -25,10 +25,10 @@ def getPortFromFile():
     """
         gets the backend port from the file the backend created
     """
-    with open("port.txt" , "r") as portFile:
+    with open("../client/port.txt" , "r") as portFile:
         strPort = portFile.read()
         print(strPort)
-        serverPort = int(strPort)
+        return int(strPort)
 
 class TextEdit(QTextEdit):
     """
@@ -106,7 +106,7 @@ class TextEdit(QTextEdit):
 
 if __name__ == "__main__":
     
-    getPortFromFile()
+    serverPort = getPortFromFile()
 
     app = QApplication([])
 
