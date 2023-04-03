@@ -13,9 +13,9 @@ public:
 	Notifier(const Notifier&) = delete;
 	Notifier& operator=(const Notifier&) = delete;
 
-	bool insert(const json event);
+	void insert(const json event);
 	bool notify();
-	bool addClient(ip::udp::endpoint& client);
+	void addClient(ip::udp::endpoint& client);
 
 private:
 	Notifier();

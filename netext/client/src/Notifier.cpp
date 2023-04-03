@@ -1,6 +1,12 @@
 #include "include/Notifier.h"
 
-bool Notifier::insert(const json event)
+
+Notifier::Notifier()
+{
+
+}
+
+void Notifier::insert(const json event)
 {
 	unique_lock<mutex> lck(muEvents);
 	events.push(event);
@@ -35,9 +41,11 @@ bool Notifier::notify()
 
 }
 
-bool Notifier::addClient(ip::udp::endpoint& client)
+void Notifier::addClient(ip::udp::endpoint& client)
 {
 	unique_lock<mutex> lck(muEvents);
 	clients.push_back(client);
 	lck.unlock();
+
+	
 }
