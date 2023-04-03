@@ -245,7 +245,8 @@ void FileHandler::handleRequests()
 		}
 		
 		
-		json request = _editRequests.top();
+		const json request = _editRequests.top();
+		Notifier::getInstance().insert(request);
 		_editRequests.pop();
 		RequestCode id = (RequestCode)request["requestCode"];
 		json data = request["data"];

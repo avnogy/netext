@@ -43,6 +43,7 @@ using std::string;
 using std::cin;
 using std::cout;
 using std::cerr;
+using std::vector;
 using std::endl;
 using std::to_string;
 using std::priority_queue;
@@ -66,7 +67,22 @@ enum ResponseCode {
 int getInt();
 string getPath();
 
+
+/// <summary>
+/// compare struct for filtering the priority queue - first is the most earliest request
+/// </summary>
+struct CompareJsonByTimestamp
+{
+	bool operator()(const json& json1, const json& json2) const
+	{
+		Timestamp time1 = json1["timeStamp"];
+		Timestamp time2 = json2["timeStamp"];
+		return time1 > time2;
+	}
+} typedef CompareJsonByTimestamp;
+
 #include "include/FileHandler.h"
+#include "Notifier.h"
 #include "MyException.h"
 #include "PeerClient.h"
 #include "PeerServer.h"

@@ -17,6 +17,8 @@ public:
 	static string receiveMessage(ip::udp::socket& sock);
 	static void sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer);
 
+	static bool notify(ip::udp::endpoint recipient, const string message);
+
 	static string serializeRequest(const int code, const Timestamp time, const json requestData);
 	static string getLocalIP();
 

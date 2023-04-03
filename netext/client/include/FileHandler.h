@@ -49,21 +49,6 @@ private:
 	bool validPosition(const int position, const int fileSize);
 	bool validRemoveAmount(const int position, const int amount, const int fileSize);
 
-	
-	/// <summary>
-	/// compare struct for filtering the priority queue - first is the most earliest request
-	/// </summary>
-	struct CompareJsonByTimestamp
-	{
-		bool operator()(const json& json1, const json& json2) const
-		{
-			Timestamp time1 = json1["timeStamp"];
-			Timestamp time2 = json2["timeStamp"];
-			return time1 > time2;
-		}
-	} typedef CompareJsonByTimestamp;
-	
-
 	// request priority queue (sorted)
 	priority_queue<json, std::vector<json>, CompareJsonByTimestamp> _editRequests;
 	mutex _muRequests;
