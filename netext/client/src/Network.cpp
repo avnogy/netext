@@ -133,7 +133,8 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
 
 ip::udp::endpoint Network::acceptFrontend()
 {
-    ip::udp::endpoint sender_endpoint;
+    ip::udp::endpoint sender_endpoint = ip::udp::endpoint();
+    cout << sock.local_endpoint().port() << endl;
     size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), sender_endpoint);
     return sender_endpoint;
 }

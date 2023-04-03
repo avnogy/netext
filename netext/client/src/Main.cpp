@@ -5,6 +5,7 @@ int main()
 	try
 	{
 		Network::writePortToFile();
+		FileHandler::getInstance().setPath("test.txt");
 		while (true)
 		{
 			Menu::mainMenu();

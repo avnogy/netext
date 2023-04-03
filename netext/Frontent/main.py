@@ -101,6 +101,8 @@ class TextEdit(QTextEdit):
         Sends a notification packet to the backend.
         """
         print(packet)
+        print(backendSock.sendto(packet.encode() , (SERVER_ADDRESS , serverPort)))
+
 
 if __name__ == "__main__":
     
