@@ -131,6 +131,13 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
     return peer;
 }
 
+ip::udp::endpoint Network::acceptFrontend()
+{
+    ip::udp::endpoint sender_endpoint;
+    size_t recv_len = sock.receive_from(boost::asio::buffer(buffer), sender_endpoint);
+    return sender_endpoint;
+}
+
 /// <summary>
 /// test thread to recieve messages, content will be used later for actual recieving.
 /// </summary>
