@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QApplication, QTextEdit
 from diff_match_patch import diff_match_patch
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QFont
+import socket
+
 
 import json
 import time
@@ -9,6 +11,24 @@ import time
 DIFF_INSERT = 1
 DIFF_REMOVE = -1
 TIMER_MILLISECONDS = 1000 * 5
+
+FILE_INSERT_REQUEST = 103
+FILE_REMOVE_REQUEST = 104
+
+SERVER_ADDRESS = "127.0.0.1"
+serverPort = 0
+
+backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+
+def getPortFromFile():
+    """
+        gets the backend port from the file the backend created
+    """
+    with open("port.txt" , "r") as portFile:
+        strPort = portFile.read()
+        print(strPort)
+        serverPort = int(strPort)
 
 class TextEdit(QTextEdit):
     """
@@ -64,13 +84,15 @@ class TextEdit(QTextEdit):
         timestamp = int(time.time())
 
         if op == DIFF_INSERT:
-            log_data = {"op": op,"pos":pos , "data": content}
+            op = FILE_INSERT_REQUEST
+            log_data = {"position":pos , "content": content}
         elif op == DIFF_REMOVE:
-            log_data = {"op": op,"pos":pos , "data": len(content)}
+            op = FILE_REMOVE_REQUEST
+            log_data = {"position":pos , "amount": len(content)}
         else:
             raise ValueError("Error: Invalid operation type.")
 
-        log_obj = {"timestamp": timestamp, "data": log_data}
+        log_obj = {"requestCode": op , "timeStamp": timestamp, "data": log_data}
         return json.dumps(log_obj)
 
 
@@ -81,10 +103,13 @@ class TextEdit(QTextEdit):
         print(packet)
 
 if __name__ == "__main__":
+    
+    getPortFromFile()
+
     app = QApplication([])
+
     textedit = TextEdit()
-
     textedit.setGeometry(100, 100, 400, 200)
-
     textedit.show()
+
     app.exec_()

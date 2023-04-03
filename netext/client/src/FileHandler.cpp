@@ -236,8 +236,6 @@ void FileHandler::removeFromFile()
 /// </summary>
 void FileHandler::handleRequests()
 {
-	// NEXT PART: ADD LOOP AS AN INFINITE LOOP THREAD
-
 	while (true)
 	{
 		unique_lock<mutex> lck(_muRequests);
