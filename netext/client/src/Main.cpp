@@ -6,6 +6,8 @@ int main()
 	{
 		Network::writePortToFile();
 		FileHandler::getInstance().setPath("test.txt");
+		boost::thread fileHandlerTh(&FileHandler::handleRequests , &FileHandler::getInstance());
+
 		while (true)
 		{
 			Menu::mainMenu();
