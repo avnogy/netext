@@ -18,6 +18,8 @@ FILE_REMOVE_REQUEST = 104
 SERVER_ADDRESS = "127.0.0.1"
 serverPort = 0
 
+CONNECTION_MSG = "Found Port!"
+
 backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 
@@ -107,6 +109,8 @@ class TextEdit(QTextEdit):
 if __name__ == "__main__":
     
     serverPort = getPortFromFile()
+    backendSock.sendto(CONNECTION_MSG.encode() , (SERVER_ADDRESS , serverPort))
+
 
     app = QApplication([])
 

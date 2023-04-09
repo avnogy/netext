@@ -16,7 +16,7 @@ public:
 	void writeToFile(string content);
 	void createFile();
 	void setPath(string path);
-
+	void handleRequests();
 	void insertRequest(json request);
 
 	static FileHandler& getInstance()
@@ -37,7 +37,7 @@ private:
 	void insertIntoFile();
 	void removeFromFile();
 
-	void handleRequests();
+	
 
 	// helper functions
 	void insert(const int location, const string content);

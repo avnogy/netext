@@ -6,6 +6,7 @@ FileHandler::FileHandler()
 
 FileHandler::~FileHandler()
 {
+
 }
 
 /// <summary>
@@ -110,6 +111,7 @@ void FileHandler::writeToFile(string content)
 void FileHandler::setPath(string path)
 {
 	_path = path;
+	this->createFile();
 }
 
 /// <summary>
@@ -118,15 +120,8 @@ void FileHandler::setPath(string path)
 /// <param name="path"></param>
 void FileHandler::createFile()
 {
-	if (!boost::filesystem::exists(_path))
-	{
-		boost::filesystem::ofstream file(_path);
-		file.close();
-	}
-	else
-	{
-		cout << "File with this path already exists!" << endl;
-	}
+	boost::filesystem::ofstream file(_path , std::ofstream::out | std::ofstream::trunc);
+	file.close();
 }
 
 /// <summary>
@@ -305,7 +300,7 @@ bool FileHandler::validPosition(const int position, const int fileSize)
 /// <returns></returns>
 bool FileHandler::validRemoveAmount(const int position, const int amount, const int fileSize)
 {
-	return (amount > 0 && amount <= fileSize - position);
+	return (amount > 0 && amount <= fileSize - position + 1);
 }
 
 /// <summary>
