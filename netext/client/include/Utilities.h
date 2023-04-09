@@ -2,7 +2,6 @@
 
 #ifndef UTILITIES_H
 #define UTILITIES_H
-
 #include <string>
 #include <iostream>
 #include <format>
@@ -20,13 +19,13 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
+#include <map>
 
 #include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/asio.hpp>
 #include "json.hpp"
-
 
 #define BUFSIZE 1024
 #define SERVER_IP "18.196.140.61"
@@ -39,34 +38,44 @@
 
 using namespace boost::asio;
 using json = nlohmann::json;
+using thread = boost::thread;
 using std::string;
 using std::cin;
 using std::cout;
 using std::cerr;
 using std::vector;
+using std::queue;
 using std::endl;
 using std::to_string;
 using std::priority_queue;
 using std::mutex;
 using std::condition_variable;
 using std::unique_lock;
-
+using std::lock_guard;
+using std::runtime_error;
 typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
 
-enum RequestCode {
-	CREATE_SESSION_REQUEST = 100, JOIN_SESSION_REQUEST, DELETE_SESSION_REQUEST , FILE_INSERT_REQUEST , FILE_REMOVE_REQUEST
-};
+enum struct Code {
+	//requests
+	CREATE_SESSION_REQUEST = 100,
+	JOIN_SESSION_REQUEST,
+	DELETE_SESSION_REQUEST,
+	FILE_INSERT_REQUEST,
+	FILE_REMOVE_REQUEST,
+	FRONTEND_SESSION_REQUEST,
 
-enum ResponseCode {
-	ERROR_RESPONSE = 200 ,CREATE_SESSION_RESPONSE, JOIN_SESSION_RESPONSE, DELETE_SESSION_RESPONSE, PEER_INFO_RESPONSE
+	//responses
+	ERROR_RESPONSE = 200,
+	CREATE_SESSION_RESPONSE,
+	JOIN_SESSION_RESPONSE,
+	DELETE_SESSION_RESPONSE,
+	PEER_INFO_RESPONSE
 };
-
 
 int getInt();
 string getPath();
-
 
 /// <summary>
 /// compare struct for filtering the priority queue - first is the most earliest request
@@ -81,13 +90,15 @@ struct CompareJsonByTimestamp
 	}
 } typedef CompareJsonByTimestamp;
 
+struct UdpPacket;
+class UdpPacketQueue;
+
+#include "include/UdpHandler.h"
 #include "include/FileHandler.h"
 #include "Notifier.h"
-#include "MyException.h"
 #include "PeerClient.h"
 #include "PeerServer.h"
 #include "Network.h"
 #include "Menu.h"
-
 
 #endif // !UTILITIES_H
