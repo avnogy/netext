@@ -6,6 +6,7 @@ int main()
 	{
 		Network::writePortToFile();
 		FileHandler::getInstance().setPath("test.txt");
+		thread receiver_thread(UdpReceiverThread);
 		while (true)
 		{
 			Menu::mainMenu();
@@ -15,6 +16,5 @@ int main()
 	catch (std::exception& e)
 	{
 		std::cout << "Error: " << e.what() << std::endl;
-		
 	}
 }
