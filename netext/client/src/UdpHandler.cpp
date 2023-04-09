@@ -1,0 +1,109 @@
+#include "include/UdpHandler.h"
+
+void UdpPacketQueue::Push(UdpPacket packet)
+{
+	lock_guard<mutex> lock(_mutex);
+	_queue.push(packet);
+	_cv.notify_all();
+}
+
+UdpPacket UdpPacketQueue::PopForRequirements(Code type)
+{
+	while (true)
+	{
+		try
+		{
+			unique_lock<mutex> lock(_mutex);
+			_cv.wait(lock, [this, type] {
+				return !_queue.empty() &&
+					_queue.front().type == type;
+				});
+			UdpPacket packet = _queue.front();
+			_queue.pop();
+			_cv.notify_all();
+			return packet;
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Caught " << e.what() << endl;
+		}
+	}
+}
+
+UdpPacket UdpPacketQueue::PopForRequirements(const Code type, ip::udp::endpoint endpoint)
+{
+	while (true)
+	{
+		try
+		{
+			unique_lock<mutex> lock(_mutex);
+			_cv.wait(lock, [this, type, endpoint] {
+				return !_queue.empty() &&
+					_queue.front().type == type &&
+					_queue.front().endpoint == endpoint; });
+			UdpPacket packet = _queue.front();
+			_queue.pop();
+			_cv.notify_all();
+			return packet;
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Caught " << e.what() << endl;
+		}
+	}
+}
+
+UdpPacketQueue::UdpPacketQueue() { }
+UdpPacketQueue::~UdpPacketQueue() { }
+
+void UdpReceiverThread()
+{
+	while (true)
+	{
+		try
+		{
+			char buffer[BUFSIZE];
+			ip::udp::endpoint sender_endpoint;
+			size_t num_bytes_received = Network::sock.receive_from(
+				boost::asio::buffer(buffer), sender_endpoint);
+
+			UdpPacket packet = deserialize(buffer, num_bytes_received);
+			packet.endpoint = sender_endpoint;
+			UdpPacketQueue::getInstance().Push(packet);
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Caught " << e.what() << endl;
+		}
+	}
+}
+
+UdpPacket deserialize(char buffer[], const size_t recv_len)
+{
+	buffer[recv_len] = '\0';
+	try
+	{
+		if (recv_len <= 0)
+		{
+			throw runtime_error("Packet is empty");
+		}
+
+		json parsed = json::parse(buffer);
+
+		UdpPacket result;
+
+		result.type = parsed["code"];
+		result.timestamp = parsed["time"];
+		result.data = parsed["data"];
+
+		return result;
+	}
+	catch (const std::exception&)
+	{
+		std::ostringstream message;
+		message << "Error while handling information, Couldnt parse message." << endl;
+		try { message << "data: " << string(buffer) << endl; }
+		catch (const std::exception&) { message << "Error while printing buffer." << endl; }
+		throw runtime_error(message.str());
+	}
+}
