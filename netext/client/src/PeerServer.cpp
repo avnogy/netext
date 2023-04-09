@@ -5,21 +5,19 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
-	
 	ip::udp::endpoint frontendEndpoint = Network::acceptFrontend();
+
 	boost::thread frontendThread(boost::bind(&PeerServer::session, frontendEndpoint));
 	frontendThread.join();
-	/*
+	
 	cout << "waiting for connections.." << endl;
-	json peerInfo = Network::getPeerInfo();
-	std::this_thread::sleep_for(chrono::milliseconds(5000));
-	ip::udp::endpoint sock = Network::punchHole(peerInfo["data"]);
-	boost::thread th(boost::bind(&PeerServer::session, sock));
-	*/
+	UdpPacket peerInfo = Network::getPeerInfo();
+	ip::udp::endpoint sock = Network::punchHole(peerInfo.data);
+	thread th(boost::bind(&PeerServer::session, sock));
 }
 
 /// <summary>
-/// gets information from user and creates a session. 
+/// gets information from user and creates a session.
 /// </summary>
 void PeerServer::createSession()
 {
@@ -31,8 +29,7 @@ void PeerServer::createSession()
 	jsonData["name"] = name;
 	jsonData["localIp"] = Network::getLocalIP();
 
-
-	string key = Network::createSession(Network::serializeRequest(CREATE_SESSION_REQUEST, time(TIME_NOW), jsonData));
+	string key = Network::createSession(Network::serializeRequest(Code::CREATE_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
 	cout << "key: " << key << endl;
 
@@ -49,7 +46,7 @@ void PeerServer::deleteSession()
 	cin >> ch;
 	cin.clear();
 	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	if ( ch == 'Y' || ch == 'y')
+	if (ch == 'Y' || ch == 'y')
 	{
 		json jsonData;
 		string key = "";
@@ -57,9 +54,15 @@ void PeerServer::deleteSession()
 		cout << "Session Key: ";
 		cin >> key;
 		jsonData["key"] = key;
-
-		Network::deleteSession(Network::serializeRequest(DELETE_SESSION_REQUEST, time(TIME_NOW), jsonData));
-		//tell threads to finish
+		try
+		{
+			Network::deleteSession(Network::serializeRequest(Code::DELETE_SESSION_REQUEST, time(TIME_NOW), jsonData));
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Error while deleting session:" << endl << e.what();
+		}
+		//TODO: tell threads to finish
 	}
 	else
 	{
@@ -80,12 +83,11 @@ void PeerServer::session(ip::udp::endpoint peer)
 		//// TODO:
 		//	 remove the sender thread and create a handler function.
 
-
 		// Creating a sender thread
-		//boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
+		//thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
 		// Creating a receiver thread
-		boost::thread receiver_thread(boost::bind(&PeerServer::handleRequests , boost::ref(Network::sock)));
+		thread receiver_thread(boost::bind(&PeerServer::handleRequests, boost::ref(Network::sock)));
 
 		receiver_thread.join();
 
@@ -114,6 +116,5 @@ void PeerServer::handleRequests(ip::udp::socket& sock)
 		{
 			cout << "Error: " << e.what() << endl;
 		}
-		
 	}
 }

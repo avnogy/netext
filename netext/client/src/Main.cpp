@@ -6,7 +6,8 @@ int main()
 	{
 		Network::writePortToFile();
 		FileHandler::getInstance().setPath("test.txt");
-		boost::thread fileHandlerTh(&FileHandler::handleRequests , &FileHandler::getInstance());
+		thread fileHandlerTh(&FileHandler::handleRequests , &FileHandler::getInstance());
+		thread receiver_thread(UdpReceiverThread);
 
 		while (true)
 		{
@@ -17,6 +18,5 @@ int main()
 	catch (std::exception& e)
 	{
 		std::cout << "Error: " << e.what() << std::endl;
-		
 	}
 }

@@ -94,7 +94,7 @@ class TextEdit(QTextEdit):
         else:
             raise ValueError("Error: Invalid operation type.")
 
-        log_obj = {"requestCode": op , "timeStamp": timestamp, "data": log_data}
+        log_obj = {"code": op , "time": timestamp, "data": log_data}
         return json.dumps(log_obj)
 
 

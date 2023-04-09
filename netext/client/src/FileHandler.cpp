@@ -2,14 +2,12 @@
 
 FileHandler::FileHandler()
 {
-	
 }
 
 FileHandler::~FileHandler()
 {
 
 }
-
 
 /// <summary>
 /// function runs menu to the user
@@ -31,27 +29,26 @@ void FileHandler::Menu()
 			}
 		}
 		_path = getPath();
-			switch (option)
-			{
-				case 1:
-					createFile();
-					break;
-				case 2:
-					deleteFile();
-					break;
-				case 3:
-					insertIntoFile();
-					break;
-				case 4:
-					removeFromFile();
-					break;
-				default:
-					break;
-			}
+		switch (option)
+		{
+		case 1:
+			createFile();
+			break;
+		case 2:
+			deleteFile();
+			break;
+		case 3:
+			insertIntoFile();
+			break;
+		case 4:
+			removeFromFile();
+			break;
+		default:
+			break;
+		}
 		option = 0;
 	}
 }
-
 
 /// <summary>
 /// function inserting request into the queue
@@ -74,22 +71,22 @@ void FileHandler::test()
 
 	FileHandler::getInstance().setPath("test.txt");
 
-	r["requestCode"] = FILE_INSERT_REQUEST;
+	r["requestCode"] = Code::FILE_INSERT_REQUEST;
 	r["timeStamp"] = time;
-	r["data"] = { {"position" , 0} , {"content" , "Hello"}};
+	r["data"] = { {"position" , 0} , {"content" , "Hello"} };
 
 	Sleep(2000);
 
 	time = std::time(nullptr);
-	r2["requestCode"] = FILE_REMOVE_REQUEST;
+	r2["requestCode"] = Code::FILE_REMOVE_REQUEST;
 	r2["timeStamp"] = time;
-	r2["data"] = { {"position" , 1} , {"amount" , 1}};
+	r2["data"] = { {"position" , 1} , {"amount" , 1} };
 
 	Sleep(2000);
 
-	r3["requestCode"] = FILE_INSERT_REQUEST;
+	r3["requestCode"] = Code::FILE_INSERT_REQUEST;
 	r3["timeStamp"] = time;
-	r3["data"] = { {"position" ,4} , {"content" , " My name is yahel. :0"}};
+	r3["data"] = { {"position" ,4} , {"content" , " My name is yahel. :0"} };
 
 	insertRequest(r3);
 	insertRequest(r2);
@@ -117,9 +114,8 @@ void FileHandler::setPath(string path)
 	this->createFile();
 }
 
-
 /// <summary>
-/// function creates a file 
+/// function creates a file
 /// </summary>
 /// <param name="path"></param>
 void FileHandler::createFile()
@@ -143,10 +139,6 @@ void FileHandler::deleteFile()
 		cout << "File with this path does not exist!";
 	}
 }
-
-
-
-
 
 /// <summary>
 /// function inserts data into existing file (appending)
@@ -174,7 +166,6 @@ void FileHandler::insertIntoFile()
 	insert(position, data);
 }
 
-
 /// <summary>
 /// function removing data from a file
 /// </summary>
@@ -197,7 +188,7 @@ void FileHandler::removeFromFile()
 	{
 		cout << "Enter Position: ";
 		position = getInt();
-		if (validPosition(position , fileSize))
+		if (validPosition(position, fileSize))
 		{
 			flag = true;
 		}
@@ -207,12 +198,12 @@ void FileHandler::removeFromFile()
 		}
 	}
 	flag = false;
-	
+
 	while (!flag)
 	{
 		cout << "Enter Amount: ";
 		amount = getInt();
-		if (validRemoveAmount(position,amount ,fileSize))
+		if (validRemoveAmount(position, amount, fileSize))
 		{
 			flag = true;
 		}
@@ -223,7 +214,6 @@ void FileHandler::removeFromFile()
 	}
 	remove(position, amount);
 }
-
 
 /// <summary>
 /// functuon handling requests from the queue (thread)
@@ -237,40 +227,34 @@ void FileHandler::handleRequests()
 		{
 			_cvRequests.wait(lck);
 		}
-		
-		
+
 		const json request = _editRequests.top();
 		Notifier::getInstance().insert(request);
 		_editRequests.pop();
-		RequestCode id = (RequestCode)request["requestCode"];
+		Code id = (Code)request["requestCode"];
 		json data = request["data"];
 		try
 		{
 			switch (id)
 			{
-				case FILE_INSERT_REQUEST:
+			case Code::FILE_INSERT_REQUEST:
 
-					insert(data["position"], data["content"]);
-					break;
+				insert(data["position"], data["content"]);
+				break;
 
-				case FILE_REMOVE_REQUEST:
-					remove(data["position"], data["amount"]);
-					break;
-					
-				default:
-					break;
+			case  Code::FILE_REMOVE_REQUEST:
+				remove(data["position"], data["amount"]);
+				break;
+
+			default:
+				break;
 			}
 		}
 		catch (std::exception& e)
 		{
 			cout << "Error: " << e.what() << endl;
 		}
-	
-		
 	}
-		
-
-
 }
 
 /// <summary>
@@ -283,10 +267,9 @@ string FileHandler::readWholeFile()
 	boost::filesystem::fstream file(_path);
 	string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	file.close();
-	
+
 	return data;
 }
-
 
 /// <summary>
 /// function gets file size
@@ -297,19 +280,16 @@ int FileHandler::getFileSize()
 	return boost::filesystem::file_size(_path);
 }
 
-
-
 /// <summary>
 /// function checking if position of the file is valid
 /// </summary>
 /// <param name="position"></param>
 /// <param name="fileSize"></param>
 /// <returns></returns>
-bool FileHandler::validPosition(const int position , const int fileSize)
+bool FileHandler::validPosition(const int position, const int fileSize)
 {
 	return (position <= fileSize && position >= 0);
-} 
-
+}
 
 /// <summary>
 /// function checking if amount of characters to remove is valid
@@ -318,7 +298,7 @@ bool FileHandler::validPosition(const int position , const int fileSize)
 /// <param name="amount"></param>
 /// <param name="fileSize"></param>
 /// <returns></returns>
-bool FileHandler::validRemoveAmount(const int position , const int amount, const int fileSize)
+bool FileHandler::validRemoveAmount(const int position, const int amount, const int fileSize)
 {
 	return (amount > 0 && amount <= fileSize - position + 1);
 }
@@ -329,15 +309,15 @@ bool FileHandler::validRemoveAmount(const int position , const int amount, const
 /// <param name="location"></param>
 /// <param name="content"></param>
 /// <param name="path"></param>
-void FileHandler::insert(const int location , const string content)
+void FileHandler::insert(const int location, const string content)
 {
 	if (!boost::filesystem::exists(_path))
 	{
-		throw MyException("File does not exist");
+		throw runtime_error("File does not exist");
 	}
 	if (!validPosition(location, getFileSize()))
 	{
-		throw MyException("Position is not valid");
+		throw runtime_error("Position is not valid");
 	}
 	string fileData = readWholeFile();
 
@@ -352,7 +332,6 @@ void FileHandler::insert(const int location , const string content)
 	file.close();
 }
 
-
 /// <summary>
 /// remove subfunction
 /// </summary>
@@ -363,15 +342,15 @@ void FileHandler::remove(const int position, const int removeAmount)
 {
 	if (!boost::filesystem::exists(_path))
 	{
-		throw MyException("File does not exist");
+		throw runtime_error("File does not exist");
 	}
 	if (!validPosition(position, getFileSize()))
 	{
-		throw MyException("Position is not valid");
+		throw runtime_error("Position is not valid");
 	}
 	if (!validRemoveAmount(position, removeAmount, getFileSize()))
 	{
-		throw MyException("Remove Amount is not valid");
+		throw runtime_error("Remove Amount is not valid");
 	}
 	string fileData = readWholeFile();
 	fileData.erase(position, removeAmount);

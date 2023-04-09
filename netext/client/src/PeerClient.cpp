@@ -7,15 +7,13 @@ void PeerClient::joinSession()
 {
 	json jsonData;
 	string key = "";
-	
+
 	cout << "Enter Session key: ";
 	cin >> key;
 	jsonData["key"] = key;
 	jsonData["localIp"] = Network::getLocalIP();
 
-	json peerInfo = Network::joinSession(Network::serializeRequest(JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
-
-	std::this_thread::sleep_for(chrono::milliseconds(5000));
+	json peerInfo = Network::joinSession(Network::serializeRequest(Code::JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
 	PeerClient::startHandleRequests(Network::punchHole(peerInfo));
 }
@@ -32,7 +30,6 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 		//// TODO:
 		//	 remove the receiver thread and make the sending work without the menu getting in the way.
 
-		
 		// Creating a sender thread
 		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
 
@@ -45,7 +42,6 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 	}
 	catch (std::exception& e)
 	{
-		cout << "Error: " << e.what() << endl;
-		cout << "Client Disconnected." << endl;
+		cerr << "Client Disconnected." << endl;
 	}
 }
