@@ -98,7 +98,8 @@ void Network::sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer)
 
 bool Network::notify(ip::udp::endpoint recipient, const string message)
 {
-	return sock.send_to(boost::asio::buffer(message), recipient) == message.size();
+	sock.send_to(boost::asio::buffer(message), recipient);
+	return true;
 }
 
 string Network::serializeRequest(const UdpPacket packet)
