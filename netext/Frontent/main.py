@@ -14,11 +14,11 @@ TIMER_MILLISECONDS = 1000 * 3
 
 FILE_INSERT_REQUEST = 103
 FILE_REMOVE_REQUEST = 104
+FRONTEND_SESSION_REQUEST = 105
 
 SERVER_ADDRESS = "127.0.0.1"
 serverPort = 0
 
-CONNECTION_MSG = "Found Port!"
 
 backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
@@ -109,7 +109,10 @@ class TextEdit(QTextEdit):
 if __name__ == "__main__":
     
     serverPort = getPortFromFile()
-    backendSock.sendto(CONNECTION_MSG.encode() , (SERVER_ADDRESS , serverPort))
+    timestamp = int(time.time())
+    obj = {"code": FRONTEND_SESSION_REQUEST , "time": timestamp, "data": "ready"}
+    
+    backendSock.sendto(json.dumps(obj).encode() , (SERVER_ADDRESS , serverPort))
 
 
     app = QApplication([])
