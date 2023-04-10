@@ -8,6 +8,5 @@ class Menu
 public:
 	static void mainMenu();
 	static bool HandleChoice(int choice);
-	enum Choices { CREATE_SESSION = 1, JOIN_SESSION, DELETE_SESSION ,EXIT_MENU};
+	enum Choices { CREATE_SESSION = 1, JOIN_SESSION, DELETE_SESSION, EXIT_MENU };
 };
-

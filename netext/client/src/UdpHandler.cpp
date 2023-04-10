@@ -30,6 +30,32 @@ UdpPacket UdpPacketQueue::PopForRequirements(Code type)
 	}
 }
 
+UdpPacket UdpPacketQueue::PopForRequirements(const Code type1, const Code type2)
+{
+	while (true)
+	{
+		try
+		{
+			unique_lock<mutex> lock(_mutex);
+			_cv.wait(lock, [this, type1, type2] {
+				return
+					!_queue.empty() && (
+						_queue.front().type == type1 ||
+						_queue.front().type == type2
+						);
+				});
+			UdpPacket packet = _queue.front();
+			_queue.pop();
+			_cv.notify_all();
+			return packet;
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Caught " << e.what() << endl;
+		}
+	}
+}
+
 UdpPacket UdpPacketQueue::PopForRequirements(const Code type, ip::udp::endpoint endpoint)
 {
 	while (true)
@@ -75,6 +101,10 @@ void UdpReceiverThread()
 		{
 			cerr << "Caught " << e.what() << endl;
 		}
+		catch (const std::exception&)
+		{
+			cerr << endl << "aha" << endl;
+		}
 	}
 }
 
@@ -83,6 +113,7 @@ UdpPacket deserialize(char buffer[], const size_t recv_len)
 	buffer[recv_len] = '\0';
 	try
 	{
+		cout << string(buffer) << endl;
 		if (recv_len <= 0)
 		{
 			throw runtime_error("Packet is empty");
@@ -95,7 +126,6 @@ UdpPacket deserialize(char buffer[], const size_t recv_len)
 		result.type = parsed["code"];
 		result.timestamp = parsed["time"];
 		result.data = parsed["data"];
-
 		return result;
 	}
 	catch (const std::exception&)

@@ -1,13 +1,6 @@
 #pragma once
 #include "Utilities.h"
 
-struct UdpPacket {
-	ip::udp::endpoint endpoint;
-	Timestamp timestamp{};
-	Code type{};
-	json data;
-};
-
 class UdpPacketQueue
 {
 public:
@@ -19,6 +12,7 @@ public:
 	void Push(UdpPacket packet);
 
 	UdpPacket PopForRequirements(const Code type);
+	UdpPacket PopForRequirements(const Code type1, const Code type2);
 	UdpPacket PopForRequirements(const Code type, ip::udp::endpoint);
 
 	UdpPacketQueue(const UdpPacketQueue&) = delete;
