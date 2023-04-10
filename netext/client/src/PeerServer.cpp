@@ -73,41 +73,16 @@ void PeerServer::deleteSession()
 /// <param name="client_sock"></param>
 void PeerServer::session(ip::udp::endpoint peer)
 {
-	cout << "Client accepted!" << endl;
-
 	try
 	{
-		//// TODO:
-		//	 remove the sender thread and create a handler function.
-
-		// Creating a sender thread
-		//thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
-
-		// Creating a receiver thread
-		thread receiver_thread(boost::bind(&PeerServer::handleRequests, boost::ref(Network::sock)));
-
-		receiver_thread.join();
-
-		// TO DO: File Update Requests
+		cout << "Client accepted!" << endl;
+		Notifier::getInstance().addClient(peer);
+		UdpPacketQueue::getInstance().PopForRequirements(Code::CLIENT_LEAVE_REQUEST, peer);
+		Notifier::getInstance().removeClient(peer);
 	}
 	catch (std::exception& e)
 	{
 		cout << "Error: " << e.what() << endl;
 		cout << "Client Disconnected." << endl;
-	}
-}
-
-void PeerServer::handleRequests(ip::udp::socket& sock)
-{
-	while (true)
-	{
-		try
-		{
-			FileHandler::getInstance().insertRequest(UdpPacketQueue::getInstance().PopForRequirements(Code::FILE_INSERT_REQUEST, Code::FILE_REMOVE_REQUEST));
-		}
-		catch (const std::exception& e)
-		{
-			cout << "Error: " << e.what() << endl;
-		}
 	}
 }

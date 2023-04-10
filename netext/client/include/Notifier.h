@@ -15,6 +15,7 @@ public:
 	void insert(const UdpPacket event);
 	bool notify();
 	void addClient(ip::udp::endpoint& client);
+	void removeClient(ip::udp::endpoint& client);
 
 private:
 	Notifier();

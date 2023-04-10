@@ -20,7 +20,17 @@ bool Notifier::notify()
 		unique_lock<mutex> lck(muEvents);
 		while (!events.empty())
 		{
-			const string event = Network::serializeRequest(events.top());
+			UdpPacket eventPacket = events.top();
+			switch (eventPacket.type)
+			{
+			case Code::FILE_INSERT_REQUEST:
+				eventPacket.type = Code::FILE_INSERT_RESPONSE;
+			case Code::FILE_REMOVE_REQUEST:
+				eventPacket.type = Code::FILE_REMOVE_RESPONSE;
+			default:
+				break;
+			}
+			const string event = Network::serializeRequest(eventPacket);
 			events.pop();
 			for (auto& endpoint : clients)
 			{
@@ -40,7 +50,16 @@ bool Notifier::notify()
 
 void Notifier::addClient(ip::udp::endpoint& client)
 {
-	unique_lock<mutex> lck(muEvents);
+	lock_guard<mutex> lck(muEvents);
 	clients.push_back(client);
-	lck.unlock();
+}
+
+void Notifier::removeClient(ip::udp::endpoint& client)
+{
+	lock_guard<mutex> lck(muEvents);
+	auto position = std::find(clients.begin(), clients.end(), client);
+	if (position != clients.end())
+	{
+		clients.erase(position);
+	}
 }

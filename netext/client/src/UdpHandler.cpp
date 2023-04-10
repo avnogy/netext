@@ -95,7 +95,14 @@ void UdpReceiverThread()
 
 			UdpPacket packet = deserialize(buffer, num_bytes_received);
 			packet.endpoint = sender_endpoint;
-			UdpPacketQueue::getInstance().Push(packet);
+			if (packet.type == Code::FILE_INSERT_REQUEST || packet.type == Code::FILE_REMOVE_REQUEST)
+			{
+				FileHandler::getInstance().insertRequest(packet);
+			}
+			else
+			{
+				UdpPacketQueue::getInstance().Push(packet);
+			}
 		}
 		catch (const runtime_error& e)
 		{
