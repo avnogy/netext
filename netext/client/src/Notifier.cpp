@@ -18,7 +18,7 @@ bool Notifier::notify()
 	while (true)
 	{
 		unique_lock<mutex> lck(muEvents);
-		
+
 		if (events.empty())
 		{
 			cvEvents.wait(lck);
@@ -29,8 +29,10 @@ bool Notifier::notify()
 		{
 		case Code::FILE_INSERT_REQUEST:
 			eventPacket.type = Code::FILE_INSERT_RESPONSE;
+			break;
 		case Code::FILE_REMOVE_REQUEST:
 			eventPacket.type = Code::FILE_REMOVE_RESPONSE;
+			break;
 		default:
 			break;
 		}
@@ -42,12 +44,12 @@ bool Notifier::notify()
 			{
 				cout << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
 			}
+			else
 			{
 				cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
 			}
 		}
 		lck.unlock();
-		
 	}
 }
 
