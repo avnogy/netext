@@ -1,9 +1,11 @@
+from turtle import back
+from urllib import request
 from PyQt5.QtWidgets import QApplication, QTextEdit
 from diff_match_patch import diff_match_patch
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QFont
-import socket
-
+from socket import *
+import threading
 
 import json
 import time
@@ -31,13 +33,13 @@ class Code:
     FILE_INSERT_RESPONSE = 205
     FILE_REMOVE_RESPONSE = 206
 
-
-SERVER_ADDRESS = "127.0.0.1"
+AUTO_SRC_PORT = 0
+LOCAL_HOST = "127.0.0.1"
 serverPort = 0
 
 
-backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
+backendSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 def getPortFromFile():
     """
@@ -47,6 +49,50 @@ def getPortFromFile():
         strPort = portFile.read()
         print(strPort)
         return int(strPort)
+
+class ContentHandler:
+
+    def __init__(self):
+        self._content = ""
+    
+    def read_content(self):
+        return self._content
+    
+    def get_content_size(self):
+        return len(self._content)
+    
+    def valid_position(self, position):
+        return position <= self.get_content_size() and position >= 0
+    
+    def valid_remove_amount(self, position, amount):
+        return amount > 0 and amount <= self.get_content_size() - position + 1
+    
+    def insert(self, position, content):
+        if not self.valid_position(position):
+            raise ValueError("Position is not valid")
+        self._content = self._content[:position] + content + self._content[position:]
+    
+    def remove(self, position, remove_amount):
+        if not self.valid_position(position):
+            raise ValueError("Position is not valid")
+        if not self.valid_remove_amount(position, remove_amount):
+            raise ValueError("Remove amount is not valid")
+        self._content = self._content[:position] + self._content[position + remove_amount:]
+
+    def handleRequests(self):
+        while True:
+            msg , addr = backendSock.recvfrom(1024)
+            print("Message Received: " + msg.decode())
+            jsonMsg = json.loads(msg.decode())
+            requestCode = jsonMsg["code"]
+            requestData = jsonMsg["data"]
+
+            if requestCode == Code.FILE_INSERT_REQUEST:
+                self.insert(requestData["position"] , requestData["content"])
+
+            elif requestCode == Code.FILE_REMOVE_REQUEST:
+                self.remove(requestData["position"] , requestData["amount"])
+
 
 class TextEdit(QTextEdit):
     """
@@ -119,17 +165,21 @@ class TextEdit(QTextEdit):
         Sends a notification packet to the backend.
         """
         print(packet)
-        print(backendSock.sendto(packet.encode() , (SERVER_ADDRESS , serverPort)))
+        print(backendSock.sendto(packet.encode() , (LOCAL_HOST , serverPort)))
 
 
 if __name__ == "__main__":
     
+    contentHandler = ContentHandler()
     serverPort = getPortFromFile()
+    backendSock.bind((LOCAL_HOST , AUTO_SRC_PORT))
+
     timestamp = int(time.time())
     obj = {"code": Code.FRONTEND_SESSION_REQUEST , "time": timestamp, "data": "ready"}
     
-    backendSock.sendto(json.dumps(obj).encode() , (SERVER_ADDRESS , serverPort))
+    backendSock.sendto(json.dumps(obj).encode() , (LOCAL_HOST , serverPort))
 
+    requestsThread = threading.Thread(target=contentHandler.handleRequests)
 
     app = QApplication([])
 

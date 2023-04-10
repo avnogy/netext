@@ -18,33 +18,36 @@ bool Notifier::notify()
 	while (true)
 	{
 		unique_lock<mutex> lck(muEvents);
-		while (!events.empty())
+		
+		if (events.empty())
 		{
-			UdpPacket eventPacket = events.top();
-			switch (eventPacket.type)
+			cvEvents.wait(lck);
+		}
+
+		UdpPacket eventPacket = events.top();
+		switch (eventPacket.type)
+		{
+		case Code::FILE_INSERT_REQUEST:
+			eventPacket.type = Code::FILE_INSERT_RESPONSE;
+		case Code::FILE_REMOVE_REQUEST:
+			eventPacket.type = Code::FILE_REMOVE_RESPONSE;
+		default:
+			break;
+		}
+		const string event = Network::serializeRequest(eventPacket);
+		events.pop();
+		for (auto& endpoint : clients)
+		{
+			if (Network::notify(endpoint, event))
 			{
-			case Code::FILE_INSERT_REQUEST:
-				eventPacket.type = Code::FILE_INSERT_RESPONSE;
-			case Code::FILE_REMOVE_REQUEST:
-				eventPacket.type = Code::FILE_REMOVE_RESPONSE;
-			default:
-				break;
+				cout << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
 			}
-			const string event = Network::serializeRequest(eventPacket);
-			events.pop();
-			for (auto& endpoint : clients)
 			{
-				if (Network::notify(endpoint, event))
-				{
-					cout << "notified " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
-				}
-				{
-					cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
-				}
+				cerr << "Error: faild to notify " << endpoint.address().to_string() << ":" << endpoint.port() << endl;
 			}
 		}
 		lck.unlock();
-		cvEvents.wait(lck);
+		
 	}
 }
 

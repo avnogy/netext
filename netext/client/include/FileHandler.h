@@ -8,7 +8,6 @@ class FileHandler
 {
 public:
 
-	void Menu();
 	void writeToFile(string content);
 	void createFile();
 	void setPath(string path);
@@ -28,10 +27,7 @@ private:
 	~FileHandler();
 
 	// menu functions
-
 	void deleteFile();
-	void insertIntoFile();
-	void removeFromFile();
 
 	// helper functions
 	void insert(const int location, const string content);

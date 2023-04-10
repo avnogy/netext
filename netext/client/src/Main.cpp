@@ -6,8 +6,10 @@ int main()
 	{
 		Network::writePortToFile();
 		FileHandler::getInstance().setPath("test.txt");
+		thread notifierTh(&Notifier::notify, &Notifier::getInstance());
 		thread fileHandlerTh(&FileHandler::handleRequests, &FileHandler::getInstance());
 		thread receiver_thread(UdpReceiverThread);
+		
 
 		while (true)
 		{
