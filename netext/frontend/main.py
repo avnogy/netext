@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import QApplication, QTextEdit
 from diff_match_patch import diff_match_patch
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QFont
-from socket import *
+
+
+import socket
 import threading
 
 import json
@@ -84,14 +86,19 @@ class ContentHandler:
             msg , addr = backendSock.recvfrom(1024)
             print("Message Received: " + msg.decode())
             jsonMsg = json.loads(msg.decode())
+
             requestCode = jsonMsg["code"]
             requestData = jsonMsg["data"]
 
-            if requestCode == Code.FILE_INSERT_REQUEST:
+            if requestCode == Code.FILE_INSERT_RESPONSE:
+                print("insert")
                 self.insert(requestData["position"] , requestData["content"])
+                print(self._content)
 
-            elif requestCode == Code.FILE_REMOVE_REQUEST:
+            elif requestCode == Code.FILE_REMOVE_RESPONSE:
+                print("remove")
                 self.remove(requestData["position"] , requestData["amount"])
+                print(self._content)
 
 
 class TextEdit(QTextEdit):
@@ -180,6 +187,7 @@ if __name__ == "__main__":
     backendSock.sendto(json.dumps(obj).encode() , (LOCAL_HOST , serverPort))
 
     requestsThread = threading.Thread(target=contentHandler.handleRequests)
+    requestsThread.start()
 
     app = QApplication([])
 
