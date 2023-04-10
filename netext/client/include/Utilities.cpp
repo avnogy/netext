@@ -6,7 +6,6 @@
 /// <returns></returns>
 int getInt()
 {
-
 	int num = 0;
 	cin >> num;
 	while (!cin.good())
@@ -20,7 +19,6 @@ int getInt()
 		cin >> num;
 	}
 	return num;
-
 }
 
 /// <summary>

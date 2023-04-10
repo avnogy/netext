@@ -3,7 +3,6 @@
 
 #define MINIUM_VALUE 2
 
-
 /// <summary>
 /// class representing a shared key creation using diffie helmen protocol
 /// </summary>

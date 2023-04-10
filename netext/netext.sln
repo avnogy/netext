@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcxproj", "{840424CF-1CAA-4147-AA09-28BD318BCB4F}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Frontend", "Frontent\Frontend.pyproj", "{942E26B6-E246-4FAB-B935-F025D9CD322D}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Frontend", "frontend\Frontend.pyproj", "{942E26B6-E246-4FAB-B935-F025D9CD322D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -44,8 +44,11 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
 
 void Network::acceptFrontend()
 {
-	ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_REQUEST).endpoint;
-	PeerServer::session(frontend);
+	while (true)
+	{
+		ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_REQUEST).endpoint;
+		PeerServer::session(frontend);
+	}
 }
 
 /// <summary>

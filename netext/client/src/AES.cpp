@@ -29,7 +29,7 @@ std::uint32_t AES::rotateWord(std::uint32_t word)
 /// </summary>
 void AES::subBytes()
 {
-	for (int i = 0; i < 16; ++i) 
+	for (int i = 0; i < 16; ++i)
 	{
 		state[i] = kSBox[state[i]];
 	}
@@ -40,7 +40,7 @@ void AES::subBytes()
 /// </summary>
 void AES::invSubBytes()
 {
-	for (int i = 0; i < 16; ++i) 
+	for (int i = 0; i < 16; ++i)
 	{
 		state[i] = kInvSBox[state[i]];
 	}
@@ -49,28 +49,26 @@ void AES::invSubBytes()
 /// <summary>
 ///  function shifts the rows of the state array by a certain number of bytes to the LEFT (with the first row remaining unchanged). (encrypt)
 /// </summary>
-void AES::shiftRows() 
+void AES::shiftRows()
 {
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
 		// Shift the row by i bytes to the left.
 		std::rotate(state.begin() + i * 4, state.begin() + i * 4 + i, state.begin() + i * 4 + 4);
 	}
 }
 
-
 /// <summary>
 /// function shifts the rows of the state array by a certain number of bytes to the RIGHT (with the first row remaining unchanged). (decrypt)
 /// </summary>
-void AES::invShiftRows() 
+void AES::invShiftRows()
 {
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
 		// Shift the row by i bytes to the right.
 		std::rotate(state.begin() + i * 4, state.begin() + i * 4 + 4 - i, state.begin() + i * 4 + 4);
 	}
 }
-
 
 /// <summary>
 /// function applies a linear transformation to the columns of the state array, effectively mixing their values. (encrypt)
@@ -78,9 +76,9 @@ void AES::invShiftRows()
 void AES::mixColumns()
 {
 	std::array<std::uint8_t, 4> column;
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
-		for (int j = 0; j < 4; ++j) 
+		for (int j = 0; j < 4; ++j)
 		{
 			column[j] = state[i + j * 4];
 		}
@@ -94,12 +92,12 @@ void AES::mixColumns()
 /// <summary>
 /// function applies the inverse of the linear transformation of the encryption. (decrypt)
 /// </summary>
-void AES::invMixColumns() 
+void AES::invMixColumns()
 {
 	std::array<std::uint8_t, 4> column;
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
-		for (int j = 0; j < 4; ++j) 
+		for (int j = 0; j < 4; ++j)
 		{
 			column[j] = state[i + j * 4];
 		}
@@ -111,29 +109,28 @@ void AES::invMixColumns()
 }
 
 // Performs the AddRoundKey step.
-void AES::addRoundKey(int round) 
+void AES::addRoundKey(int round)
 {
 	for (int i = 0; i < 16; ++i) {
 		state[i] ^= key_schedule[i + round * 16];
 	}
 }
 
-
 /// <summary>
 /// function takes the initial key and expands it into a key schedule, which is used in the subsequent encryption and decryption rounds.
 /// </summary>
 /// <param name="key"></param>
-void AES::keyExpansion(const std::array<std::uint8_t, 16>& key) 
+void AES::keyExpansion(const std::array<std::uint8_t, 16>& key)
 {
-	for (int i = 0; i < 16; ++i) 
+	for (int i = 0; i < 16; ++i)
 	{
 		key_schedule[i] = key[i];
 	}
 	std::uint32_t temp;
-	for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i) 
+	for (int i = 4; i < 4 * (K_NUM_ROUNDS + 1); ++i)
 	{
 		temp = key_schedule[i - 1];
-		if (i % 4 == 0) 
+		if (i % 4 == 0)
 		{
 			temp = rotateWord(temp) ^ kRoundConstant[i / 4] ^ (kSBox[temp & 0xFF] << 24);
 		}
@@ -141,17 +138,15 @@ void AES::keyExpansion(const std::array<std::uint8_t, 16>& key)
 	}
 }
 
-
 /// <summary>
 /// Encrypts a block of 16 bytes of plaintext using the given key.
 /// </summary>
 /// <param name="plaintext"></param>
 /// <returns></returns>
 std::array<std::uint8_t, 16> AES::encrypt(const std::array<std::uint8_t, 16>& plaintext) {
-
 	state = plaintext;
 	addRoundKey(0);
-	for (int round = 1; round <= K_NUM_ROUNDS; ++round) 
+	for (int round = 1; round <= K_NUM_ROUNDS; ++round)
 	{
 		subBytes();
 		shiftRows();
@@ -167,10 +162,9 @@ std::array<std::uint8_t, 16> AES::encrypt(const std::array<std::uint8_t, 16>& pl
 /// <param name="ciphertext"></param>
 /// <returns></returns>
 std::array<std::uint8_t, 16> AES::decrypt(const std::array<std::uint8_t, 16>& ciphertext) {
-
 	state = ciphertext;
 	addRoundKey(K_NUM_ROUNDS);
-	for (int round = K_NUM_ROUNDS - 1; round >= 0; --round) 
+	for (int round = K_NUM_ROUNDS - 1; round >= 0; --round)
 	{
 		invMixColumns();
 		invShiftRows();
