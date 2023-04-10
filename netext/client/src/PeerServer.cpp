@@ -5,11 +5,8 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
-	ip::udp::endpoint frontendEndpoint = Network::acceptFrontend();
+	thread frontendThread(Network::acceptFrontend);
 
-	boost::thread frontendThread(boost::bind(&PeerServer::session, frontendEndpoint));
-	frontendThread.join();
-	
 	cout << "waiting for connections.." << endl;
 	UdpPacket peerInfo = Network::getPeerInfo();
 	ip::udp::endpoint sock = Network::punchHole(peerInfo.data);
@@ -102,15 +99,11 @@ void PeerServer::session(ip::udp::endpoint peer)
 
 void PeerServer::handleRequests(ip::udp::socket& sock)
 {
-	string msg = "";
 	while (true)
 	{
 		try
 		{
-			msg = Network::receiveMessage(sock);
-			cout << "Peer's Request: " << msg << endl;
-
-			FileHandler::getInstance().insertRequest(json::parse(msg));
+			FileHandler::getInstance().insertRequest(UdpPacketQueue::getInstance().PopForRequirements(Code::FILE_INSERT_REQUEST, Code::FILE_REMOVE_REQUEST));
 		}
 		catch (const std::exception& e)
 		{

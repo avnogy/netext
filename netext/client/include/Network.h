@@ -9,13 +9,14 @@ public:
 	static UdpPacket getPeerInfo();
 	static void printPeerInfo(const json peerInfo);
 	static ip::udp::endpoint punchHole(const json peerInfo);
-	static ip::udp::endpoint acceptFrontend();
+	static void acceptFrontend();
 
 	static string receiveMessage(ip::udp::socket& sock);
 	static void sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer);
 
 	static bool notify(ip::udp::endpoint recipient, const string message);
 
+	static string serializeRequest(const UdpPacket);
 	static string serializeRequest(const Code code, const Timestamp time, const json requestData);
 	static string getLocalIP();
 

@@ -77,21 +77,22 @@ enum struct Code {
 int getInt();
 string getPath();
 
-/// <summary>
-/// compare struct for filtering the priority queue - first is the most earliest request
-/// </summary>
-struct CompareJsonByTimestamp
-{
-	bool operator()(const json& json1, const json& json2) const
-	{
-		Timestamp time1 = json1["timeStamp"];
-		Timestamp time2 = json2["timeStamp"];
-		return time1 > time2;
-	}
-} typedef CompareJsonByTimestamp;
+struct UdpPacket {
+	ip::udp::endpoint endpoint;
+	Timestamp timestamp{};
+	Code type{};
+	json data;
+};
 
-struct UdpPacket;
-class UdpPacketQueue;
+struct CompareUdpPacket
+{
+	bool operator()(const UdpPacket& left, const UdpPacket& right) const
+	{
+		Timestamp timeL = left.timestamp;
+		Timestamp timeR = right.timestamp;
+		return timeL > timeR;
+	}
+} typedef CompareUdpPacket;
 
 #include "include/UdpHandler.h"
 #include "include/FileHandler.h"

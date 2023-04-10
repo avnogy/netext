@@ -10,10 +10,8 @@ public:
 	static void createSession();
 	static void deleteSession();
 	static void session(ip::udp::endpoint peer);
-	
 
 private:
 	static void acceptClients();
 	static void handleRequests(ip::udp::socket& sock);
-	
 };

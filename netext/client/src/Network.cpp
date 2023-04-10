@@ -42,9 +42,10 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
 	return peer;
 }
 
-ip::udp::endpoint Network::acceptFrontend()
+void Network::acceptFrontend()
 {
-	return UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_REQUEST).endpoint;
+	ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_REQUEST).endpoint;
+	PeerServer::session(frontend);
 }
 
 /// <summary>
@@ -95,6 +96,17 @@ void Network::sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer)
 bool Network::notify(ip::udp::endpoint recipient, const string message)
 {
 	return sock.send_to(boost::asio::buffer(message), recipient) == message.size();
+}
+
+string Network::serializeRequest(const UdpPacket packet)
+{
+	json requestJson;
+
+	requestJson["code"] = packet.type;
+	requestJson["time"] = packet.timestamp;
+	requestJson["data"] = packet.data;
+
+	return requestJson.dump();
 }
 
 string Network::serializeRequest(const Code code, const Timestamp time, const json requestData)

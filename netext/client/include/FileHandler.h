@@ -1,23 +1,19 @@
 #pragma once
-
 #include "Utilities.h"
 
-#define SHOW_MENU "Menu:\n1. Create File\n2. Delete File\n3. Insert Into File\n4. Remove From File\n5. Exit"
-
 /// <summary>
-/// class represents a simple file api for file functionallities
+/// class represents a simple file api for file functionalities
 /// </summary>
 class FileHandler
 {
 public:
 
 	void Menu();
-	void test();
 	void writeToFile(string content);
 	void createFile();
 	void setPath(string path);
 	void handleRequests();
-	void insertRequest(json request);
+	void insertRequest(UdpPacket request);
 
 	static FileHandler& getInstance()
 	{
@@ -32,12 +28,10 @@ private:
 	~FileHandler();
 
 	// menu functions
-	
+
 	void deleteFile();
 	void insertIntoFile();
 	void removeFromFile();
-
-	
 
 	// helper functions
 	void insert(const int location, const string content);
@@ -50,10 +44,8 @@ private:
 	bool validRemoveAmount(const int position, const int amount, const int fileSize);
 
 	// request priority queue (sorted)
-	priority_queue<json, std::vector<json>, CompareJsonByTimestamp> _editRequests;
+	priority_queue<UdpPacket, vector<UdpPacket>, CompareUdpPacket> _editRequests;
 	mutex _muRequests;
 	condition_variable _cvRequests;
 	string _path;
-
-	
 };

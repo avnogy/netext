@@ -1,12 +1,10 @@
 #include "include/Notifier.h"
 
-
 Notifier::Notifier()
 {
-
 }
 
-void Notifier::insert(const json event)
+void Notifier::insert(const UdpPacket event)
 {
 	unique_lock<mutex> lck(muEvents);
 	events.push(event);
@@ -22,7 +20,7 @@ bool Notifier::notify()
 		unique_lock<mutex> lck(muEvents);
 		while (!events.empty())
 		{
-			const string event = events.top().dump();
+			const string event = Network::serializeRequest(events.top());
 			events.pop();
 			for (auto& endpoint : clients)
 			{
@@ -38,7 +36,6 @@ bool Notifier::notify()
 		lck.unlock();
 		cvEvents.wait(lck);
 	}
-
 }
 
 void Notifier::addClient(ip::udp::endpoint& client)
@@ -46,6 +43,4 @@ void Notifier::addClient(ip::udp::endpoint& client)
 	unique_lock<mutex> lck(muEvents);
 	clients.push_back(client);
 	lck.unlock();
-
-	
 }

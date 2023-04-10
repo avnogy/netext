@@ -6,96 +6,18 @@ FileHandler::FileHandler()
 
 FileHandler::~FileHandler()
 {
-
-}
-
-/// <summary>
-/// function runs menu to the user
-/// </summary>
-void FileHandler::Menu()
-{
-	int option = 0;
-	while (option != 5)
-	{
-		cout << SHOW_MENU << endl;
-		while (option < 1 || option > 5)
-		{
-			cout << "Select Option: ";
-			option = getInt();
-
-			if (option < 1 || option > 5)
-			{
-				cout << "Invalid option chosen , type a existed option!" << endl;
-			}
-		}
-		_path = getPath();
-		switch (option)
-		{
-		case 1:
-			createFile();
-			break;
-		case 2:
-			deleteFile();
-			break;
-		case 3:
-			insertIntoFile();
-			break;
-		case 4:
-			removeFromFile();
-			break;
-		default:
-			break;
-		}
-		option = 0;
-	}
 }
 
 /// <summary>
 /// function inserting request into the queue
 /// </summary>
 /// <param name="request"></param>
-void FileHandler::insertRequest(json request)
+void FileHandler::insertRequest(UdpPacket request)
 {
 	unique_lock<mutex> lck(_muRequests);
 	_editRequests.push(request);
 	lck.unlock();
 	_cvRequests.notify_all();
-}
-
-void FileHandler::test()
-{
-	std::time_t time = std::time(nullptr);
-	json r;
-	json r2;
-	json r3;
-
-	FileHandler::getInstance().setPath("test.txt");
-
-	r["requestCode"] = Code::FILE_INSERT_REQUEST;
-	r["timeStamp"] = time;
-	r["data"] = { {"position" , 0} , {"content" , "Hello"} };
-
-	Sleep(2000);
-
-	time = std::time(nullptr);
-	r2["requestCode"] = Code::FILE_REMOVE_REQUEST;
-	r2["timeStamp"] = time;
-	r2["data"] = { {"position" , 1} , {"amount" , 1} };
-
-	Sleep(2000);
-
-	r3["requestCode"] = Code::FILE_INSERT_REQUEST;
-	r3["timeStamp"] = time;
-	r3["data"] = { {"position" ,4} , {"content" , " My name is yahel. :0"} };
-
-	insertRequest(r3);
-	insertRequest(r2);
-	insertRequest(r);
-
-	while (!_editRequests.empty())
-	{
-		handleRequests();
-	}
 }
 
 void FileHandler::writeToFile(string content)
@@ -120,7 +42,7 @@ void FileHandler::setPath(string path)
 /// <param name="path"></param>
 void FileHandler::createFile()
 {
-	boost::filesystem::ofstream file(_path , std::ofstream::out | std::ofstream::trunc);
+	boost::filesystem::ofstream file(_path, std::ofstream::out | std::ofstream::trunc);
 	file.close();
 }
 
@@ -228,22 +150,21 @@ void FileHandler::handleRequests()
 			_cvRequests.wait(lck);
 		}
 
-		const json request = _editRequests.top();
+		const UdpPacket request = _editRequests.top();
 		Notifier::getInstance().insert(request);
 		_editRequests.pop();
-		Code id = (Code)request["requestCode"];
-		json data = request["data"];
+		json data = request.data;
 		try
 		{
-			switch (id)
+			switch (request.type)
 			{
 			case Code::FILE_INSERT_REQUEST:
 
-				insert(data["position"], data["content"]);
+				insert(request.data["position"], request.data["content"]);
 				break;
 
 			case  Code::FILE_REMOVE_REQUEST:
-				remove(data["position"], data["amount"]);
+				remove(request.data["position"], request.data["amount"]);
 				break;
 
 			default:
