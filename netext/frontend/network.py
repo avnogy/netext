@@ -7,7 +7,9 @@ SERVER_PORT = 0
 SERVER_ENDPOINT = (SERVER_ADDRESS , SERVER_PORT)
 
 backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-serverPort = utils.getPortFromFile()
+backendSock.bind(SERVER_ENDPOINT)
+
+SERVER_ENDPOINT = (SERVER_ADDRESS , utils.getPortFromFile())
 
 def greet_backend():
     backendSock.sendto(utils.serialize(Code.FRONTEND_SESSION_REQUEST,"ready").encode() ,SERVER_ENDPOINT)

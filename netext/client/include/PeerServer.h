@@ -13,5 +13,4 @@ public:
 
 private:
 	static void acceptClients();
-	static void handleRequests(ip::udp::socket& sock);
 };
