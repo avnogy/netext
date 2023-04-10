@@ -12,9 +12,24 @@ DIFF_INSERT = 1
 DIFF_REMOVE = -1
 TIMER_MILLISECONDS = 1000 * 3
 
-FILE_INSERT_REQUEST = 103
-FILE_REMOVE_REQUEST = 104
-FRONTEND_SESSION_REQUEST = 105
+class Code:
+    # requests
+    CREATE_SESSION_REQUEST = 100
+    JOIN_SESSION_REQUEST = 101
+    DELETE_SESSION_REQUEST = 102
+    FILE_INSERT_REQUEST = 103
+    FILE_REMOVE_REQUEST = 104
+    FRONTEND_SESSION_REQUEST = 105
+    
+    # responses
+    ERROR_RESPONSE = 200
+    CREATE_SESSION_RESPONSE = 201
+    JOIN_SESSION_RESPONSE = 202
+    DELETE_SESSION_RESPONSE = 203
+    PEER_INFO_RESPONSE = 204
+    FILE_INSERT_RESPONSE = 205
+    FILE_REMOVE_RESPONSE = 206
+
 
 SERVER_ADDRESS = "127.0.0.1"
 serverPort = 0
@@ -86,10 +101,10 @@ class TextEdit(QTextEdit):
         timestamp = int(time.time())
 
         if op == DIFF_INSERT:
-            op = FILE_INSERT_REQUEST
+            op = Code.FILE_INSERT_REQUEST
             log_data = {"position":pos , "content": content}
         elif op == DIFF_REMOVE:
-            op = FILE_REMOVE_REQUEST
+            op = Code.FILE_REMOVE_REQUEST
             log_data = {"position":pos , "amount": len(content)}
         else:
             raise ValueError("Error: Invalid operation type.")
@@ -110,7 +125,7 @@ if __name__ == "__main__":
     
     serverPort = getPortFromFile()
     timestamp = int(time.time())
-    obj = {"code": FRONTEND_SESSION_REQUEST , "time": timestamp, "data": "ready"}
+    obj = {"code": Code.FRONTEND_SESSION_REQUEST , "time": timestamp, "data": "ready"}
     
     backendSock.sendto(json.dumps(obj).encode() , (SERVER_ADDRESS , serverPort))
 
