@@ -1,10 +1,13 @@
 from PyQt5.QtWidgets import QApplication, QTextEdit,QWidget,QVBoxLayout,QPushButton,QMainWindow,QLabel,QMenuBar,QMenu,QAction
 from diff_match_patch import diff_match_patch
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QObject,pyqtSignals
 from PyQt5.QtGui import QFont,QKeySequence
 
 from utils import *
 import network
+import content
+
+
 
 class Window(QMainWindow):
     """Main Window."""
@@ -64,30 +67,35 @@ class Window(QMainWindow):
 
    
     def newFile(self):
-        self.centralWidget.setText("New clicked")
+        self.centralwidget.settext("new clicked")
 
     def openFile(self):
-        self.centralWidget.setText("Open clicked")
+        self.update_content("Open clicked")
 
     def saveFile(self):
-        self.centralWidget.setText("Save clicked")
+        self.update_content("Save clicked")
 
     def copyContent(self):
-        self.centralWidget.setText("Copy clicked")
+        self.update_content("Copy clicked")
 
     def pasteContent(self):
-        self.centralWidget.setText("Paste clicked")
+        self.update_content("Paste clicked")
 
     def cutContent(self):
-        self.centralWidget.setText("Cut clicked")
+        self.update_content("Cut clicked")
+    
+    def update_content(self,text):
+        self.centralWidget.setText(text)
 
+    def leave(self):
+        network.leave_backend()
 
     def __init__(self, parent=None):
         """Initializer."""
         super().__init__(parent)
         
         self.setWindowTitle("netext")
-        self.resize(800, 600)
+        self.resize(400, 200)
 
         self.centralWidget = TextEdit()
         #self.centralWidget.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -95,7 +103,6 @@ class Window(QMainWindow):
         self._createActions()
         self._connectActions()
         self._createMenuBar()
-
 
 
 
@@ -145,6 +152,7 @@ class TextEdit(QTextEdit):
 
         self.last_text = new_text
 
+
     def compile(self,data):
         """
         Serializes the data for the notification packet.
@@ -170,5 +178,5 @@ class TextEdit(QTextEdit):
         Sends a notification packet to the backend.
         """
         print(packet)
-        network.notify(packet)
+        network.send(packet)
 
