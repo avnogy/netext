@@ -1,16 +1,36 @@
-from PyQt5.QtWidgets import QApplication, QTextEdit,QWidget,QVBoxLayout,QPushButton,QMainWindow,QLabel,QMenuBar,QMenu,QAction
+from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QVBoxLayout, QPushButton, QMainWindow, QLabel, QMenuBar, QMenu, QAction
 from diff_match_patch import diff_match_patch
-from PyQt5.QtCore import QTimer, Qt, QObject,pyqtSignals
-from PyQt5.QtGui import QFont,QKeySequence
+from PyQt5.QtCore import QTimer, Qt, QObject, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QFont, QKeySequence, QTextCursor
 
 from utils import *
 import network
 import content
 
 
-
 class Window(QMainWindow):
     """Main Window."""
+
+    def leave(self):
+        network.leave_backend()
+
+    def __init__(self, parent=None):
+        """Initializer."""
+        super().__init__(parent)
+
+        self.setWindowTitle("netext")
+        self.resize(400, 200)
+
+        self.centralWidget = TextEdit()
+        self.setCentralWidget(self.centralWidget)
+        self._createActions()
+        self._connectActions()
+        self._createMenuBar()
+
+        self.text_updater_thread = content.ContentHandler()
+        self.text_updater_thread.packet_received.connect(
+            self.centralWidget.handle_packet)
+        self.text_updater_thread.start()
 
     def _createActions(self):
         # Creating action using the first constructor
@@ -30,10 +50,6 @@ class Window(QMainWindow):
         self.cutAction = QAction("C&ut", self)
         self.cutAction.setShortcut(QKeySequence.Cut)
 
-        # Edit actions
-        # Snip...
-        # Using standard keys
-
     def _connectActions(self):
         # Connect File actions
         self.newAction.triggered.connect(self.newFile)
@@ -44,7 +60,6 @@ class Window(QMainWindow):
         self.copyAction.triggered.connect(self.copyContent)
         self.pasteAction.triggered.connect(self.pasteContent)
         self.cutAction.triggered.connect(self.cutContent)
-
 
     def _createMenuBar(self):
         menuBar = QMenuBar(self)
@@ -58,16 +73,15 @@ class Window(QMainWindow):
         fileMenu.addAction(self.saveAction)
         fileMenu.addSeparator()
         fileMenu.addAction(self.exitAction)
-        
+
         # Edit menu
         editMenu = menuBar.addMenu("&Edit")
         editMenu.addAction(self.copyAction)
         editMenu.addAction(self.pasteAction)
         editMenu.addAction(self.cutAction)
 
-   
     def newFile(self):
-        self.centralwidget.settext("new clicked")
+        self.centralwidget.setText("new clicked")
 
     def openFile(self):
         self.update_content("Open clicked")
@@ -83,27 +97,9 @@ class Window(QMainWindow):
 
     def cutContent(self):
         self.update_content("Cut clicked")
-    
-    def update_content(self,text):
+
+    def update_content(self, text):
         self.centralWidget.setText(text)
-
-    def leave(self):
-        network.leave_backend()
-
-    def __init__(self, parent=None):
-        """Initializer."""
-        super().__init__(parent)
-        
-        self.setWindowTitle("netext")
-        self.resize(400, 200)
-
-        self.centralWidget = TextEdit()
-        #self.centralWidget.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCentralWidget(self.centralWidget)
-        self._createActions()
-        self._connectActions()
-        self._createMenuBar()
-
 
 
 class TextEdit(QTextEdit):
@@ -117,6 +113,7 @@ class TextEdit(QTextEdit):
     timer : QTimer object
         A QTimer object to trigger the diff_handler() function on a given rate.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -127,13 +124,12 @@ class TextEdit(QTextEdit):
         self.timer.timeout.connect(self.diff_handler)
         self.timer.start(TIMER_MILLISECONDS)
 
-         # Set font and background color
+        # Set font and background color
         font = QFont("Courier")
         font.setPointSize(14)
         self.setFont(font)
         self.setStyleSheet("background-color: #f0f0f0; color: #000000;")
 
-    
     def diff_handler(self):
         """
         Triggers the diff_match_patch library to find and notify the difference(s) between last_text and new_text.
@@ -144,16 +140,13 @@ class TextEdit(QTextEdit):
         pos = 0
         for op, content in diffs:
             if op:
-                self.notify(self.compile((op,pos,content)))
+                self.notify(self.compile((op, pos, content)))
 
             if op != DIFF_REMOVE:
                 chunk_length = len(content)
                 pos += chunk_length
 
-        self.last_text = new_text
-
-
-    def compile(self,data):
+    def compile(self, data):
         """
         Serializes the data for the notification packet.
         """
@@ -161,22 +154,78 @@ class TextEdit(QTextEdit):
 
         if op == DIFF_INSERT:
             op = Code.FILE_INSERT_REQUEST
-            log_data = {"position":pos , "content": content}
+            log_data = {"position": pos, "content": content}
         elif op == DIFF_REMOVE:
             op = Code.FILE_REMOVE_REQUEST
-            log_data = {"position":pos , "amount": len(content)}
+            log_data = {"position": pos, "amount": len(content)}
         else:
             raise ValueError("Error: Invalid operation type.")
 
-        
-        return serialize(op,log_data)
- 
+        return serialize(op, log_data)
 
+    @pyqtSlot(dict)
+    def handle_packet(self, packet):
+        try:
 
-    def notify(self,packet):
+            position = packet["data"]["position"]
+            if not self.valid_position(position):
+                raise ValueError("Position is not valid")
+
+            cursor_pos = self.textCursor().position()
+            print(cursor_pos)
+            if packet["code"] == Code.FILE_INSERT_RESPONSE:
+                insert_text = packet["data"]["content"]
+
+                if position <= cursor_pos:
+                    cursor_pos += len(insert_text)
+
+                self.last_text = self.last_text[:position] + \
+                    insert_text + self.last_text[position:]
+                print(self.last_text)
+                self.setText(self.last_text)
+
+            elif packet["code"] == Code.FILE_REMOVE_RESPONSE:
+                amount = packet["data"]["amount"]
+
+                if not self.valid_remove_amount(position, amount):
+                    raise ValueError("Remove amount is not valid")
+
+                self.last_text = self.last_text[:position] + \
+                    self.last_text[position+amount:]
+                self.setText(self.last_text)
+
+                cursor_adjusted = False
+                if cursor_pos >= position + amount:
+                    cursor_pos -= amount
+                    cursor_adjusted = True
+
+                elif cursor_pos > position:
+                    cursor_pos = position
+                    cursor_adjusted = True
+
+                if cursor_adjusted:
+                    cursor = self.textCursor()
+                    cursor.setPosition(cursor_pos)
+                    self.setTextCursor(cursor)
+
+            self.textChanged.emit()
+
+        except Exception as e:
+            print("Error while applying packet:\n", packet)
+            print(e)
+
+    def notify(self, packet):
         """
         Sends a notification packet to the backend.
         """
         print(packet)
         network.send(packet)
 
+    def content_size(self):
+        return len(self.last_text)
+
+    def valid_position(self, position):
+        return position <= self.content_size() and position >= 0
+
+    def valid_remove_amount(self, position, amount):
+        return amount > 0 and amount <= self.content_size() - position + 1

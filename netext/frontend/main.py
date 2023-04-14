@@ -9,14 +9,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()
 
-    contentHandler = ContentHandler()
-    requestsThread = threading.Thread(target=contentHandler.handleRequests)
-    requestsThread.start()
-
     win.show()
     app.exec_()
     network.leave_backend()
 
-    requestsThread.join()
     sys.exit()
-
