@@ -4,7 +4,7 @@ import threading
 
 DIFF_INSERT = 1
 DIFF_REMOVE = -1
-TIMER_MILLISECONDS = 10
+TIMER_MILLISECONDS = 1000
 
 
 class Code:
