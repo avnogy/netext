@@ -79,7 +79,25 @@ class Window(QMainWindow):
         editMenu.addAction(self.cutAction)
 
     def newFile(self):
-        self.centralwidget.setText("new clicked")
+        if not self.centralWidget.toPlainText():
+            self.current_file = ""
+            self.centralWidget.clear()
+        else:
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setText("Do you want to discard unsaved changes and create a new file?")
+            msg_box.setWindowTitle("Confirm New File")
+            msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            button_yes = msg_box.button(QMessageBox.Yes)
+            button_yes.setText("Yes, discard changes")
+            button_no = msg_box.button(QMessageBox.No)
+            button_no.setText("No, cancel")
+            msg_box.setDefaultButton(button_no)
+            msg_box.exec_()
+            if msg_box.clickedButton() == button_yes:
+                self.centralWidget.clear()
+            else:
+                return
 
     def openFile(self):
         options = QFileDialog.Options()
@@ -104,8 +122,6 @@ class Window(QMainWindow):
     def cutContent(self):
         self.centralWidget.cut()
 
-    def update_content(self, text):
-        self.centralWidget.setText(text)
 
 
 class TextEdit(QTextEdit):
