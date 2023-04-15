@@ -46,7 +46,11 @@ void Network::acceptFrontend()
 {
 	while (true)
 	{
-		ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_REQUEST).endpoint;
+		json jsonData;
+
+		ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_JOIN).endpoint;
+		jsonData = { frontend.address().to_string(),frontend.port() };
+		sock.send_to(boost::asio::buffer(Network::serializeRequest(Code::FRONTEND_SESSION_JOIN, time(TIME_NOW), jsonData)), frontend);
 		PeerServer::session(frontend);
 	}
 }
@@ -109,6 +113,7 @@ string Network::serializeRequest(const UdpPacket packet)
 	requestJson["code"] = packet.type;
 	requestJson["time"] = packet.timestamp;
 	requestJson["data"] = packet.data;
+	requestJson["data"]["endpoint"] = { packet.endpoint.address().to_string(),packet.endpoint.port() };
 
 	return requestJson.dump();
 }

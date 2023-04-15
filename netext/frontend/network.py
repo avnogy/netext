@@ -5,7 +5,7 @@ import network
 
 SERVER_ADDRESS = "127.0.0.1"
 server_port = 0
-
+frontend_endpoint = 0
 backendSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 backendSock.bind((SERVER_ADDRESS, server_port))
 backendSock.settimeout(1)
@@ -29,8 +29,20 @@ def recv():
 
 
 def greet_backend():
-    backendSock.sendto(utils.serialize(
-        Code.FRONTEND_SESSION_JOIN, "join").encode(), SERVER_ENDPOINT)
+    global frontend_endpoint
+    while True:
+        try:
+            backendSock.sendto(utils.serialize(
+                Code.FRONTEND_SESSION_JOIN, "join").encode(), SERVER_ENDPOINT)
+            msg, _ = backendSock.recvfrom(1024)
+            print(msg.decode())
+            jsonMsg = utils.json.loads(msg.decode())
+            if jsonMsg["code"] == Code.FRONTEND_SESSION_JOIN:
+                frontend_endpoint = jsonMsg["data"]
+                print("Joined as:", frontend_endpoint)
+            break
+        except Exception as e:
+            print("Exception: ", e)
 
 
 def leave_backend():

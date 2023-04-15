@@ -1,11 +1,13 @@
+import sys
 from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QVBoxLayout, QPushButton, QMainWindow, QLabel, QMenuBar, QMenu, QAction
+from PyQt5.QtCore import QTimer, Qt, QObject, pyqtSlot, pyqtSignal, QMutex, QMutexLocker
 from diff_match_patch import diff_match_patch
-from PyQt5.QtCore import QTimer, Qt, QObject, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QFont, QKeySequence, QTextCursor
 
 from utils import *
 import network
 import content
+import timeit
 
 
 class Window(QMainWindow):
@@ -29,7 +31,7 @@ class Window(QMainWindow):
 
         self.text_updater_thread = content.ContentHandler()
         self.text_updater_thread.packet_received.connect(
-            self.centralWidget.handle_packet)
+            self.centralWidget.handle_packet)  # type: ignore
         self.text_updater_thread.start()
 
     def _createActions(self):
@@ -55,7 +57,7 @@ class Window(QMainWindow):
         self.newAction.triggered.connect(self.newFile)
         self.openAction.triggered.connect(self.openFile)
         self.saveAction.triggered.connect(self.saveFile)
-        self.exitAction.triggered.connect(self.close)
+        self.exitAction.triggered.connect(self.close)  # type: ignore
         # Connect Edit actions
         self.copyAction.triggered.connect(self.copyContent)
         self.pasteAction.triggered.connect(self.pasteContent)
@@ -123,20 +125,24 @@ class TextEdit(QTextEdit):
         self.timer = QTimer()
         self.timer.timeout.connect(self.diff_handler)
         self.timer.start(TIMER_MILLISECONDS)
+        self.mutex = QMutex()
 
-        # Set font and background color
         font = QFont("Courier")
         font.setPointSize(14)
         self.setFont(font)
         self.setStyleSheet("background-color: #f0f0f0; color: #000000;")
 
     def diff_handler(self):
+        # tic = time.perf_counter()
+
+        self.mutex.lock()
+
         """
         Triggers the diff_match_patch library to find and notify the difference(s) between last_text and new_text.
         """
         new_text = self.toPlainText()
         diffs = self.diff_tool.diff_main(self.last_text, new_text)
-        self.diff_tool.diff_cleanupSemantic(diffs)
+        # self.diff_tool.diff_cleanupSemantic(diffs)
         pos = 0
         for op, content in diffs:
             if op:
@@ -145,6 +151,10 @@ class TextEdit(QTextEdit):
             if op != DIFF_REMOVE:
                 chunk_length = len(content)
                 pos += chunk_length
+        self.mutex.unlock()
+
+        # toc = time.perf_counter()
+        # print(f"timed diff at {toc - tic:0.4f} seconds")
 
     def compile(self, data):
         """
@@ -155,34 +165,45 @@ class TextEdit(QTextEdit):
         if op == DIFF_INSERT:
             op = Code.FILE_INSERT_REQUEST
             log_data = {"position": pos, "content": content}
+
         elif op == DIFF_REMOVE:
             op = Code.FILE_REMOVE_REQUEST
             log_data = {"position": pos, "amount": len(content)}
         else:
             raise ValueError("Error: Invalid operation type.")
-
         return serialize(op, log_data)
+    
+    def keyPressEvent(self, event):
+        self.mutex.lock()
+        super().keyPressEvent(event)
+        self.mutex.unlock()
 
     @pyqtSlot(dict)
     def handle_packet(self, packet):
+        tic = time.perf_counter()
+        self.mutex.lock()
         try:
-
+            print("last_text: ", self.last_text)
             position = packet["data"]["position"]
+            remote_change =  packet["data"]["endpoint"] != network.frontend_endpoint
+
             if not self.valid_position(position):
                 raise ValueError("Position is not valid")
 
             cursor_pos = self.textCursor().position()
-            print(cursor_pos)
+
             if packet["code"] == Code.FILE_INSERT_RESPONSE:
                 insert_text = packet["data"]["content"]
 
-                if position <= cursor_pos:
-                    cursor_pos += len(insert_text)
-
                 self.last_text = self.last_text[:position] + \
                     insert_text + self.last_text[position:]
-                print(self.last_text)
                 self.setText(self.last_text)
+
+                if remote_change and position <= cursor_pos:  # and self.last_direction > 0:
+                    cursor_pos += len(insert_text)
+                    print("insert", cursor_pos)
+                else:
+                    print("didnt compensatei")
 
             elif packet["code"] == Code.FILE_REMOVE_RESPONSE:
                 amount = packet["data"]["amount"]
@@ -194,25 +215,34 @@ class TextEdit(QTextEdit):
                     self.last_text[position+amount:]
                 self.setText(self.last_text)
 
-                cursor_adjusted = False
-                if cursor_pos >= position + amount:
+
+                # print(cursor_pos, position ,amount, self.last_direction,cursor_pos >= position + amount -1 , self.last_direction < 0)
+                if remote_change and cursor_pos >= position + amount - 1:  # and self.last_direction < 0:
                     cursor_pos -= amount
-                    cursor_adjusted = True
+                    print("removed", cursor_pos)
+                else:
+                    print("didnt compensater")
 
-                elif cursor_pos > position:
-                    cursor_pos = position
-                    cursor_adjusted = True
-
-                if cursor_adjusted:
-                    cursor = self.textCursor()
-                    cursor.setPosition(cursor_pos)
-                    self.setTextCursor(cursor)
-
+                    
             self.textChanged.emit()
+
+            if cursor_pos > len(self.toPlainText()):
+                cursor_pos = len(self.toPlainText())
+            
+            cursor = self.textCursor()
+            cursor.setPosition(cursor_pos)
+            self.setTextCursor(cursor)
+            self.cursorPositionChanged.emit()
+
 
         except Exception as e:
             print("Error while applying packet:\n", packet)
             print(e)
+        self.mutex.unlock()
+
+        
+        # toc = time.perf_counter()
+        # print(f"timed handler at {toc - tic:0.4f} seconds")
 
     def notify(self, packet):
         """

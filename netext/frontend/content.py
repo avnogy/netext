@@ -1,4 +1,4 @@
-from utils import Code, json
+from utils import Code, json, time
 import network
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -11,6 +11,7 @@ class ContentHandler(QThread):
 
     def run(self):
         while True:
+            msg = ""
             try:
                 msg = network.recv()
                 if not msg:
