@@ -27,7 +27,7 @@
 #include <boost/asio.hpp>
 #include "json.hpp"
 
-#define BUFSIZE 1024
+#define BUFSIZE 102400
 #define SERVER_IP "18.196.140.61"
 #define SERVER_PORT 55555
 #define SUCCESS 1

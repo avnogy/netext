@@ -19,7 +19,7 @@ def recv():
     """
     while True:
         try:
-            msg, addr = network.backendSock.recvfrom(1024)
+            msg, addr = network.backendSock.recvfrom(utils.BUFFER_SIZE)
             return msg
         except socket.timeout:
             continue

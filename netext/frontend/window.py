@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QVBoxLayout, QPushButton, QMainWindow, QLabel, QMenuBar, QMenu, QAction
+from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QVBoxLayout, QPushButton, QMainWindow, QLabel, QMenuBar, QMenu, QAction, QFileDialog, QMessageBox
 from PyQt5.QtCore import QTimer, Qt, QObject, pyqtSlot, pyqtSignal, QMutex, QMutexLocker
 from diff_match_patch import diff_match_patch
 from PyQt5.QtGui import QFont, QKeySequence, QTextCursor
@@ -86,7 +86,18 @@ class Window(QMainWindow):
         self.centralwidget.setText("new clicked")
 
     def openFile(self):
-        self.update_content("Open clicked")
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(
+            self, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        if fileName:
+            with open(fileName, "r") as f:
+                file_content = f.read()
+            if len(file_content) > BUFFER_SIZE:
+                QMessageBox.warning(self, "File Too Large",
+                                    "The file is too large. Please try another file.")
+            else:
+                self.centralWidget.setText(file_content)
 
     def saveFile(self):
         self.update_content("Save clicked")

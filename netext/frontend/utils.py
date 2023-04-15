@@ -5,7 +5,7 @@ import threading
 DIFF_INSERT = 1
 DIFF_REMOVE = -1
 TIMER_MILLISECONDS = 1000
-
+BUFFER_SIZE = 102400
 
 class Code:
     # requests
