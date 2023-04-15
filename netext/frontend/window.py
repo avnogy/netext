@@ -42,8 +42,6 @@ class Window(QMainWindow):
         # Creating actions using the second constructor
         self.openAction = QAction("&Open...", self)
         self.openAction.setShortcut("Ctrl+O")
-        self.saveAction = QAction("&Save", self)
-        self.saveAction.setShortcut("Ctrl+S")
         self.exitAction = QAction("&Exit", self)
         self.copyAction = QAction("&Copy", self)
         self.copyAction.setShortcut(QKeySequence.Copy)
@@ -56,7 +54,6 @@ class Window(QMainWindow):
         # Connect File actions
         self.newAction.triggered.connect(self.newFile)
         self.openAction.triggered.connect(self.openFile)
-        self.saveAction.triggered.connect(self.saveFile)
         self.exitAction.triggered.connect(self.close)  # type: ignore
         # Connect Edit actions
         self.copyAction.triggered.connect(self.copyContent)
@@ -72,7 +69,6 @@ class Window(QMainWindow):
         menuBar.addMenu(fileMenu)
         fileMenu.addAction(self.newAction)
         fileMenu.addAction(self.openAction)
-        fileMenu.addAction(self.saveAction)
         fileMenu.addSeparator()
         fileMenu.addAction(self.exitAction)
 
@@ -99,17 +95,14 @@ class Window(QMainWindow):
             else:
                 self.centralWidget.setText(file_content)
 
-    def saveFile(self):
-        self.update_content("Save clicked")
-
     def copyContent(self):
-        self.update_content("Copy clicked")
+        self.centralWidget.copy()
 
     def pasteContent(self):
-        self.update_content("Paste clicked")
+        self.centralWidget.paste()
 
     def cutContent(self):
-        self.update_content("Cut clicked")
+        self.centralWidget.cut()
 
     def update_content(self, text):
         self.centralWidget.setText(text)
