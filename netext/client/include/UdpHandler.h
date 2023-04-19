@@ -13,7 +13,8 @@ public:
 
 	UdpPacket PopForRequirements(const Code type);
 	UdpPacket PopForRequirements(const Code type1, const Code type2);
-	UdpPacket PopForRequirements(const Code type, ip::udp::endpoint);
+	UdpPacket PopForRequirements(const Code type, ip::udp::endpoint endpoint);
+	UdpPacket PopForRequirements(ip::udp::endpoint endpoint);
 
 	UdpPacketQueue(const UdpPacketQueue&) = delete;
 	UdpPacketQueue& operator=(const UdpPacketQueue&) = delete;
@@ -23,6 +24,7 @@ private:
 	queue<UdpPacket> _queue;
 	mutex _mutex;
 	condition_variable _cv;
+	bool isHost;
 };
 
 void UdpReceiverThread();

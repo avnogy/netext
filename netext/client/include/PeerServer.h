@@ -13,4 +13,5 @@ public:
 
 private:
 	static void acceptClients();
+	static thread fileHandlerTh;
 };

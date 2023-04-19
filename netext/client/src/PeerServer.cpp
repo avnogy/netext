@@ -5,7 +5,8 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
-	thread frontendThread(Network::acceptFrontend);
+	PeerServer::fileHandlerTh = thread(&FileHandler::handleRequests, &FileHandler::getInstance());
+	thread frontendThread(PeerServer::session, &Network::acceptFrontend());
 
 	cout << "waiting for connections.." << endl;
 	UdpPacket peerInfo = Network::getPeerInfo();

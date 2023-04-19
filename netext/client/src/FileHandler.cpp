@@ -46,6 +46,13 @@ void FileHandler::createFile()
 	file.close();
 }
 
+
+string FileHandler::openFile(string path)
+{
+	setPath(path);
+	return readWholeFile();
+}
+
 /// <summary>
 /// function deletes a file (if exists)
 /// </summary>

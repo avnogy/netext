@@ -5,6 +5,7 @@
 /// </summary>
 void PeerClient::joinSession()
 {
+	thread frontendThread(PeerClient::session, &Network::acceptFrontend());
 	json jsonData;
 	string key = "";
 
@@ -43,5 +44,32 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 	catch (std::exception& e)
 	{
 		cerr << "Client Disconnected." << endl;
+	}
+}
+
+/// <summary>
+/// handling client requests
+/// </summary>
+/// <param name="client_sock"></param>
+void PeerClient::session(ip::udp::endpoint peer)
+{
+	try
+	{
+		cout << "Client accepted!" << endl;
+		thread redirect(PeerClient::redirect);
+		UdpPacketQueue::getInstance().PopForRequirements(Code::CLIENT_LEAVE_REQUEST, peer);
+	}
+	catch (std::exception& e)
+	{
+		cout << "Error: " << e.what() << endl;
+		cout << "Client Disconnected." << endl;
+	}
+}
+
+void PeerClient::redirect(ip::udp::endpoint peer)
+{
+	while (true)
+	{
+		Notifier::getInstance().insert(UdpPacketQueue::getInstance().PopForRequirements(peer));
 	}
 }

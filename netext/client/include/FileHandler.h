@@ -13,6 +13,7 @@ public:
 	void setPath(string path);
 	void handleRequests();
 	void insertRequest(UdpPacket request);
+	string openFile(string path);
 
 	static FileHandler& getInstance()
 	{

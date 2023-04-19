@@ -9,7 +9,7 @@ public:
 	static UdpPacket getPeerInfo();
 	static void printPeerInfo(const json peerInfo);
 	static ip::udp::endpoint punchHole(const json peerInfo);
-	static void acceptFrontend();
+	static ip::udp::endpoint acceptFrontend();
 
 	static string receiveMessage(ip::udp::socket& sock);
 	static void sendMessage(ip::udp::socket& sock, ip::udp::endpoint& peer);

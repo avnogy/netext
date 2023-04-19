@@ -42,17 +42,14 @@ ip::udp::endpoint Network::punchHole(const json peerInfo)
 	return peer;
 }
 
-void Network::acceptFrontend()
+ip::udp::endpoint Network::acceptFrontend()
 {
-	while (true)
-	{
-		json jsonData;
+	json jsonData;
 
-		ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_JOIN).endpoint;
-		jsonData = { frontend.address().to_string(),frontend.port() };
-		sock.send_to(boost::asio::buffer(Network::serializeRequest(Code::FRONTEND_SESSION_JOIN, time(TIME_NOW), jsonData)), frontend);
-		PeerServer::session(frontend);
-	}
+	ip::udp::endpoint frontend = UdpPacketQueue::getInstance().PopForRequirements(Code::FRONTEND_SESSION_JOIN).endpoint;
+	jsonData = { frontend.address().to_string(),frontend.port() };
+	sock.send_to(boost::asio::buffer(Network::serializeRequest(Code::FRONTEND_SESSION_JOIN, time(TIME_NOW), jsonData)), frontend);
+	return frontend;
 }
 
 /// <summary>

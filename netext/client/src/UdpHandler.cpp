@@ -79,6 +79,28 @@ UdpPacket UdpPacketQueue::PopForRequirements(const Code type, ip::udp::endpoint 
 	}
 }
 
+UdpPacket UdpPacketQueue::PopForRequirements(ip::udp::endpoint endpoint)
+{
+	while (true)
+	{
+		try
+		{
+			unique_lock<mutex> lock(_mutex);
+			_cv.wait(lock, [this, endpoint] {
+				return !_queue.empty() &&
+					_queue.front().endpoint == endpoint; });
+			UdpPacket packet = _queue.front();
+			_queue.pop();
+			_cv.notify_all();
+			return packet;
+		}
+		catch (const runtime_error& e)
+		{
+			cerr << "Caught " << e.what() << endl;
+		}
+	}
+}
+
 UdpPacketQueue::UdpPacketQueue() { }
 UdpPacketQueue::~UdpPacketQueue() { }
 
@@ -98,6 +120,16 @@ void UdpReceiverThread()
 			if (packet.type == Code::FILE_INSERT_REQUEST || packet.type == Code::FILE_REMOVE_REQUEST)
 			{
 				FileHandler::getInstance().insertRequest(packet);
+			}
+			else if (packet.type == Code::FILE_OPEN_REQUEST)
+			{
+				string content = FileHandler::getInstance().openFile(packet.data["path"]);
+				UdpPacket response;
+				response.endpoint = packet.endpoint;
+				response.type = Code::FILE_OPEN_RESPONSE;
+				response.data = { "content" , content };
+				response.timestamp = time(TIME_NOW);
+				Notifier::getInstance().insert(response);
 			}
 			else
 			{
