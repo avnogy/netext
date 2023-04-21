@@ -53,6 +53,7 @@ using std::condition_variable;
 using std::unique_lock;
 using std::lock_guard;
 using std::runtime_error;
+using std::exception;
 typedef std::time_t Timestamp; //used as a timestamp for update messages
 typedef unsigned char Byte; // a byte of data
 typedef std::vector<Byte> Buffer; // a vector (chunk) of bytes.
@@ -106,5 +107,36 @@ struct CompareUdpPacket
 #include "PeerServer.h"
 #include "Network.h"
 #include "Menu.h"
+
+#define TRY_CATCH_FUNCTION(return_type, func_name, params, error_msg, body) \
+    return_type func_name params { \
+        try { \
+            body \
+        } \
+        catch (const runtime_error& e) { \
+            cout << error_msg << endl; \
+            cout << "Error: " << e.what() << endl; \
+        } \
+        catch (const exception& e) { \
+            throw runtime_error(error_msg); \
+        } \
+    }
+
+#define TRY_CATCH_LOOP_FUNCTION(return_type, func_name, params, error_msg, body) \
+    return_type func_name params { \
+		while (true)\
+			{\
+			try { \
+				body \
+			}\
+			catch (const runtime_error& e) { \
+				cout << error_msg << endl; \
+				cout << "Error: " << e.what() << endl; \
+			} \
+			catch (const exception& e) {\
+				throw runtime_error(error_msg); \
+			} \
+			} \
+	}
 
 #endif // !UTILITIES_H
