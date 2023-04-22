@@ -7,99 +7,73 @@ void UdpPacketQueue::Push(UdpPacket packet)
 	_cv.notify_all();
 }
 
-UdpPacket UdpPacketQueue::PopForRequirements(Code type)
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (const Code type), "Error while popping for type",
 	{
-		try
-		{
-			unique_lock<mutex> lock(_mutex);
-			_cv.wait(lock, [this, type] {
-				return !_queue.empty() &&
-					_queue.front().type == type;
-				});
-			UdpPacket packet = _queue.front();
-			_queue.pop();
-			_cv.notify_all();
-			return packet;
-		}
-		catch (const runtime_error& e)
-		{
-			cerr << "Caught " << e.what() << endl;
-		}
-	}
-}
+		unique_lock<mutex> lock(_mutex);
+		_cv.wait(lock, [this, type] {
+			boost::this_thread::interruption_point();
+			return !_queue.empty() &&
+				_queue.front().type == type;
+			});
+		UdpPacket packet = _queue.front();
+		_queue.pop();
+		_cv.notify_all();
+		return packet;
+	}, {
+		throw boost::thread_interrupted();
+	});
 
-UdpPacket UdpPacketQueue::PopForRequirements(const Code type1, const Code type2)
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (const Code type1, const Code type2), "Error while popping for type and type",
 	{
-		try
-		{
-			unique_lock<mutex> lock(_mutex);
-			_cv.wait(lock, [this, type1, type2] {
-				return
-					!_queue.empty() && (
-						_queue.front().type == type1 ||
-						_queue.front().type == type2
-						);
-				});
-			UdpPacket packet = _queue.front();
-			_queue.pop();
-			_cv.notify_all();
-			return packet;
-		}
-		catch (const runtime_error& e)
-		{
-			cerr << "Caught " << e.what() << endl;
-		}
-	}
-}
+		unique_lock<mutex> lock(_mutex);
+		_cv.wait(lock, [this, type1, type2] {
+			boost::this_thread::interruption_point();
+			return
+				!_queue.empty() && (
+					_queue.front().type == type1 ||
+					_queue.front().type == type2
+					);
+			});
+		UdpPacket packet = _queue.front();
+		_queue.pop();
+		_cv.notify_all();
+		return packet;
+	}, {
+		throw boost::thread_interrupted();
+	});
 
-UdpPacket UdpPacketQueue::PopForRequirements(const Code type, ip::udp::endpoint endpoint)
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (const Code type, ip::udp::endpoint endpoint), "Error while popping for endpoint and type",
 	{
-		try
-		{
-			unique_lock<mutex> lock(_mutex);
-			_cv.wait(lock, [this, type, endpoint] {
-				return !_queue.empty() &&
-					_queue.front().type == type &&
-					_queue.front().endpoint == endpoint; });
-			UdpPacket packet = _queue.front();
-			_queue.pop();
-			_cv.notify_all();
-			return packet;
-		}
-		catch (const runtime_error& e)
-		{
-			cerr << "Caught " << e.what() << endl;
-		}
-	}
-}
+		unique_lock<mutex> lock(_mutex);
+		_cv.wait(lock, [this, type, endpoint] {
+			boost::this_thread::interruption_point();
+			return !_queue.empty() &&
+				_queue.front().type == type &&
+				_queue.front().endpoint == endpoint; });
+		UdpPacket packet = _queue.front();
+		_queue.pop();
+		_cv.notify_all();
+		return packet;
+	}, {
+		throw boost::thread_interrupted();
+	});
 
-UdpPacket UdpPacketQueue::PopForRequirements(ip::udp::endpoint endpoint)
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (ip::udp::endpoint endpoint), "Error while popping for endpoint",
 	{
-		try
-		{
-			unique_lock<mutex> lock(_mutex);
-			_cv.wait(lock, [this, endpoint] {
-				return !_queue.empty() &&
-					_queue.front().endpoint == endpoint; });
-			UdpPacket packet = _queue.front();
-			_queue.pop();
-			_cv.notify_all();
-			return packet;
-		}
-		catch (const runtime_error& e)
-		{
-			cerr << "Caught " << e.what() << endl;
-		}
-	}
-}
+		unique_lock<mutex> lock(_mutex);
+		_cv.wait(lock, [this, endpoint] {
+			boost::this_thread::interruption_point();
+			return !_queue.empty() &&
+				_queue.front().endpoint == endpoint &&
+				_queue.front().type != Code::CLIENT_LEAVE_REQUEST;
+			});
+		UdpPacket packet = _queue.front();
+		_queue.pop();
+		_cv.notify_all();
+		return packet;
+	}, {
+		throw boost::thread_interrupted();
+	});
 
 UdpPacketQueue::UdpPacketQueue() { }
 UdpPacketQueue::~UdpPacketQueue() { }
@@ -117,11 +91,11 @@ void UdpReceiverThread()
 
 			UdpPacket packet = deserialize(buffer, num_bytes_received);
 			packet.endpoint = sender_endpoint;
-			if (packet.type == Code::FILE_INSERT_REQUEST || packet.type == Code::FILE_REMOVE_REQUEST)
-			{
-				FileHandler::getInstance().insertRequest(packet);
-			}
-			else if (packet.type == Code::FILE_OPEN_REQUEST)
+			//if (packet.type == Code::FILE_INSERT_REQUEST || packet.type == Code::FILE_REMOVE_REQUEST)
+			//{
+			//	FileHandler::getInstance().insertRequest(packet);
+			//}
+			if (packet.type == Code::FILE_OPEN_REQUEST)
 			{
 				string content = FileHandler::getInstance().openFile(packet.data["path"]);
 				UdpPacket response;
@@ -130,6 +104,9 @@ void UdpReceiverThread()
 				response.data = { "content" , content };
 				response.timestamp = time(TIME_NOW);
 				Notifier::getInstance().insert(response);
+			}
+			else if (packet.type == Code::PUNCH_HOLE_PACKET)
+			{
 			}
 			else
 			{

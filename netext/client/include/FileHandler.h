@@ -12,7 +12,6 @@ public:
 	void createFile();
 	void setPath(string path);
 	void handleRequests();
-	void insertRequest(UdpPacket request);
 	string openFile(string path);
 
 	static FileHandler& getInstance()
@@ -41,7 +40,6 @@ private:
 	bool validRemoveAmount(const int position, const int amount, const int fileSize);
 
 	// request priority queue (sorted)
-	priority_queue<UdpPacket, vector<UdpPacket>, CompareUdpPacket> _editRequests;
 	mutex _muRequests;
 	condition_variable _cvRequests;
 	string _path;

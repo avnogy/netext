@@ -18,13 +18,12 @@ public:
 
 	UdpPacketQueue(const UdpPacketQueue&) = delete;
 	UdpPacketQueue& operator=(const UdpPacketQueue&) = delete;
+	condition_variable _cv;
 private:
 	UdpPacketQueue();
 	~UdpPacketQueue();
 	queue<UdpPacket> _queue;
 	mutex _mutex;
-	condition_variable _cv;
-	bool isHost;
 };
 
 void UdpReceiverThread();

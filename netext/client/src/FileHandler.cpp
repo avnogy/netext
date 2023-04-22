@@ -8,18 +8,6 @@ FileHandler::~FileHandler()
 {
 }
 
-/// <summary>
-/// function inserting request into the queue
-/// </summary>
-/// <param name="request"></param>
-void FileHandler::insertRequest(UdpPacket request)
-{
-	unique_lock<mutex> lck(_muRequests);
-	_editRequests.push(request);
-	lck.unlock();
-	_cvRequests.notify_all();
-}
-
 void FileHandler::writeToFile(string content)
 {
 	boost::filesystem::ofstream file(_path);
@@ -46,7 +34,6 @@ void FileHandler::createFile()
 	file.close();
 }
 
-
 string FileHandler::openFile(string path)
 {
 	setPath(path);
@@ -69,7 +56,6 @@ void FileHandler::deleteFile()
 	}
 }
 
-
 /// <summary>
 /// functuon handling requests from the queue (thread)
 /// </summary>
@@ -77,15 +63,9 @@ void FileHandler::handleRequests()
 {
 	while (true)
 	{
-		unique_lock<mutex> lck(_muRequests);
-		if (_editRequests.empty())
-		{
-			_cvRequests.wait(lck);
-		}
-
-		const UdpPacket request = _editRequests.top();
+		const UdpPacket request = UdpPacketQueue::getInstance().PopForRequirements(Code::FILE_INSERT_REQUEST, Code::FILE_REMOVE_REQUEST);
+		cout << "got an edit" << endl;
 		Notifier::getInstance().insert(request);
-		_editRequests.pop();
 		json data = request.data;
 		try
 		{
@@ -106,7 +86,7 @@ void FileHandler::handleRequests()
 		}
 		catch (std::exception& e)
 		{
-			cout << "Error: " << e.what() << endl;
+			cout << "Error" << endl;
 		}
 	}
 }
