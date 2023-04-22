@@ -38,7 +38,7 @@ void Network::printPeerInfo(const json peerInfo)
 ip::udp::endpoint Network::punchHole(const json peerInfo)
 {
 	ip::udp::endpoint peer(ip::address::from_string(peerInfo["ip"]), peerInfo["port"]);
-	sock.send_to(boost::asio::buffer("ready"), peer);
+	sock.send_to(boost::asio::buffer(Network::serializeRequest(Code::PUNCH_HOLE_PACKET, time(TIME_NOW), {})), peer);
 	return peer;
 }
 
