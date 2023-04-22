@@ -110,7 +110,12 @@ string Network::serializeRequest(const UdpPacket packet)
 	requestJson["code"] = packet.type;
 	requestJson["time"] = packet.timestamp;
 	requestJson["data"] = packet.data;
-	requestJson["data"]["endpoint"] = { packet.endpoint.address().to_string(),packet.endpoint.port() };
+	if (!requestJson["data"].contains("endpoint"))
+	{
+		cout << "a";
+		requestJson["data"]["endpoint"] = { packet.endpoint.address().to_string(),packet.endpoint.port() };
+	}
+	cout << "b" << endl;
 
 	return requestJson.dump();
 }

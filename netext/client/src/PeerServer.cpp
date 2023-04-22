@@ -5,13 +5,16 @@
 /// </summary>
 void PeerServer::acceptClients()
 {
-	PeerServer::fileHandlerTh = thread(&FileHandler::handleRequests, &FileHandler::getInstance());
-	thread frontendThread(PeerServer::session, &Network::acceptFrontend());
+	thread fileHandlerThread = thread(&FileHandler::handleRequests, &FileHandler::getInstance());
+
+	thread frontendThread(boost::bind(&PeerServer::session, Network::acceptFrontend()));
 
 	cout << "waiting for connections.." << endl;
 	UdpPacket peerInfo = Network::getPeerInfo();
 	ip::udp::endpoint sock = Network::punchHole(peerInfo.data);
-	thread th(boost::bind(&PeerServer::session, sock));
+	thread clientThread(boost::bind(&PeerServer::session, sock));
+	clientThread.join();
+	frontendThread.join();
 }
 
 /// <summary>

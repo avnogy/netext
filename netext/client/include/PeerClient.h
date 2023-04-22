@@ -10,5 +10,5 @@ public:
 	static void joinSession();
 	static void startHandleRequests(ip::udp::endpoint peer);
 	static void session(ip::udp::endpoint peer);
-	static void redirect(ip::udp::endpoint peer);
+	static void redirect(ip::udp::endpoint host, ip::udp::endpoint frontend);
 };

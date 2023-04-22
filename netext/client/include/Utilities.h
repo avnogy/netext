@@ -101,6 +101,7 @@ struct CompareUdpPacket
 } typedef CompareUdpPacket;
 
 #include "include/UdpHandler.h"
+#include "include/ProxyHandler.h"
 #include "include/FileHandler.h"
 #include "Notifier.h"
 #include "PeerClient.h"

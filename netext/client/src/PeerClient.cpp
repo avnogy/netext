@@ -5,18 +5,29 @@
 /// </summary>
 void PeerClient::joinSession()
 {
-	thread frontendThread(PeerClient::session, &Network::acceptFrontend());
-	json jsonData;
-	string key = "";
+	ip::udp::endpoint frontend = Network::acceptFrontend();
+	//Notifier::getInstance().addClient(frontend);
+	thread frontendThread(boost::bind(&PeerClient::session, frontend));
+	//Notifier::getInstance().removeClient(frontend);
 
+	string key;
 	cout << "Enter Session key: ";
 	cin >> key;
-	jsonData["key"] = key;
-	jsonData["localIp"] = Network::getLocalIP();
+
+	json jsonData = {
+		{"key", key},
+		{"localIp", Network::getLocalIP()}
+	};
 
 	json peerInfo = Network::joinSession(Network::serializeRequest(Code::JOIN_SESSION_REQUEST, time(TIME_NOW), jsonData));
 
-	PeerClient::startHandleRequests(Network::punchHole(peerInfo));
+	ip::udp::endpoint host = Network::punchHole(peerInfo);
+	thread hostThread(boost::bind(&PeerClient::session, host));
+	thread redirectThread(boost::bind(&PeerClient::redirect, host, frontend));
+
+	hostThread.join();
+	redirectThread.interrupt();
+	frontendThread.join();
 }
 
 /// <summary>
@@ -51,25 +62,28 @@ void PeerClient::startHandleRequests(ip::udp::endpoint peer)
 /// handling client requests
 /// </summary>
 /// <param name="client_sock"></param>
-void PeerClient::session(ip::udp::endpoint peer)
-{
-	try
+TRY_CATCH_FUNCTION(void, PeerClient::session, (ip::udp::endpoint peer), "Client Disconnected.",
 	{
 		cout << "Client accepted!" << endl;
-		thread redirect(PeerClient::redirect);
 		UdpPacketQueue::getInstance().PopForRequirements(Code::CLIENT_LEAVE_REQUEST, peer);
-	}
-	catch (std::exception& e)
-	{
-		cout << "Error: " << e.what() << endl;
 		cout << "Client Disconnected." << endl;
-	}
-}
+	}, {
+		return;
+	});
 
-void PeerClient::redirect(ip::udp::endpoint peer)
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(void, PeerClient::redirect, (ip::udp::endpoint host, ip::udp::endpoint frontend), "error while redirecting",
 	{
-		Notifier::getInstance().insert(UdpPacketQueue::getInstance().PopForRequirements(peer));
-	}
-}
+		frontendThread = thread(boost::bind(&redirectFrontend, host, frontend));
+		hostThread = thread(boost::bind(&redirectHost, host, frontend));
+		boost::this_thread::interruption_point();
+		frontendThread.join();
+		hostThread.join();
+	}, {
+		frontendThread.interrupt();
+		hostThread.interrupt();
+		UdpPacketQueue::getInstance()._cv.notify_all();
+		frontendThread.join();
+		hostThread.join();
+	},
+		thread frontendThread; thread hostThread;
+	);

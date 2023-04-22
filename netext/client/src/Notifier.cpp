@@ -14,7 +14,7 @@ void Notifier::insert(const UdpPacket event)
 
 bool Notifier::notify()
 {
-	//TODO: add stop condition
+	//TODO: add stop condition, error handling
 	while (true)
 	{
 		unique_lock<mutex> lck(muEvents);

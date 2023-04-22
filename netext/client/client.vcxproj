@@ -159,8 +159,14 @@
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\Network.cpp" />
     <ClCompile Include="src\Notifier.cpp" />
-    <ClCompile Include="src\PeerClient.cpp" />
+    <ClCompile Include="src\PeerClient.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
+    </ClCompile>
     <ClCompile Include="src\PeerServer.cpp" />
+    <ClCompile Include="src\ProxyHandler.cpp" />
     <ClCompile Include="src\UdpHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,8 +179,12 @@
     <ClInclude Include="include\Notifier.h" />
     <ClInclude Include="include\PeerClient.h" />
     <ClInclude Include="include\PeerServer.h" />
+    <ClInclude Include="include\ProxyHandler.h" />
     <ClInclude Include="include\UdpHandler.h" />
     <ClInclude Include="include\Utilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
