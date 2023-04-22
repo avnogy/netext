@@ -1,11 +1,11 @@
 #include "include/UdpHandler.h"
 
-void UdpPacketQueue::Push(UdpPacket packet)
-{
+TRY_CATCH_FUNCTION(void, UdpPacketQueue::Push, (UdpPacket packet), "Error while pushing packet into queue",
+	{
 	lock_guard<mutex> lock(_mutex);
 	_queue.push(packet);
 	_cv.notify_all();
-}
+	}, {});
 
 TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (const Code type), "Error while popping for type",
 	{
@@ -78,51 +78,30 @@ TRY_CATCH_LOOP_FUNCTION(UdpPacket, UdpPacketQueue::PopForRequirements, (ip::udp:
 UdpPacketQueue::UdpPacketQueue() { }
 UdpPacketQueue::~UdpPacketQueue() { }
 
-void UdpReceiverThread()
-{
-	while (true)
+TRY_CATCH_LOOP_FUNCTION(void, UdpReceiverThread, (), "error while receiving in udphandler.",
 	{
-		try
-		{
-			char buffer[BUFSIZE];
-			ip::udp::endpoint sender_endpoint;
-			size_t num_bytes_received = Network::sock.receive_from(
-				boost::asio::buffer(buffer), sender_endpoint);
+		char buffer[BUFSIZE];
+		ip::udp::endpoint sender_endpoint;
+		size_t num_bytes_received = Network::sock.receive_from(
+			boost::asio::buffer(buffer), sender_endpoint);
 
-			UdpPacket packet = deserialize(buffer, num_bytes_received);
-			packet.endpoint = sender_endpoint;
-			//if (packet.type == Code::FILE_INSERT_REQUEST || packet.type == Code::FILE_REMOVE_REQUEST)
-			//{
-			//	FileHandler::getInstance().insertRequest(packet);
-			//}
-			if (packet.type == Code::FILE_OPEN_REQUEST)
-			{
-				string content = FileHandler::getInstance().openFile(packet.data["path"]);
-				UdpPacket response;
-				response.endpoint = packet.endpoint;
-				response.type = Code::FILE_OPEN_RESPONSE;
-				response.data = { "content" , content };
-				response.timestamp = time(TIME_NOW);
-				Notifier::getInstance().insert(response);
-			}
-			else if (packet.type == Code::PUNCH_HOLE_PACKET)
-			{
-			}
-			else
-			{
-				UdpPacketQueue::getInstance().Push(packet);
-			}
-		}
-		catch (const runtime_error& e)
+		UdpPacket packet = deserialize(buffer, num_bytes_received);
+		packet.endpoint = sender_endpoint;
+		if (packet.type == Code::FILE_OPEN_REQUEST)
 		{
-			cerr << "Caught " << e.what() << endl;
+			string content = FileHandler::getInstance().openFile(packet.data["path"]);
+			UdpPacket response;
+			response.endpoint = packet.endpoint;
+			response.type = Code::FILE_OPEN_RESPONSE;
+			response.data["content"] = content;
+			response.timestamp = time(TIME_NOW);
+			Notifier::getInstance().insert(response);
 		}
-		catch (const std::exception&)
+		else if (packet.type != Code::PUNCH_HOLE_PACKET)
 		{
-			cerr << endl << "aha" << endl;
+			UdpPacketQueue::getInstance().Push(packet);
 		}
-	}
-}
+	}, {});
 
 UdpPacket deserialize(char buffer[], const size_t recv_len)
 {
