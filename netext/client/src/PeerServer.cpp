@@ -72,18 +72,12 @@ void PeerServer::deleteSession()
 /// handling client requests
 /// </summary>
 /// <param name="client_sock"></param>
-void PeerServer::session(ip::udp::endpoint peer)
-{
-	try
-	{
+TRY_CATCH_FUNCTION(void, PeerServer::session, (ip::udp::endpoint peer), "Client Disconnected.", {
 		cout << "Client accepted!" << endl;
 		Notifier::getInstance().addClient(peer);
 		UdpPacketQueue::getInstance().PopForRequirements(Code::CLIENT_LEAVE_REQUEST, peer);
 		Notifier::getInstance().removeClient(peer);
-	}
-	catch (std::exception& e)
-	{
-		cout << "Error: " << e.what() << endl;
 		cout << "Client Disconnected." << endl;
-	}
-}
+	}, {
+		return;
+	});
