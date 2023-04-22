@@ -108,35 +108,53 @@ struct CompareUdpPacket
 #include "Network.h"
 #include "Menu.h"
 
-#define TRY_CATCH_FUNCTION(return_type, func_name, params, error_msg, body) \
+#define TRY_CATCH_FUNCTION(return_type, func_name, params, error_msg, body, exitcode,...) \
     return_type func_name params { \
-        try { \
+        __VA_ARGS__ \
+        try \
+        { \
             body \
         } \
-        catch (const runtime_error& e) { \
+        catch (const runtime_error& e) \
+        { \
             cout << error_msg << endl; \
             cout << "Error: " << e.what() << endl; \
-        } \
-        catch (const exception& e) { \
-            throw runtime_error(error_msg); \
-        } \
-    }
+            exitcode \
+		} \
+		catch (const exception& e) \
+		{ \
+			throw runtime_error(error_msg); \
+		} \
+		catch (const boost::thread_interrupted&) \
+		{ \
+			exitcode \
+		} \
+}
 
-#define TRY_CATCH_LOOP_FUNCTION(return_type, func_name, params, error_msg, body) \
+#define TRY_CATCH_LOOP_FUNCTION(return_type, func_name, params, error_msg, body, exitcode,...) \
     return_type func_name params { \
-		while (true)\
-			{\
-			try { \
-				body \
-			}\
-			catch (const runtime_error& e) { \
-				cout << error_msg << endl; \
-				cout << "Error: " << e.what() << endl; \
-			} \
-			catch (const exception& e) {\
-				throw runtime_error(error_msg); \
-			} \
-			} \
-	}
+        while (true) \
+        { \
+            __VA_ARGS__ \
+            try \
+            { \
+                body \
+            } \
+            catch (const runtime_error& e) \
+            { \
+                cout << error_msg << endl; \
+                cout << "Error: " << e.what() << endl; \
+	            exitcode \
+            } \
+            catch (const exception& e) \
+            { \
+                throw runtime_error(error_msg); \
+            } \
+            catch (const boost::thread_interrupted&) \
+            { \
+                exitcode \
+            } \
+        } \
+}
 
 #endif // !UTILITIES_H
