@@ -12,5 +12,6 @@ public:
 	static void session(ip::udp::endpoint peer);
 
 private:
+	PeerServer();
 	static void acceptClients();
 };

@@ -5,11 +5,6 @@
 /// </summary>
 void PeerClient::joinSession()
 {
-	ip::udp::endpoint frontend = Network::acceptFrontend();
-	//Notifier::getInstance().addClient(frontend);
-	thread frontendThread(boost::bind(&PeerClient::session, frontend));
-	//Notifier::getInstance().removeClient(frontend);
-
 	string key;
 	cout << "Enter Session key: ";
 	cin >> key;
@@ -23,39 +18,14 @@ void PeerClient::joinSession()
 
 	ip::udp::endpoint host = Network::punchHole(peerInfo);
 	thread hostThread(boost::bind(&PeerClient::session, host));
+
+	ip::udp::endpoint frontend = Network::acceptFrontend();
+	thread frontendThread(boost::bind(&PeerClient::session, frontend));
 	thread redirectThread(boost::bind(&PeerClient::redirect, host, frontend));
 
 	hostThread.join();
 	redirectThread.interrupt();
 	frontendThread.join();
-}
-
-/// <summary>
-/// handling client requests
-/// </summary>
-/// <param name="client_sock"></param>
-void PeerClient::startHandleRequests(ip::udp::endpoint peer)
-{
-	cout << "Host found!" << endl;
-	try
-	{
-		//// TODO:
-		//	 remove the receiver thread and make the sending work without the menu getting in the way.
-
-		// Creating a sender thread
-		boost::thread sender_thread(boost::bind(&Network::sendMessage, boost::ref(Network::sock), peer));
-
-		// Creating a receiver thread
-		//boost::thread receiver_thread(boost::bind(&Network::receiveMessage, boost::ref(Network::sock)));
-
-		sender_thread.join();
-
-		// TO DO: File Update Requests
-	}
-	catch (std::exception& e)
-	{
-		cerr << "Client Disconnected." << endl;
-	}
 }
 
 /// <summary>
