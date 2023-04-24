@@ -1,0 +1,52 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+
+#define TRY_CATCH_FUNCTION(return_type, func_name, params, error_msg, body, exitcode,...) \
+    return_type func_name params { \
+        __VA_ARGS__ \
+        try \
+        { \
+            body \
+        } \
+        catch (const runtime_error& e) \
+        { \
+            cout << error_msg << endl; \
+            cout << "Error: " << e.what() << endl; \
+            exitcode \
+		} \
+		catch (const exception& e) \
+		{ \
+			throw runtime_error(error_msg); \
+		} \
+		catch (const boost::thread_interrupted&) \
+		{ \
+			exitcode \
+		} \
+}
+
+#define TRY_CATCH_LOOP_FUNCTION(return_type, func_name, params, error_msg, body, exitcode,...) \
+    return_type func_name params { \
+        while (true) \
+        { \
+            __VA_ARGS__ \
+            try \
+            { \
+                body \
+            } \
+            catch (const runtime_error& e) \
+            { \
+                cout << error_msg << endl; \
+                cout << "Error: " << e.what() << endl; \
+	            exitcode \
+            } \
+            catch (const exception& e) \
+            { \
+                throw runtime_error(error_msg); \
+            } \
+            catch (const boost::thread_interrupted&) \
+            { \
+                exitcode \
+            } \
+        } \
+}
