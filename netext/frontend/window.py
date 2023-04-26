@@ -107,13 +107,12 @@ class Window(QMainWindow):
         if fileName:
             with open(fileName, "r") as f:
                 file_content = f.read()
-
-            network.send(serialize(Code.FILE_OPEN_REQUEST , {"path" : fileName}))
-
+            #  network.send(serialize(Code.FILE_OPEN_REQUEST , {"path" : fileName}))
             if len(file_content) > BUFFER_SIZE:
                 QMessageBox.warning(self, "File Too Large",
                                     "The file is too large. Please try another file.")
-            
+            else:
+                self.centralWidget.setText(file_content)
 
     def copyContent(self):
         self.centralWidget.copy()
