@@ -1,7 +1,8 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,c++
-
+# Port file
+port.txt
 ### C++ ###
 # Prerequisites
 *.d
@@ -355,6 +356,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+.venv/
 
 # Cake - Uncomment if you are using it
 # tools/**
